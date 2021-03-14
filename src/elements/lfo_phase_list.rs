@@ -1,0 +1,72 @@
+use iced::{pick_list, Container, Length, PickList, Row, Text};
+
+use crate::messages::Message;
+use crate::params::SoundParameter;
+use crate::style;
+
+pub fn lfo_phase_list<'a>(
+    label: &'a str,
+    state: &'a mut pick_list::State<LFOPhase>,
+    sound_param: SoundParameter,
+    value: i32,
+) -> Container<'a, Message> {
+    let value = match value {
+        0 => Some(LFOPhase::Free),
+        1 => Some(LFOPhase::Random),
+        2 => Some(LFOPhase::Phase0),
+        3 => Some(LFOPhase::Phase90),
+        4 => Some(LFOPhase::Phase180),
+        5 => Some(LFOPhase::Phase270),
+
+        _ => None,
+    };
+    let pick_list = PickList::new(state, &LFOPhase::ALL[..], value, move |v| {
+        Message::SoundParameterChange(sound_param, v as i32)
+    })
+    .style(style::PickList)
+    .text_size(16);
+
+    Container::new(
+        Row::new()
+            .push(Text::new(label).size(16).width(Length::Units(80)))
+            .push(pick_list),
+    )
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LFOPhase {
+    Free,
+    Random,
+    Phase0,
+    Phase90,
+    Phase180,
+    Phase270,
+}
+
+impl LFOPhase {
+    const ALL: [LFOPhase; 6] = [
+        LFOPhase::Free,
+        LFOPhase::Random,
+        LFOPhase::Phase0,
+        LFOPhase::Phase90,
+        LFOPhase::Phase180,
+        LFOPhase::Phase270,
+    ];
+}
+
+impl std::fmt::Display for LFOPhase {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                LFOPhase::Free => "Free",
+                LFOPhase::Random => "Random",
+                LFOPhase::Phase0 => "0°",
+                LFOPhase::Phase90 => "90°",
+                LFOPhase::Phase180 => "180°",
+                LFOPhase::Phase270 => "270°",
+            }
+        )
+    }
+}
