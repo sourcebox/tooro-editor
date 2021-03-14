@@ -4,11 +4,15 @@ use crate::params::SoundParameter;
 
 pub struct MidiConnector {
     midi_out: Option<MidiOutputConnection>,
+    midi_in: Option<MidiInputConnection<()>>,
 }
 
 impl MidiConnector {
     pub fn new() -> Self {
-        Self { midi_out: None }
+        Self {
+            midi_out: None,
+            midi_in: None,
+        }
     }
 
     /// Scans the ports and establishes a connection to the device if found
@@ -20,8 +24,8 @@ impl MidiConnector {
                     let port_name = midi_out.port_name(p).unwrap();
                     if port_name.starts_with("Tooro") {
                         if self.midi_out.is_none() {
-                            println!("Device connected");
-                            self.midi_out = Some(midi_out.connect(p, "midir-test").unwrap());
+                            println!("Device MIDI out connected");
+                            self.midi_out = Some(midi_out.connect(p, "tooro output").unwrap());
                         }
                         connected = true;
                         break;
@@ -33,6 +37,30 @@ impl MidiConnector {
             }
             Err(error) => {
                 println!("MIDI out error {}", error);
+            }
+        }
+
+        match MidiInput::new("midi scan input") {
+            Ok(midi_in) => {
+                let mut connected = false;
+                for p in midi_in.ports().iter() {
+                    let port_name = midi_in.port_name(p).unwrap();
+                    if port_name.starts_with("Tooro") {
+                        if self.midi_in.is_none() {
+                            println!("Device MIDI in connected");
+                            self.midi_in =
+                                Some(midi_in.connect(p, "tooro input", on_receive, ()).unwrap());
+                        }
+                        connected = true;
+                        break;
+                    }
+                }
+                if !connected {
+                    self.midi_in = None;
+                }
+            }
+            Err(error) => {
+                println!("MIDI in error {}", error);
             }
         }
     }
@@ -168,4 +196,9 @@ impl MidiConnector {
 
 fn rescale(value: i32, in_min: i32, in_max: i32, out_min: i32, out_max: i32) -> i32 {
     (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+}
+
+// Callback for received MIDI messages
+fn on_receive(_timestamp: u64, message: &[u8], args: &mut ()) {
+    println!("MIDI in {:?}", message);
 }
