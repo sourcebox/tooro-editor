@@ -95,7 +95,7 @@ impl Application for EditorApp {
                     self.midi.send_sound_param(0, &param, value);
                 }
             }
-            Message::Tick(_local_time) => {
+            Message::Tick => {
                 self.midi.scan();
             }
             _ => {}
@@ -105,8 +105,12 @@ impl Application for EditorApp {
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        time::every(std::time::Duration::from_millis(1000))
-            .map(|_| Message::Tick(chrono::Local::now()))
+        let tick_subscription =
+            time::every(std::time::Duration::from_millis(1000)).map(|_| Message::Tick);
+
+        let subscriptions = vec![tick_subscription];
+
+        Subscription::batch(subscriptions.into_iter())
     }
 
     fn view(&mut self) -> Element<Self::Message> {

@@ -198,7 +198,7 @@ fn rescale(value: i32, in_min: i32, in_max: i32, out_min: i32, out_max: i32) -> 
     (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }
 
-// Callback for received MIDI messages
-fn on_receive(_timestamp: u64, message: &[u8], args: &mut ()) {
+/// Callback for received MIDI messages
+fn on_receive(_timestamp: u64, message: &[u8], _args: &mut ()) {
     println!("MIDI in {:?}", message);
 }
