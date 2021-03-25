@@ -98,7 +98,6 @@ pub enum SoundParameter {
     // Misc
     BendRange,
     Tune,
-    Glide,
 }
 
 impl SoundParameter {

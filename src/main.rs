@@ -5,10 +5,15 @@ mod params;
 mod sections;
 mod style;
 
+use std::hash::{Hash, Hasher};
+use std::sync::mpsc;
+
 use iced::{
     executor, time, Application, Clipboard, Column, Command, Container, Element, Length, Row,
     Settings, Subscription,
 };
+use iced_futures::futures;
+use iced_native;
 
 use messages::Message;
 use midi::MidiConnector;
@@ -95,6 +100,16 @@ impl Application for EditorApp {
                     self.midi.send_sound_param(0, &param, value);
                 }
             }
+            Message::MidiCCReceived(_channel, no, value) => {
+                let sound_param = self.midi.cc_to_sound_param(no, value);
+                if sound_param.is_some() {
+                    let (param, value) = sound_param.unwrap();
+                    let last_value = self.sound_params.get_value(param);
+                    if value != last_value {
+                        self.sound_params.insert(param, value);
+                    }
+                }
+            }
             Message::Tick => {
                 self.midi.scan();
             }
@@ -104,11 +119,22 @@ impl Application for EditorApp {
         Command::none()
     }
 
-    fn subscription(&self) -> Subscription<Message> {
+    fn subscription(&self) -> Subscription<Self::Message> {
         let tick_subscription =
             time::every(std::time::Duration::from_millis(1000)).map(|_| Message::Tick);
 
-        let subscriptions = vec![tick_subscription];
+        let (sender, receiver) = mpsc::channel();
+        self.midi.set_midi_in_sender(&sender);
+        let midi_subscription =
+            Subscription::from_recipe(MidiReceiveSubscription { receiver: receiver }).map(|data| {
+                if data[0] == 0xB0 {
+                    Message::MidiCCReceived(data[0] & 0x0F, data[1], data[2])
+                } else {
+                    Message::MidiUnknownReceived
+                }
+            });
+
+        let subscriptions = vec![tick_subscription, midi_subscription];
 
         Subscription::batch(subscriptions.into_iter())
     }
@@ -181,5 +207,39 @@ impl Application for EditorApp {
             .height(Length::Fill)
             .style(style::MainWindow)
             .into()
+    }
+}
+
+pub struct MidiReceiveSubscription {
+    receiver: mpsc::Receiver<Vec<u8>>,
+}
+
+impl<H, I> iced_native::subscription::Recipe<H, I> for MidiReceiveSubscription
+where
+    H: Hasher,
+{
+    type Output = Vec<u8>;
+
+    fn hash(&self, state: &mut H) {
+        struct Marker;
+        std::any::TypeId::of::<Marker>().hash(state);
+    }
+
+    fn stream(
+        self: Box<Self>,
+        _input: futures::stream::BoxStream<'static, I>,
+    ) -> futures::stream::BoxStream<'static, Self::Output> {
+        Box::pin(futures::stream::unfold(
+            self.receiver,
+            move |state| async move {
+                let receiver = &state;
+                let result = receiver.recv();
+                if result.is_ok() {
+                    Some((result.unwrap(), state))
+                } else {
+                    None
+                }
+            },
+        ))
     }
 }

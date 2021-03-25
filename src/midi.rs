@@ -1,10 +1,14 @@
+use std::cell::Cell;
+use std::sync::mpsc;
+
 use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 
 use crate::params::SoundParameter;
 
 pub struct MidiConnector {
     midi_out: Option<MidiOutputConnection>,
-    midi_in: Option<MidiInputConnection<()>>,
+    midi_in: Option<MidiInputConnection<OnReceiveArgs>>,
+    midi_in_mpsc_sender: Cell<Option<mpsc::Sender<Vec<u8>>>>,
 }
 
 impl MidiConnector {
@@ -12,6 +16,7 @@ impl MidiConnector {
         Self {
             midi_out: None,
             midi_in: None,
+            midi_in_mpsc_sender: Cell::new(None),
         }
     }
 
@@ -48,8 +53,14 @@ impl MidiConnector {
                     if port_name.starts_with("Tooro") {
                         if self.midi_in.is_none() {
                             println!("Device MIDI in connected");
-                            self.midi_in =
-                                Some(midi_in.connect(p, "tooro input", on_receive, ()).unwrap());
+                            let on_receive_args = OnReceiveArgs {
+                                sender: self.midi_in_mpsc_sender.take(),
+                            };
+                            self.midi_in = Some(
+                                midi_in
+                                    .connect(p, "tooro input", on_receive, on_receive_args)
+                                    .unwrap(),
+                            );
                         }
                         connected = true;
                         break;
@@ -63,6 +74,10 @@ impl MidiConnector {
                 println!("MIDI in error {}", error);
             }
         }
+    }
+
+    pub fn set_midi_in_sender(&self, sender: &mpsc::Sender<Vec<u8>>) {
+        self.midi_in_mpsc_sender.set(Some(sender.clone()));
     }
 
     /// Sends a raw message
@@ -145,7 +160,7 @@ impl MidiConnector {
             SoundParameter::LFO1Rise => Some(104),
             SoundParameter::LFO1Phase => Some(105),
 
-            // LFO 1
+            // LFO 2
             SoundParameter::LFO2Shape => Some(106),
             SoundParameter::LFO2Speed => Some(107),
             SoundParameter::LFO2Rise => Some(108),
@@ -174,7 +189,6 @@ impl MidiConnector {
             // Misc
             SoundParameter::BendRange => Some(84),
             SoundParameter::Tune => Some(85),
-            SoundParameter::Glide => Some(86),
         };
 
         if cc_num.is_none() {
@@ -192,13 +206,141 @@ impl MidiConnector {
 
         self.send(&[0xB0 | channel, cc_num.unwrap(), cc_value]);
     }
+
+    pub fn cc_to_sound_param(&self, cc_num: u8, cc_value: u8) -> Option<(SoundParameter, i32)> {
+        let param = match cc_num {
+            // Osc 1
+            70 => Some(SoundParameter::Osc1Wave),
+            21 => Some(SoundParameter::Osc1Coarse),
+            22 => Some(SoundParameter::Osc1FMAmount),
+            23 => Some(SoundParameter::Osc1Level),
+            24 => Some(SoundParameter::Osc1Table),
+            25 => Some(SoundParameter::Osc1Fine),
+            26 => Some(SoundParameter::Osc1FMRate),
+            27 => Some(SoundParameter::Osc1Sync),
+
+            // Osc 2
+            77 => Some(SoundParameter::Osc2Wave),
+            31 => Some(SoundParameter::Osc2Coarse),
+            32 => Some(SoundParameter::Osc2FMAmount),
+            33 => Some(SoundParameter::Osc2Level),
+            34 => Some(SoundParameter::Osc2Table),
+            35 => Some(SoundParameter::Osc2Fine),
+            36 => Some(SoundParameter::Osc2FMRate),
+            37 => Some(SoundParameter::Osc2Sync),
+
+            // Extra
+            78 => Some(SoundParameter::ExtraNoise),
+            79 => Some(SoundParameter::ExtraRingMod),
+
+            // Filter
+            74 => Some(SoundParameter::FilterCutoff),
+            71 => Some(SoundParameter::FilterResonance),
+            54 => Some(SoundParameter::FilterEnvFAmount),
+            55 => Some(SoundParameter::FilterTrack),
+            56 => Some(SoundParameter::FilterAfter),
+            57 => Some(SoundParameter::FilterLFO1Amount),
+
+            // Shaper
+            75 => Some(SoundParameter::ShaperCutoff),
+            76 => Some(SoundParameter::ShaperResonance),
+            58 => Some(SoundParameter::ShaperEnvAAmount),
+            59 => Some(SoundParameter::ShaperTrack),
+            60 => Some(SoundParameter::ShaperMode),
+            61 => Some(SoundParameter::ShaperLFO2Amount),
+
+            // Env F
+            46 => Some(SoundParameter::EnvFAttack),
+            47 => Some(SoundParameter::EnvFDecay),
+            48 => Some(SoundParameter::EnvFSustain),
+            49 => Some(SoundParameter::EnvFRelease),
+            50 => Some(SoundParameter::EnvFVelo),
+            51 => Some(SoundParameter::EnvFHold),
+            52 => Some(SoundParameter::EnvFAfter),
+            53 => Some(SoundParameter::EnvFTrigger),
+
+            // Env A
+            73 => Some(SoundParameter::EnvAAttack),
+            40 => Some(SoundParameter::EnvADecay),
+            41 => Some(SoundParameter::EnvASustain),
+            72 => Some(SoundParameter::EnvARelease),
+            43 => Some(SoundParameter::EnvAVelo),
+            42 => Some(SoundParameter::EnvAHold),
+            44 => Some(SoundParameter::EnvAAfter),
+            45 => Some(SoundParameter::EnvATrigger),
+
+            // LFO 1
+            102 => Some(SoundParameter::LFO1Shape),
+            103 => Some(SoundParameter::LFO1Speed),
+            104 => Some(SoundParameter::LFO1Rise),
+            105 => Some(SoundParameter::LFO1Phase),
+
+            // LFO 2
+            106 => Some(SoundParameter::LFO2Shape),
+            107 => Some(SoundParameter::LFO2Speed),
+            108 => Some(SoundParameter::LFO2Rise),
+            109 => Some(SoundParameter::LFO2Phase),
+
+            // Arpeggiator
+            110 => Some(SoundParameter::ArpMode),
+            111 => Some(SoundParameter::ArpGrid),
+            112 => Some(SoundParameter::ArpTempo),
+            113 => Some(SoundParameter::ArpHold),
+
+            // Amplifier
+            80 => Some(SoundParameter::AmpLevel),
+            81 => Some(SoundParameter::AmpPan),
+
+            // Modulations
+            17 => Some(SoundParameter::ModEnvF),
+            18 => Some(SoundParameter::ModEnvA),
+            19 => Some(SoundParameter::ModLFO1),
+            20 => Some(SoundParameter::ModLFO2),
+            87 => Some(SoundParameter::ModModwheel),
+            88 => Some(SoundParameter::ModPitchbend),
+            89 => Some(SoundParameter::ModVelocity),
+            90 => Some(SoundParameter::ModAftertouch),
+
+            // Misc
+            84 => Some(SoundParameter::BendRange),
+            85 => Some(SoundParameter::Tune),
+
+            // Unknown
+            _ => None,
+        };
+
+        if param.is_none() {
+            return None;
+        }
+
+        let param = param.unwrap();
+
+        let value = match param {
+            // Default
+            _ => {
+                let range = param.get_range();
+                rescale(cc_value as i32, 0, 127, *range.start(), *range.end())
+            }
+        };
+
+        Some((param, value))
+    }
 }
 
 fn rescale(value: i32, in_min: i32, in_max: i32, out_min: i32, out_max: i32) -> i32 {
     (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }
 
+/// Arguments for on_receive() callback function
+struct OnReceiveArgs {
+    sender: Option<mpsc::Sender<Vec<u8>>>,
+}
+
 /// Callback for received MIDI messages
-fn on_receive(_timestamp: u64, message: &[u8], _args: &mut ()) {
+fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
+    let message = Vec::<u8>::from(message);
     println!("MIDI in {:?}", message);
+    if args.sender.is_some() {
+        args.sender.as_ref().unwrap().send(message).ok();
+    }
 }

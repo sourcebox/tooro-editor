@@ -8,7 +8,6 @@ use crate::style;
 pub struct MiscSection {
     bend_slider: slider::State,
     tune_slider: slider::State,
-    glide_slider: slider::State,
 }
 
 impl MiscSection {
@@ -16,7 +15,6 @@ impl MiscSection {
         Self {
             bend_slider: slider::State::new(),
             tune_slider: slider::State::new(),
-            glide_slider: slider::State::new(),
         }
     }
 
@@ -36,12 +34,6 @@ impl MiscSection {
                 &mut self.tune_slider,
                 SoundParameter::Tune,
                 params.get_value(SoundParameter::Tune),
-            ))
-            .push(slider_with_labels(
-                "Glide",
-                &mut self.glide_slider,
-                SoundParameter::Glide,
-                params.get_value(SoundParameter::Glide),
             ));
         Container::new(content).style(style::MiscSection).into()
     }
