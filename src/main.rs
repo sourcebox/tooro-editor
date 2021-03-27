@@ -97,11 +97,14 @@ impl Application for EditorApp {
                 let last_value = self.sound_params.get_value(param);
                 if value != last_value {
                     self.sound_params.insert(param, value);
-                    self.midi.send_sound_param(0, &param, value);
+                    if let Some(cc) = midi::cc::sound_param_to_cc(&param, value) {
+                        let (cc_num, cc_value) = cc;
+                        self.midi.send(&[0xB0, cc_num, cc_value]);
+                    }
                 }
             }
             Message::MidiCCReceived(_channel, no, value) => {
-                let sound_param = self.midi.cc_to_sound_param(no, value);
+                let sound_param = midi::cc::cc_to_sound_param(no, value);
                 if sound_param.is_some() {
                     let (param, value) = sound_param.unwrap();
                     let last_value = self.sound_params.get_value(param);
