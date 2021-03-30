@@ -103,13 +103,15 @@ impl Application for EditorApp {
                     }
                 }
             }
-            Message::MidiCCReceived(_channel, no, value) => {
-                let sound_param = midi::cc::cc_to_sound_param(no, value);
-                if sound_param.is_some() {
-                    let (param, value) = sound_param.unwrap();
-                    let last_value = self.sound_params.get_value(param);
-                    if value != last_value {
-                        self.sound_params.insert(param, value);
+            Message::MidiReceived(data) => {
+                if data[0] == 0xB0 {
+                    let sound_param = midi::cc::cc_to_sound_param(data[1], data[2]);
+                    if sound_param.is_some() {
+                        let (param, value) = sound_param.unwrap();
+                        let last_value = self.sound_params.get_value(param);
+                        if value != last_value {
+                            self.sound_params.insert(param, value);
+                        }
                     }
                 }
             }
@@ -129,13 +131,8 @@ impl Application for EditorApp {
         let (sender, receiver) = mpsc::channel();
         self.midi.set_midi_in_sender(&sender);
         let midi_subscription =
-            Subscription::from_recipe(MidiReceiveSubscription { receiver: receiver }).map(|data| {
-                if data[0] == 0xB0 {
-                    Message::MidiCCReceived(data[0] & 0x0F, data[1], data[2])
-                } else {
-                    Message::MidiUnknownReceived
-                }
-            });
+            Subscription::from_recipe(MidiReceiveSubscription { receiver: receiver })
+                .map(|data| Message::MidiReceived(data));
 
         let subscriptions = vec![tick_subscription, midi_subscription];
 

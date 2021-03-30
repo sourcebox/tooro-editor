@@ -1,8 +1,8 @@
 use crate::params::SoundParameter;
-#[derive(Debug, Clone, Copy)]
+
+#[derive(Debug, Clone)]
 pub enum Message {
     SoundParameterChange(SoundParameter, i32),
-    MidiCCReceived(u8, u8, u8),
-    MidiUnknownReceived,
+    MidiReceived(Vec<u8>),
     Tick,
 }
