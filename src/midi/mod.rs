@@ -1,4 +1,5 @@
 pub mod cc;
+pub mod sysex;
 
 use std::cell::Cell;
 use std::sync::mpsc;
@@ -90,6 +91,11 @@ impl MidiConnector {
             }
             None => {}
         }
+    }
+
+    /// Returns if device is connected
+    pub fn is_connected(&self) -> bool {
+        self.midi_in.is_some() && self.midi_out.is_some()
     }
 }
 

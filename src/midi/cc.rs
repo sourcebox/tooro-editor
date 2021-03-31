@@ -86,18 +86,20 @@ pub fn sound_param_to_cc(param: &SoundParameter, value: i32) -> Option<(u8, u8)>
         SoundParameter::AmpPan => Some(81),
 
         // Modulations
-        SoundParameter::ModEnvF => Some(17),
-        SoundParameter::ModEnvA => Some(18),
-        SoundParameter::ModLFO1 => Some(19),
-        SoundParameter::ModLFO2 => Some(20),
-        SoundParameter::ModModwheel => Some(87),
-        SoundParameter::ModPitchbend => Some(88),
-        SoundParameter::ModVelocity => Some(89),
-        SoundParameter::ModAftertouch => Some(90),
+        SoundParameter::ModEnvFAmount => Some(17),
+        SoundParameter::ModEnvAAmount => Some(18),
+        SoundParameter::ModLFO1Amount => Some(19),
+        SoundParameter::ModLFO2Amount => Some(20),
+        SoundParameter::ModModwheelAmount => Some(87),
+        SoundParameter::ModPitchbendAmount => Some(88),
+        SoundParameter::ModVelocityAmount => Some(89),
+        SoundParameter::ModAftertouchAmount => Some(90),
 
         // Misc
         SoundParameter::BendRange => Some(84),
         SoundParameter::Tune => Some(85),
+
+        _ => None,
     };
 
     if cc_num.is_none() {
@@ -202,14 +204,14 @@ pub fn cc_to_sound_param(cc_num: u8, cc_value: u8) -> Option<(SoundParameter, i3
         81 => Some(SoundParameter::AmpPan),
 
         // Modulations
-        17 => Some(SoundParameter::ModEnvF),
-        18 => Some(SoundParameter::ModEnvA),
-        19 => Some(SoundParameter::ModLFO1),
-        20 => Some(SoundParameter::ModLFO2),
-        87 => Some(SoundParameter::ModModwheel),
-        88 => Some(SoundParameter::ModPitchbend),
-        89 => Some(SoundParameter::ModVelocity),
-        90 => Some(SoundParameter::ModAftertouch),
+        17 => Some(SoundParameter::ModEnvFAmount),
+        18 => Some(SoundParameter::ModEnvAAmount),
+        19 => Some(SoundParameter::ModLFO1Amount),
+        20 => Some(SoundParameter::ModLFO2Amount),
+        87 => Some(SoundParameter::ModModwheelAmount),
+        88 => Some(SoundParameter::ModPitchbendAmount),
+        89 => Some(SoundParameter::ModVelocityAmount),
+        90 => Some(SoundParameter::ModAftertouchAmount),
 
         // Misc
         84 => Some(SoundParameter::BendRange),

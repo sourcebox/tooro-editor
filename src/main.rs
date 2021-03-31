@@ -104,21 +104,15 @@ impl Application for EditorApp {
                 }
             }
             Message::MidiReceived(data) => {
-                if data[0] == 0xB0 {
-                    let sound_param = midi::cc::cc_to_sound_param(data[1], data[2]);
-                    if sound_param.is_some() {
-                        let (param, value) = sound_param.unwrap();
-                        let last_value = self.sound_params.get_value(param);
-                        if value != last_value {
-                            self.sound_params.insert(param, value);
-                        }
-                    }
-                }
+                self.process_incoming_midi(&data);
             }
             Message::Tick => {
                 self.midi.scan();
+                if self.midi.is_connected() {
+                    let message = [0xF0, midi::sysex::SERVICE_PRESET_REQUEST, 0x70, 0xF7];
+                    self.midi.send(&message);
+                }
             }
-            _ => {}
         }
 
         Command::none()
@@ -207,6 +201,50 @@ impl Application for EditorApp {
             .height(Length::Fill)
             .style(style::MainWindow)
             .into()
+    }
+}
+
+impl EditorApp {
+    fn process_incoming_midi(&mut self, message: &Vec<u8>) {
+        match message[0] {
+            0xB0 => {
+                // Control change
+                let sound_param = midi::cc::cc_to_sound_param(message[1], message[2]);
+                if sound_param.is_some() {
+                    let (param, value) = sound_param.unwrap();
+                    // self.sound_params.insert(param, value);
+                }
+            }
+            0xF0 => {
+                // Sysex
+                match message[1] {
+                    midi::sysex::SERVICE_PRESET_DUMP => {
+                        let preset_id = message[2];
+                        println!("Preset dump");
+                        match preset_id {
+                            0..=99 => {
+                                println!("Preset {}", preset_id);
+                            }
+                            0x70..=0x73 => {
+                                let part_no = preset_id - 0x70;
+                                println!("Part {}", part_no + 1);
+                                let param_values =
+                                    midi::sysex::unpack_data(&message[3..message.len()]);
+                                midi::sysex::update_sound_params(
+                                    &mut self.sound_params,
+                                    &param_values,
+                                );
+                            }
+                            _ => {
+                                println!("Unknown id {}", preset_id);
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
     }
 }
 

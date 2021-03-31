@@ -86,14 +86,22 @@ pub enum SoundParameter {
     AmpPan,
 
     // Modulations
-    ModEnvF,
-    ModEnvA,
-    ModLFO1,
-    ModLFO2,
-    ModModwheel,
-    ModPitchbend,
-    ModVelocity,
-    ModAftertouch,
+    ModEnvFAmount,
+    ModEnvFTarget,
+    ModEnvAAmount,
+    ModEnvATarget,
+    ModLFO1Amount,
+    ModLFO1Target,
+    ModLFO2Amount,
+    ModLFO2Target,
+    ModModwheelAmount,
+    ModModwheelTarget,
+    ModPitchbendAmount,
+    ModPitchbendTarget,
+    ModVelocityAmount,
+    ModVelocityTarget,
+    ModAftertouchAmount,
+    ModAftertouchTarget,
 
     // Misc
     BendRange,
@@ -106,17 +114,19 @@ impl SoundParameter {
             // Default for bipolar
             SoundParameter::ShaperEnvAAmount
             | SoundParameter::ShaperLFO2Amount
-            | SoundParameter::ShaperTrack
             | SoundParameter::FilterEnvFAmount
             | SoundParameter::FilterLFO1Amount
-            | SoundParameter::FilterTrack
             | SoundParameter::FilterAfter
             | SoundParameter::AmpPan
-            | SoundParameter::Tune => RangeInclusive::new(-64, 63),
+            | SoundParameter::Tune => RangeInclusive::new(-128, 128),
 
-            // Speecial ranges
+            // Special ranges
             SoundParameter::Osc1Coarse | SoundParameter::Osc2Coarse => RangeInclusive::new(-36, 36),
             SoundParameter::Osc1Fine | SoundParameter::Osc2Fine => RangeInclusive::new(-100, 100),
+            SoundParameter::ShaperTrack | SoundParameter::FilterTrack => {
+                RangeInclusive::new(-20, 20)
+            }
+            &SoundParameter::ArpTempo => RangeInclusive::new(64, 320),
 
             // Lists
             SoundParameter::Osc1Table | SoundParameter::Osc2Table => RangeInclusive::new(0, 10),
@@ -131,7 +141,7 @@ impl SoundParameter {
             SoundParameter::ArpHold => RangeInclusive::new(0, 1),
 
             // Default
-            _ => RangeInclusive::new(0, 127),
+            _ => RangeInclusive::new(0, 255),
         }
     }
 
