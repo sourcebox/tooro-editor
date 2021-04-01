@@ -1,9 +1,14 @@
 use crate::params::{SoundParameter, SoundParameterValues};
 
+// Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
 pub const SERVICE_PRESET_REQUEST: u8 = 0x02;
 pub const SERVICE_MULTI_DUMP: u8 = 0x11;
 pub const SERVICE_PRESET_DUMP: u8 = 0x12;
+
+// Total dump lengths in bytes (incl. 0xF0 & 0xF7)
+pub const MULTI_DUMP_LENGTH: usize = 104;
+pub const PRESET_DUMP_LENGTH: usize = 264;
 
 /// Unpack the data and return a vector of it
 ///

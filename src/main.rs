@@ -27,7 +27,8 @@ use sections::{
 pub fn main() -> iced::Result {
     let settings = Settings {
         window: iced::window::Settings {
-            min_size: Some((800, 700)),
+            min_size: Some((800, 850)),
+            resizable: false,
             ..iced::window::Settings::default()
         },
         ..Settings::default()
@@ -218,7 +219,9 @@ impl EditorApp {
             0xF0 => {
                 // Sysex
                 match message[1] {
-                    midi::sysex::SERVICE_PRESET_DUMP => {
+                    midi::sysex::SERVICE_PRESET_DUMP
+                        if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
+                    {
                         let preset_id = message[2];
                         println!("Preset dump");
                         match preset_id {

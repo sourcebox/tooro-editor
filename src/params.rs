@@ -118,7 +118,15 @@ impl SoundParameter {
             | SoundParameter::FilterLFO1Amount
             | SoundParameter::FilterAfter
             | SoundParameter::AmpPan
-            | SoundParameter::Tune => RangeInclusive::new(-128, 128),
+            | SoundParameter::Tune
+            | SoundParameter::ModEnvFAmount
+            | SoundParameter::ModEnvAAmount
+            | SoundParameter::ModLFO1Amount
+            | SoundParameter::ModLFO2Amount
+            | SoundParameter::ModModwheelAmount
+            | SoundParameter::ModPitchbendAmount
+            | SoundParameter::ModVelocityAmount
+            | SoundParameter::ModAftertouchAmount => RangeInclusive::new(-128, 128),
 
             // Special ranges
             SoundParameter::Osc1Coarse | SoundParameter::Osc2Coarse => RangeInclusive::new(-36, 36),
@@ -126,7 +134,7 @@ impl SoundParameter {
             SoundParameter::ShaperTrack | SoundParameter::FilterTrack => {
                 RangeInclusive::new(-20, 20)
             }
-            &SoundParameter::ArpTempo => RangeInclusive::new(64, 320),
+            SoundParameter::ArpTempo => RangeInclusive::new(64, 320),
 
             // Lists
             SoundParameter::Osc1Table | SoundParameter::Osc2Table => RangeInclusive::new(0, 10),
@@ -136,6 +144,14 @@ impl SoundParameter {
             SoundParameter::LFO1Phase | SoundParameter::LFO2Phase => RangeInclusive::new(0, 5),
             SoundParameter::ArpMode => RangeInclusive::new(0, 7),
             SoundParameter::ArpGrid => RangeInclusive::new(0, 9),
+            SoundParameter::ModEnvFTarget
+            | SoundParameter::ModEnvATarget
+            | SoundParameter::ModLFO1Target
+            | SoundParameter::ModLFO2Target
+            | SoundParameter::ModModwheelTarget
+            | SoundParameter::ModPitchbendTarget
+            | SoundParameter::ModVelocityTarget
+            | SoundParameter::ModAftertouchTarget => RangeInclusive::new(0, 21),
 
             // Boolean
             SoundParameter::ArpHold => RangeInclusive::new(0, 1),

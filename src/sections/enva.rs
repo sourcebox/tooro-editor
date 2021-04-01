@@ -1,7 +1,8 @@
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
 
 use crate::elements::{
     env_trigger_list::{env_trigger_list, EnvTrigger},
+    mod_target_list::{mod_target_list, ModTarget},
     slider::slider_with_labels,
 };
 use crate::messages::Message;
@@ -17,6 +18,8 @@ pub struct EnvASection {
     hold_slider: slider::State,
     after_slider: slider::State,
     trigger_list: pick_list::State<EnvTrigger>,
+    mod_target_list: pick_list::State<ModTarget>,
+    mod_amount_slider: slider::State,
 }
 
 impl EnvASection {
@@ -30,6 +33,8 @@ impl EnvASection {
             hold_slider: slider::State::new(),
             after_slider: slider::State::new(),
             trigger_list: pick_list::State::<EnvTrigger>::default(),
+            mod_target_list: pick_list::State::<ModTarget>::default(),
+            mod_amount_slider: slider::State::new(),
         }
     }
 
@@ -85,6 +90,19 @@ impl EnvASection {
                 &mut self.trigger_list,
                 SoundParameter::EnvATrigger,
                 params.get_value(SoundParameter::EnvATrigger),
+            ))
+            .push(Rule::horizontal(10))
+            .push(mod_target_list(
+                "Mod Target",
+                &mut self.mod_target_list,
+                SoundParameter::ModEnvATarget,
+                params.get_value(SoundParameter::ModEnvATarget),
+            ))
+            .push(slider_with_labels(
+                "Mod Amount",
+                &mut self.mod_amount_slider,
+                SoundParameter::ModEnvAAmount,
+                params.get_value(SoundParameter::ModEnvAAmount),
             ));
         Container::new(content).style(style::EnvSection).into()
     }
