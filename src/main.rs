@@ -163,26 +163,26 @@ impl Application for EditorApp {
             .padding(5)
             .spacing(10)
             .push(self.lfo1_section.view(&self.sound_params))
-            .push(self.lfo2_section.view(&self.sound_params))
+            .push(self.arp_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
         let row2_col2 = Column::new()
             .padding(5)
             .spacing(10)
-            .push(self.envf_section.view(&self.sound_params))
+            .push(self.lfo2_section.view(&self.sound_params))
+            .push(self.misc_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
         let row2_col3 = Column::new()
             .padding(5)
             .spacing(10)
-            .push(self.enva_section.view(&self.sound_params))
+            .push(self.envf_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
         let row2_col4 = Column::new()
             .padding(5)
             .spacing(10)
-            .push(self.arp_section.view(&self.sound_params))
-            .push(self.misc_section.view(&self.sound_params))
+            .push(self.enva_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
         let row1 = Row::new()
