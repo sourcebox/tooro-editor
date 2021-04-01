@@ -56,6 +56,12 @@ struct EditorApp {
 
     // MIDI connection handler
     midi: MidiConnector,
+
+    // Flag for preset update on next tick
+    request_update: bool,
+
+    // Exit flag
+    should_exit: bool,
 }
 
 impl Application for EditorApp {
@@ -82,6 +88,9 @@ impl Application for EditorApp {
                 sound_params: SoundParameterValues::with_capacity(128),
 
                 midi: MidiConnector::new(),
+
+                request_update: true,
+                should_exit: false,
             },
             Command::none(),
         )
@@ -94,6 +103,13 @@ impl Application for EditorApp {
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
         // println!("{:?}", message);
         match message {
+            Message::EventOccurred(event) => {
+                if let iced_native::Event::Window(iced_native::window::Event::CloseRequested) =
+                    event
+                {
+                    self.should_exit = true;
+                }
+            }
             Message::SoundParameterChange(param, value) => {
                 let last_value = self.sound_params.get_value(param);
                 if value != last_value {
@@ -109,9 +125,9 @@ impl Application for EditorApp {
             }
             Message::Tick => {
                 self.midi.scan();
-                if self.midi.is_connected() {
-                    let message = [0xF0, midi::sysex::SERVICE_PRESET_REQUEST, 0x70, 0xF7];
-                    self.midi.send(&message);
+                if self.midi.is_connected() && self.request_update {
+                    self.midi.request_preset_dump(0x70);
+                    self.request_update = false;
                 }
             }
         }
@@ -120,6 +136,8 @@ impl Application for EditorApp {
     }
 
     fn subscription(&self) -> Subscription<Self::Message> {
+        let event_subscription = iced_native::subscription::events().map(Message::EventOccurred);
+
         let tick_subscription =
             time::every(std::time::Duration::from_millis(1000)).map(|_| Message::Tick);
 
@@ -132,6 +150,10 @@ impl Application for EditorApp {
         let subscriptions = vec![tick_subscription, midi_subscription];
 
         Subscription::batch(subscriptions.into_iter())
+    }
+
+    fn should_exit(&self) -> bool {
+        self.should_exit
     }
 
     fn view(&mut self) -> Element<Self::Message> {
@@ -212,8 +234,7 @@ impl EditorApp {
                 // Control change
                 let sound_param = midi::cc::cc_to_sound_param(message[1], message[2]);
                 if sound_param.is_some() {
-                    let (param, value) = sound_param.unwrap();
-                    // self.sound_params.insert(param, value);
+                    self.request_update = true;
                 }
             }
             0xF0 => {

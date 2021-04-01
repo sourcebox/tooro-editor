@@ -97,6 +97,14 @@ impl MidiConnector {
     pub fn is_connected(&self) -> bool {
         self.midi_in.is_some() && self.midi_out.is_some()
     }
+
+    /// Send a dump request for a preset
+    ///
+    /// - `preset_id`   Preset id, either 0..99 or 0x70..0x73
+    pub fn request_preset_dump(&mut self, preset_id: u8) {
+        let message = [0xF0, sysex::SERVICE_PRESET_REQUEST, preset_id, 0xF7];
+        self.send(&message);
+    }
 }
 
 /// Arguments for on_receive() callback function
