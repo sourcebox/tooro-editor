@@ -10,6 +10,8 @@ use iced::{
     Settings, Subscription,
 };
 use iced_native;
+use log;
+use simple_logger::SimpleLogger;
 
 use messages::Message;
 use midi::MidiConnector;
@@ -21,6 +23,10 @@ use sections::{
 };
 
 pub fn main() -> iced::Result {
+    SimpleLogger::new()
+        .with_level(log::LevelFilter::Debug)
+        .init()
+        .unwrap();
     let settings = Settings {
         window: iced::window::Settings {
             min_size: Some((800, 850)),
@@ -97,7 +103,6 @@ impl Application for EditorApp {
     }
 
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
-        // println!("{:?}", message);
         match message {
             Message::EventOccurred(event) => {
                 if let iced_native::Event::Window(iced_native::window::Event::CloseRequested) =
@@ -124,7 +129,9 @@ impl Application for EditorApp {
                     self.process_incoming_midi(&message);
                 }
                 if self.midi.is_connected() && self.request_update {
-                    self.midi.request_preset_dump(0x70);
+                    let preset_id = 0x70;
+                    log::info!("Requesting preset dump for id {}", preset_id);
+                    self.midi.request_preset_dump(preset_id);
                     self.request_update = false;
                 }
             }
@@ -242,14 +249,11 @@ impl EditorApp {
                         if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
                     {
                         let preset_id = message[2];
-                        println!("Preset dump");
+                        log::info!("Preset dump received with id {}", preset_id);
                         match preset_id {
-                            0..=99 => {
-                                println!("Preset {}", preset_id);
-                            }
+                            0..=99 => {}
                             0x70..=0x73 => {
                                 let part_no = preset_id - 0x70;
-                                println!("Part {}", part_no + 1);
                                 let param_values =
                                     midi::sysex::unpack_data(&message[3..message.len()]);
                                 midi::sysex::update_sound_params(
@@ -257,9 +261,7 @@ impl EditorApp {
                                     &param_values,
                                 );
                             }
-                            _ => {
-                                println!("Unknown id {}", preset_id);
-                            }
+                            _ => {}
                         }
                     }
                     _ => {}

@@ -3,6 +3,7 @@ pub mod sysex;
 
 use std::sync::mpsc;
 
+use log;
 use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 
 pub struct MidiConnector {
@@ -29,19 +30,20 @@ impl MidiConnector {
                     let port_name = midi_out.port_name(p).unwrap();
                     if port_name.starts_with("Tooro") {
                         if self.midi_out.is_none() {
-                            println!("Device MIDI out connected");
+                            log::info!("MIDI out connected to port {}", port_name);
                             self.midi_out = Some(midi_out.connect(p, "tooro output").unwrap());
                         }
                         connected = true;
                         break;
                     }
                 }
-                if !connected {
+                if !connected && self.midi_out.is_some() {
+                    log::info!("MIDI out disconnected");
                     self.midi_out = None;
                 }
             }
             Err(error) => {
-                println!("MIDI out error: {}", error);
+                log::error!("MIDI out error: {}", error);
             }
         }
 
@@ -52,7 +54,7 @@ impl MidiConnector {
                     let port_name = midi_in.port_name(p).unwrap();
                     if port_name.starts_with("Tooro") {
                         if self.midi_in.is_none() {
-                            println!("Device MIDI in connected");
+                            log::info!("MIDI in connected to port {}", port_name);
                             self.midi_in_mpsc_channel = Some(mpsc::channel());
                             let on_receive_args = OnReceiveArgs {
                                 sender: Some(self.midi_in_mpsc_channel.as_ref().unwrap().0.clone()),
@@ -67,20 +69,20 @@ impl MidiConnector {
                         break;
                     }
                 }
-                if !connected {
+                if !connected && self.midi_in.is_some() {
+                    log::info!("MIDI in disconnected");
                     self.midi_in = None;
                     self.midi_in_mpsc_channel = None;
                 }
             }
             Err(error) => {
-                println!("MIDI in error: {}", error);
+                log::error!("MIDI in error: {}", error);
             }
         }
     }
 
     /// Sends a message
     pub fn send(&mut self, message: &[u8]) {
-        println!("MIDI out {:?}", message);
         match self.midi_out.as_mut() {
             Some(conn) => {
                 conn.send(message).ok();
@@ -127,7 +129,6 @@ struct OnReceiveArgs {
 /// Callback for received MIDI messages
 fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
     let message = Vec::<u8>::from(message);
-    println!("MIDI in {:?}", message);
     if args.sender.is_some() {
         args.sender.as_ref().unwrap().send(message).ok();
     }
