@@ -5,14 +5,10 @@ mod params;
 mod sections;
 mod style;
 
-use std::hash::{Hash, Hasher};
-use std::sync::mpsc;
-
 use iced::{
     executor, time, Application, Clipboard, Column, Command, Container, Element, Length, Row,
     Settings, Subscription,
 };
-use iced_futures::futures;
 use iced_native;
 
 use messages::Message;
@@ -120,11 +116,13 @@ impl Application for EditorApp {
                     }
                 }
             }
-            Message::MidiReceived(data) => {
-                self.process_incoming_midi(&data);
-            }
             Message::Tick => {
                 self.midi.scan();
+            }
+            Message::FastTick => {
+                if let Some(message) = self.midi.receive() {
+                    self.process_incoming_midi(&message);
+                }
                 if self.midi.is_connected() && self.request_update {
                     self.midi.request_preset_dump(0x70);
                     self.request_update = false;
@@ -140,14 +138,14 @@ impl Application for EditorApp {
 
         let tick_subscription =
             time::every(std::time::Duration::from_millis(1000)).map(|_| Message::Tick);
+        let fast_tick_subscription =
+            time::every(std::time::Duration::from_millis(100)).map(|_| Message::FastTick);
 
-        let (sender, receiver) = mpsc::channel();
-        self.midi.set_midi_in_sender(&sender);
-        let midi_subscription =
-            Subscription::from_recipe(MidiReceiveSubscription { receiver: receiver })
-                .map(|data| Message::MidiReceived(data));
-
-        let subscriptions = vec![tick_subscription, midi_subscription];
+        let subscriptions = vec![
+            tick_subscription,
+            fast_tick_subscription,
+            event_subscription,
+        ];
 
         Subscription::batch(subscriptions.into_iter())
     }
@@ -269,39 +267,5 @@ impl EditorApp {
             }
             _ => {}
         }
-    }
-}
-
-pub struct MidiReceiveSubscription {
-    receiver: mpsc::Receiver<Vec<u8>>,
-}
-
-impl<H, I> iced_native::subscription::Recipe<H, I> for MidiReceiveSubscription
-where
-    H: Hasher,
-{
-    type Output = Vec<u8>;
-
-    fn hash(&self, state: &mut H) {
-        struct Marker;
-        std::any::TypeId::of::<Marker>().hash(state);
-    }
-
-    fn stream(
-        self: Box<Self>,
-        _input: futures::stream::BoxStream<'static, I>,
-    ) -> futures::stream::BoxStream<'static, Self::Output> {
-        Box::pin(futures::stream::unfold(
-            self.receiver,
-            move |state| async move {
-                let receiver = &state;
-                let result = receiver.recv();
-                if result.is_ok() {
-                    Some((result.unwrap(), state))
-                } else {
-                    None
-                }
-            },
-        ))
     }
 }

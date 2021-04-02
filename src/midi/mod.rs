@@ -1,7 +1,6 @@
 pub mod cc;
 pub mod sysex;
 
-use std::cell::Cell;
 use std::sync::mpsc;
 
 use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
@@ -9,7 +8,7 @@ use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 pub struct MidiConnector {
     midi_out: Option<MidiOutputConnection>,
     midi_in: Option<MidiInputConnection<OnReceiveArgs>>,
-    midi_in_mpsc_sender: Cell<Option<mpsc::Sender<Vec<u8>>>>,
+    midi_in_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
 }
 
 impl MidiConnector {
@@ -17,7 +16,7 @@ impl MidiConnector {
         Self {
             midi_out: None,
             midi_in: None,
-            midi_in_mpsc_sender: Cell::new(None),
+            midi_in_mpsc_channel: None,
         }
     }
 
@@ -42,7 +41,7 @@ impl MidiConnector {
                 }
             }
             Err(error) => {
-                println!("MIDI out error {}", error);
+                println!("MIDI out error: {}", error);
             }
         }
 
@@ -54,8 +53,9 @@ impl MidiConnector {
                     if port_name.starts_with("Tooro") {
                         if self.midi_in.is_none() {
                             println!("Device MIDI in connected");
+                            self.midi_in_mpsc_channel = Some(mpsc::channel());
                             let on_receive_args = OnReceiveArgs {
-                                sender: self.midi_in_mpsc_sender.take(),
+                                sender: Some(self.midi_in_mpsc_channel.as_ref().unwrap().0.clone()),
                             };
                             self.midi_in = Some(
                                 midi_in
@@ -69,20 +69,16 @@ impl MidiConnector {
                 }
                 if !connected {
                     self.midi_in = None;
+                    self.midi_in_mpsc_channel = None;
                 }
             }
             Err(error) => {
-                println!("MIDI in error {}", error);
+                println!("MIDI in error: {}", error);
             }
         }
     }
 
-    /// Sets the mpsc sender for the received messages
-    pub fn set_midi_in_sender(&self, sender: &mpsc::Sender<Vec<u8>>) {
-        self.midi_in_mpsc_sender.set(Some(sender.clone()));
-    }
-
-    /// Sends a raw message
+    /// Sends a message
     pub fn send(&mut self, message: &[u8]) {
         println!("MIDI out {:?}", message);
         match self.midi_out.as_mut() {
@@ -91,6 +87,22 @@ impl MidiConnector {
             }
             None => {}
         }
+    }
+
+    /// Receive a message
+    pub fn receive(&mut self) -> Option<Vec<u8>> {
+        if self.midi_in_mpsc_channel.is_none() {
+            return None;
+        }
+
+        let receiver = &self.midi_in_mpsc_channel.as_ref().unwrap().1;
+        let result = receiver.try_recv();
+
+        if result.is_err() {
+            return None;
+        }
+
+        Some(result.unwrap())
     }
 
     /// Returns if device is connected
