@@ -1,9 +1,9 @@
 use iced::{slider, Column, Container, Element, Text};
 
-use crate::elements::slider::slider_with_labels;
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::style;
+use crate::ui::elements::slider::slider_with_labels;
+use crate::ui::style;
 
 pub struct ExtraSection {
     noise_slider: slider::State,

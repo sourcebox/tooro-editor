@@ -1,9 +1,7 @@
-mod elements;
 mod messages;
 mod midi;
 mod params;
-mod sections;
-mod style;
+mod ui;
 
 use iced::{
     executor, time, Application, Clipboard, Column, Command, Container, Element, Length, Row,
@@ -16,11 +14,12 @@ use simple_logger::SimpleLogger;
 use messages::Message;
 use midi::MidiConnector;
 use params::{GetValue, SoundParameterValues};
-use sections::{
+use ui::sound::{
     amp::AmpSection, arp::ArpSection, enva::EnvASection, envf::EnvFSection, extra::ExtraSection,
     filter::FilterSection, lfo1::LFO1Section, lfo2::LFO2Section, misc::MiscSection,
     osc1::Osc1Section, osc2::Osc2Section, shaper::ShaperSection,
 };
+use ui::style;
 
 pub fn main() -> iced::Result {
     SimpleLogger::new()

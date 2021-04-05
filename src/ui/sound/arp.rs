@@ -1,14 +1,14 @@
 use iced::{pick_list, slider, Column, Container, Element, Text};
 
-use crate::elements::{
+use crate::messages::Message;
+use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::{
     arp_grid_list::{arp_grid_list, ArpGrid},
     arp_mode_list::{arp_mode_list, ArpMode},
     checkbox::checkbox_with_labels,
     slider::slider_with_labels,
 };
-use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::style;
+use crate::ui::style;
 
 pub struct ArpSection {
     mode_list: pick_list::State<ArpMode>,

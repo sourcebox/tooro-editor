@@ -1,15 +1,15 @@
 use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
 
-use crate::elements::{
+use crate::messages::Message;
+use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::{
     env_trigger_list::{env_trigger_list, EnvTrigger},
     mod_target_list::{mod_target_list, ModTarget},
     slider::slider_with_labels,
 };
-use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::style;
+use crate::ui::style;
 
-pub struct EnvASection {
+pub struct EnvFSection {
     attack_slider: slider::State,
     decay_slider: slider::State,
     sustain_slider: slider::State,
@@ -22,7 +22,7 @@ pub struct EnvASection {
     mod_amount_slider: slider::State,
 }
 
-impl EnvASection {
+impl EnvFSection {
     pub fn new() -> Self {
         Self {
             attack_slider: slider::State::new(),
@@ -40,69 +40,69 @@ impl EnvASection {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("Env A"))
+            .push(Text::new("Env F"))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(
                 "Attack",
                 &mut self.attack_slider,
-                SoundParameter::EnvAAttack,
-                params.get_value(SoundParameter::EnvAAttack),
+                SoundParameter::EnvFAttack,
+                params.get_value(SoundParameter::EnvFAttack),
             ))
             .push(slider_with_labels(
                 "Hold",
                 &mut self.hold_slider,
-                SoundParameter::EnvAHold,
-                params.get_value(SoundParameter::EnvAHold),
+                SoundParameter::EnvFHold,
+                params.get_value(SoundParameter::EnvFHold),
             ))
             .push(slider_with_labels(
                 "Decay",
                 &mut self.decay_slider,
-                SoundParameter::EnvADecay,
-                params.get_value(SoundParameter::EnvADecay),
+                SoundParameter::EnvFDecay,
+                params.get_value(SoundParameter::EnvFDecay),
             ))
             .push(slider_with_labels(
                 "Sustain",
                 &mut self.sustain_slider,
-                SoundParameter::EnvASustain,
-                params.get_value(SoundParameter::EnvASustain),
+                SoundParameter::EnvFSustain,
+                params.get_value(SoundParameter::EnvFSustain),
             ))
             .push(slider_with_labels(
                 "Release",
                 &mut self.release_slider,
-                SoundParameter::EnvARelease,
-                params.get_value(SoundParameter::EnvARelease),
+                SoundParameter::EnvFRelease,
+                params.get_value(SoundParameter::EnvFRelease),
             ))
             .push(slider_with_labels(
                 "Velo",
                 &mut self.velo_slider,
-                SoundParameter::EnvAVelo,
-                params.get_value(SoundParameter::EnvAVelo),
+                SoundParameter::EnvFVelo,
+                params.get_value(SoundParameter::EnvFVelo),
             ))
             .push(slider_with_labels(
                 "After",
                 &mut self.after_slider,
-                SoundParameter::EnvAAfter,
-                params.get_value(SoundParameter::EnvAAfter),
+                SoundParameter::EnvFAfter,
+                params.get_value(SoundParameter::EnvFAfter),
             ))
             .push(env_trigger_list(
                 "Trigger",
                 &mut self.trigger_list,
-                SoundParameter::EnvATrigger,
-                params.get_value(SoundParameter::EnvATrigger),
+                SoundParameter::EnvFTrigger,
+                params.get_value(SoundParameter::EnvFTrigger),
             ))
             .push(Rule::horizontal(10))
             .push(mod_target_list(
                 "Mod Target",
                 &mut self.mod_target_list,
-                SoundParameter::ModEnvATarget,
-                params.get_value(SoundParameter::ModEnvATarget),
+                SoundParameter::ModEnvFTarget,
+                params.get_value(SoundParameter::ModEnvFTarget),
             ))
             .push(slider_with_labels(
                 "Mod Amount",
                 &mut self.mod_amount_slider,
-                SoundParameter::ModEnvAAmount,
-                params.get_value(SoundParameter::ModEnvAAmount),
+                SoundParameter::ModEnvFAmount,
+                params.get_value(SoundParameter::ModEnvFAmount),
             ));
         Container::new(content).style(style::EnvSection).into()
     }

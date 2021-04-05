@@ -1,14 +1,14 @@
 use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
 
-use crate::elements::{
+use crate::messages::Message;
+use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::{
     lfo_phase_list::{lfo_phase_list, LFOPhase},
     lfo_shape_list::{lfo_shape_list, LFOShape},
     mod_target_list::{mod_target_list, ModTarget},
     slider::slider_with_labels,
 };
-use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::style;
+use crate::ui::style;
 
 pub struct LFO1Section {
     shape_list: pick_list::State<LFOShape>,

@@ -1,12 +1,12 @@
 use iced::{pick_list, slider, Column, Container, Element, Text};
 
-use crate::elements::{
+use crate::messages::Message;
+use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::{
     shaper_mode_list::{shaper_mode_list, ShaperMode},
     slider::slider_with_labels,
 };
-use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::style;
+use crate::ui::style;
 
 pub struct ShaperSection {
     cutoff_slider: slider::State,
