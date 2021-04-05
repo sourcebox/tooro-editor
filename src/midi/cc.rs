@@ -91,7 +91,7 @@ pub fn sound_param_to_cc(param: &SoundParameter, value: i32) -> Option<(u8, u8)>
         SoundParameter::ModLFO1Amount => Some(19),
         SoundParameter::ModLFO2Amount => Some(20),
         SoundParameter::ModModwheelAmount => Some(87),
-        SoundParameter::ModPitchbendAmount => Some(88),
+        SoundParameter::ModPitchAmount => Some(88),
         SoundParameter::ModVelocityAmount => Some(89),
         SoundParameter::ModAftertouchAmount => Some(90),
 
@@ -209,7 +209,7 @@ pub fn cc_to_sound_param(cc_num: u8, cc_value: u8) -> Option<(SoundParameter, i3
         19 => Some(SoundParameter::ModLFO1Amount),
         20 => Some(SoundParameter::ModLFO2Amount),
         87 => Some(SoundParameter::ModModwheelAmount),
-        88 => Some(SoundParameter::ModPitchbendAmount),
+        88 => Some(SoundParameter::ModPitchAmount),
         89 => Some(SoundParameter::ModVelocityAmount),
         90 => Some(SoundParameter::ModAftertouchAmount),
 

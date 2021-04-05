@@ -201,11 +201,11 @@ pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) 
         value_from_index(values, 138),
     );
     params.insert(
-        SoundParameter::ModPitchbendAmount,
+        SoundParameter::ModPitchAmount,
         value_from_index(values, 140) / 4,
     );
     params.insert(
-        SoundParameter::ModPitchbendTarget,
+        SoundParameter::ModPitchTarget,
         value_from_index(values, 142),
     );
     params.insert(

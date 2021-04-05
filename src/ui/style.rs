@@ -106,7 +106,21 @@ pub struct MiscSection;
 impl container::StyleSheet for MiscSection {
     fn style(&self) -> container::Style {
         container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xD6, 0xDe, 0x97))),
+            background: Some(Background::Color(Color::from_rgb8(0xD6, 0xDE, 0x97))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct ModSection;
+
+impl container::StyleSheet for ModSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            background: Some(Background::Color(Color::from_rgb8(0xF2, 0xCB, 0x68))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,

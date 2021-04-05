@@ -96,8 +96,8 @@ pub enum SoundParameter {
     ModLFO2Target,
     ModModwheelAmount,
     ModModwheelTarget,
-    ModPitchbendAmount,
-    ModPitchbendTarget,
+    ModPitchAmount,
+    ModPitchTarget,
     ModVelocityAmount,
     ModVelocityTarget,
     ModAftertouchAmount,
@@ -124,7 +124,7 @@ impl SoundParameter {
             | SoundParameter::ModLFO1Amount
             | SoundParameter::ModLFO2Amount
             | SoundParameter::ModModwheelAmount
-            | SoundParameter::ModPitchbendAmount
+            | SoundParameter::ModPitchAmount
             | SoundParameter::ModVelocityAmount
             | SoundParameter::ModAftertouchAmount => RangeInclusive::new(-128, 128),
 
@@ -149,7 +149,7 @@ impl SoundParameter {
             | SoundParameter::ModLFO1Target
             | SoundParameter::ModLFO2Target
             | SoundParameter::ModModwheelTarget
-            | SoundParameter::ModPitchbendTarget
+            | SoundParameter::ModPitchTarget
             | SoundParameter::ModVelocityTarget
             | SoundParameter::ModAftertouchTarget => RangeInclusive::new(0, 21),
 

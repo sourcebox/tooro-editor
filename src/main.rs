@@ -17,7 +17,7 @@ use params::{GetValue, SoundParameterValues};
 use ui::sound::{
     amp::AmpSection, arp::ArpSection, enva::EnvASection, envf::EnvFSection, extra::ExtraSection,
     filter::FilterSection, lfo1::LFO1Section, lfo2::LFO2Section, misc::MiscSection,
-    osc1::Osc1Section, osc2::Osc2Section, shaper::ShaperSection,
+    modulation::ModSection, osc1::Osc1Section, osc2::Osc2Section, shaper::ShaperSection,
 };
 use ui::style;
 
@@ -28,7 +28,7 @@ pub fn main() -> iced::Result {
         .unwrap();
     let settings = Settings {
         window: iced::window::Settings {
-            min_size: Some((800, 850)),
+            min_size: Some((800, 900)),
             resizable: false,
             ..iced::window::Settings::default()
         },
@@ -51,6 +51,7 @@ struct EditorApp {
     enva_section: EnvASection,
     arp_section: ArpSection,
     misc_section: MiscSection,
+    mod_section: ModSection,
 
     // Current sound parameter values
     sound_params: SoundParameterValues,
@@ -85,6 +86,7 @@ impl Application for EditorApp {
                 enva_section: EnvASection::new(),
                 arp_section: ArpSection::new(),
                 misc_section: MiscSection::new(),
+                mod_section: ModSection::new(),
 
                 sound_params: SoundParameterValues::with_capacity(128),
 
@@ -211,6 +213,12 @@ impl Application for EditorApp {
             .push(self.enva_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
+        let row3_col1 = Column::new()
+            .padding(5)
+            .spacing(10)
+            .push(self.mod_section.view(&self.sound_params))
+            .width(Length::FillPortion(4));
+
         let row1 = Row::new()
             .push(row1_col1)
             .push(row1_col2)
@@ -223,7 +231,9 @@ impl Application for EditorApp {
             .push(row2_col3)
             .push(row2_col4);
 
-        Container::new(Column::new().push(row1).push(row2))
+        let row3 = Row::new().push(row3_col1);
+
+        Container::new(Column::new().push(row1).push(row2).push(row3))
             .padding(10)
             .height(Length::Fill)
             .style(style::MainWindow)
