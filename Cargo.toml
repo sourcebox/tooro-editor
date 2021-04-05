@@ -3,6 +3,7 @@ name = "tooro-editor"
 version = "0.1.0"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
 edition = "2018"
+description = "Töörö Editor"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,3 +17,9 @@ simple_logger = "1.11.0"
 
 [profile.release]
 lto = true
+
+[package.metadata.bundle]
+name = "Töörö Editor"
+identifier = "de.sourcebox.tooro-editor"
+osx_frameworks = ["/System/Library/Frameworks/ColorSync.framework"]
+osx_minimum_system_version = "10.11"
