@@ -1,4 +1,3 @@
-pub mod cc;
 pub mod sysex;
 
 use std::sync::mpsc;

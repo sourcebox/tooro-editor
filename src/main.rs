@@ -116,10 +116,9 @@ impl Application for EditorApp {
                 let last_value = self.sound_params.get_value(param);
                 if value != last_value {
                     self.sound_params.insert(param, value);
-                    if let Some(cc) = midi::cc::sound_param_to_cc(&param, value) {
-                        let (cc_num, cc_value) = cc;
-                        self.midi.send(&[0xB0, cc_num, cc_value]);
-                    }
+                    let message = midi::sysex::preset_param_dump(0x70, &param, value);
+                    // log::info!("Sending preset parameter dump {:?}", message);
+                    self.midi.send(&message);
                 }
             }
             Message::Tick => {
@@ -246,10 +245,7 @@ impl EditorApp {
         match message[0] {
             0xB0 => {
                 // Control change
-                let sound_param = midi::cc::cc_to_sound_param(message[1], message[2]);
-                if sound_param.is_some() {
-                    self.request_update = true;
-                }
+                self.request_update = true;
             }
             0xF0 => {
                 // Sysex

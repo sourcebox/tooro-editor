@@ -106,13 +106,16 @@ pub enum SoundParameter {
     // Misc
     BendRange,
     Tune,
+    PolyMode,
 }
 
 impl SoundParameter {
     pub fn get_range(&self) -> RangeInclusive<i32> {
         match self {
             // Default for bipolar
-            SoundParameter::ShaperEnvAAmount
+            SoundParameter::Osc1FMRate
+            | SoundParameter::Osc2FMRate
+            | SoundParameter::ShaperEnvAAmount
             | SoundParameter::ShaperLFO2Amount
             | SoundParameter::FilterEnvFAmount
             | SoundParameter::FilterLFO1Amount
@@ -154,7 +157,7 @@ impl SoundParameter {
             | SoundParameter::ModAftertouchTarget => RangeInclusive::new(0, 21),
 
             // Boolean
-            SoundParameter::ArpHold => RangeInclusive::new(0, 1),
+            SoundParameter::ArpHold | SoundParameter::PolyMode => RangeInclusive::new(0, 1),
 
             // Default
             _ => RangeInclusive::new(0, 255),

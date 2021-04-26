@@ -1,4 +1,4 @@
-use iced::{pick_list, slider, Column, Container, Element, Length, Row, Text};
+use iced::{pick_list, slider, Column, Container, Element, Length, Row};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
