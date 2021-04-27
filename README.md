@@ -24,10 +24,12 @@ Use `cargo build` to compile or `cargo run` to compile and run.
 ## Todo
 
 - Application bundle for macOS
+- Installer for Windows
 - Make MIDI port selectable via dropdown list
 - More intelligent handling of device connect/disconnect
 - Status bar
-- Modulation matrix editing
 - Multi parameters
-- Selecting presets
+- Presets selection
+- Parts selection
+- Update from device button
 - Preferences storage
