@@ -13,6 +13,150 @@ pub const MULTI_DUMP_LENGTH: usize = 104;
 pub const PRESET_DUMP_LENGTH: usize = 264;
 pub const PRESET_PARAMETER_DUMP_LENGTH: usize = 8;
 
+/// Return message for multi request
+///
+/// - `multi_id`   Multi id, either 0..9 or 0x7F
+pub fn multi_request(multi_id: u8) -> Vec<u8> {
+    vec![0xF0, SERVICE_MULTI_REQUEST, multi_id, 0xF7]
+}
+
+/// Return message for preset request
+///
+/// - `preset_id`   Preset id, either 0..99 or 0x70..0x73
+pub fn preset_request(preset_id: u8) -> Vec<u8> {
+    vec![0xF0, SERVICE_PRESET_REQUEST, preset_id, 0xF7]
+}
+
+/// Return message for preset parameter dump
+///
+/// - `preset_id`   Preset id 0x70..0x73
+/// - `param`       Sound parameter enum value
+/// - `value`       Sound parameter value
+pub fn preset_param_dump(preset_id: u8, param: &SoundParameter, value: i32) -> Vec<u8> {
+    let (id, value) = match param {
+        // Osc 1
+        SoundParameter::Osc1Wave => (0, value * 4),
+        SoundParameter::Osc1Coarse => (1, value),
+        SoundParameter::Osc1FMAmount => (2, value * 4),
+        SoundParameter::Osc1Level => (3, value * 4),
+        SoundParameter::Osc1Table => (4, value),
+        SoundParameter::Osc1Fine => (5, value),
+        SoundParameter::Osc1FMRate => (6, value * 4),
+        SoundParameter::Osc1Sync => (7, value * 4),
+
+        // Osc 2
+        SoundParameter::Osc2Wave => (8, value * 4),
+        SoundParameter::Osc2Coarse => (9, value),
+        SoundParameter::Osc2FMAmount => (10, value * 4),
+        SoundParameter::Osc2Level => (11, value * 4),
+        SoundParameter::Osc2Table => (12, value),
+        SoundParameter::Osc2Fine => (13, value),
+        SoundParameter::Osc2FMRate => (14, value * 4),
+        SoundParameter::Osc2Sync => (15, value * 4),
+
+        // Extra
+        SoundParameter::ExtraNoise => (16, value * 4),
+        SoundParameter::ExtraRingMod => (17, value * 4),
+
+        // Shaper
+        SoundParameter::ShaperCutoff => (18, value * 4),
+        SoundParameter::ShaperResonance => (19, value * 4),
+        SoundParameter::ShaperEnvAAmount => (20, value * 4),
+        SoundParameter::ShaperTrack => (21, value),
+        SoundParameter::ShaperMode => (22, value),
+        SoundParameter::ShaperLFO2Amount => (23, value * 4),
+
+        // Filter
+        SoundParameter::FilterCutoff => (24, value * 4),
+        SoundParameter::FilterResonance => (25, value * 4),
+        SoundParameter::FilterEnvFAmount => (26, value * 4),
+        SoundParameter::FilterTrack => (27, value),
+        SoundParameter::FilterAfter => (28, value * 4),
+        SoundParameter::FilterLFO1Amount => (29, value * 4),
+
+        // Env F
+        SoundParameter::EnvFAttack => (30, value * 4),
+        SoundParameter::EnvFDecay => (31, value * 4),
+        SoundParameter::EnvFSustain => (32, value * 4),
+        SoundParameter::EnvFRelease => (33, value * 4),
+        SoundParameter::EnvFVelo => (34, value * 4),
+        SoundParameter::EnvFHold => (35, value * 4),
+        SoundParameter::EnvFAfter => (36, value * 4),
+        SoundParameter::EnvFTrigger => (37, value),
+
+        // Env A
+        SoundParameter::EnvAAttack => (38, value * 4),
+        SoundParameter::EnvADecay => (39, value * 4),
+        SoundParameter::EnvASustain => (40, value * 4),
+        SoundParameter::EnvARelease => (41, value * 4),
+        SoundParameter::EnvAVelo => (42, value * 4),
+        SoundParameter::EnvAHold => (43, value * 4),
+        SoundParameter::EnvAAfter => (44, value * 4),
+        SoundParameter::EnvATrigger => (45, value),
+
+        // LFO 1
+        SoundParameter::LFO1Shape => (46, value),
+        SoundParameter::LFO1Speed => (47, value * 4),
+        SoundParameter::LFO1Rise => (48, value * 4),
+        SoundParameter::LFO1Phase => (49, value),
+
+        // LFO 2
+        SoundParameter::LFO2Shape => (50, value),
+        SoundParameter::LFO2Speed => (51, value * 4),
+        SoundParameter::LFO2Rise => (52, value * 4),
+        SoundParameter::LFO2Phase => (53, value),
+
+        // Arpeggiator
+        SoundParameter::ArpMode => (54, value),
+        SoundParameter::ArpGrid => (55, value),
+        SoundParameter::ArpTempo => (56, rescale(value, 20, 199, 0, 1024)),
+        SoundParameter::ArpHold => (57, value),
+
+        // Amplifier
+        SoundParameter::AmpLevel => (58, value * 4),
+        SoundParameter::AmpPan => (59, value * 4),
+
+        // Modulations
+        SoundParameter::ModEnvFAmount => (60, value * 4),
+        SoundParameter::ModEnvFTarget => (61, value),
+        SoundParameter::ModEnvAAmount => (62, value * 4),
+        SoundParameter::ModEnvATarget => (63, value),
+        SoundParameter::ModLFO1Amount => (64, value * 4),
+        SoundParameter::ModLFO1Target => (65, value),
+        SoundParameter::ModLFO2Amount => (66, value * 4),
+        SoundParameter::ModLFO2Target => (67, value),
+        SoundParameter::ModModwheelAmount => (68, value * 4),
+        SoundParameter::ModModwheelTarget => (69, value),
+        SoundParameter::ModPitchAmount => (70, value * 4),
+        SoundParameter::ModPitchTarget => (71, value),
+        SoundParameter::ModVelocityAmount => (72, value * 4),
+        SoundParameter::ModVelocityTarget => (73, value),
+        SoundParameter::ModAftertouchAmount => (74, value * 4),
+        SoundParameter::ModAftertouchTarget => (75, value),
+
+        // Misc
+        SoundParameter::Tune => (84, value),
+        SoundParameter::BendRange => (86, value),
+        SoundParameter::PolyMode => (87, value),
+    };
+
+    let id_low = id & 0x7F;
+    let id_high = (id >> 7) & 0x7F;
+    let value_low = (value & 0x7F) as u8;
+    let value_high = ((value >> 7) & 0x7F) as u8;
+
+    vec![
+        0xF0,
+        SERVICE_PRESET_PARAMETER_DUMP,
+        preset_id,
+        id_low,
+        id_high,
+        value_low,
+        value_high,
+        0xF7,
+    ]
+}
+
 /// Unpack the data and return a vector of it
 ///
 /// - `data`    Slice of 7-bit sysex payload
@@ -232,136 +376,6 @@ pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) 
     params.insert(SoundParameter::Tune, value_from_index(values, 168));
     params.insert(SoundParameter::BendRange, value_from_index(values, 172));
     params.insert(SoundParameter::PolyMode, value_from_index(values, 174));
-}
-
-/// Return message for preset parameter dump
-///
-/// - `preset_id`   Preset id 0x70..0x73
-/// - `param`       Sound parameter enum value
-/// - `value`       Sound parameter value
-pub fn preset_param_dump(preset_id: u8, param: &SoundParameter, value: i32) -> Vec<u8> {
-    let (id, value) = match param {
-        // Osc 1
-        SoundParameter::Osc1Wave => (0, value * 4),
-        SoundParameter::Osc1Coarse => (1, value),
-        SoundParameter::Osc1FMAmount => (2, value * 4),
-        SoundParameter::Osc1Level => (3, value * 4),
-        SoundParameter::Osc1Table => (4, value),
-        SoundParameter::Osc1Fine => (5, value),
-        SoundParameter::Osc1FMRate => (6, value * 4),
-        SoundParameter::Osc1Sync => (7, value * 4),
-
-        // Osc 2
-        SoundParameter::Osc2Wave => (8, value * 4),
-        SoundParameter::Osc2Coarse => (9, value),
-        SoundParameter::Osc2FMAmount => (10, value * 4),
-        SoundParameter::Osc2Level => (11, value * 4),
-        SoundParameter::Osc2Table => (12, value),
-        SoundParameter::Osc2Fine => (13, value),
-        SoundParameter::Osc2FMRate => (14, value * 4),
-        SoundParameter::Osc2Sync => (15, value * 4),
-
-        // Extra
-        SoundParameter::ExtraNoise => (16, value * 4),
-        SoundParameter::ExtraRingMod => (17, value * 4),
-
-        // Shaper
-        SoundParameter::ShaperCutoff => (18, value * 4),
-        SoundParameter::ShaperResonance => (19, value * 4),
-        SoundParameter::ShaperEnvAAmount => (20, value * 4),
-        SoundParameter::ShaperTrack => (21, value),
-        SoundParameter::ShaperMode => (22, value),
-        SoundParameter::ShaperLFO2Amount => (23, value * 4),
-
-        // Filter
-        SoundParameter::FilterCutoff => (24, value * 4),
-        SoundParameter::FilterResonance => (25, value * 4),
-        SoundParameter::FilterEnvFAmount => (26, value * 4),
-        SoundParameter::FilterTrack => (27, value),
-        SoundParameter::FilterAfter => (28, value * 4),
-        SoundParameter::FilterLFO1Amount => (29, value * 4),
-
-        // Env F
-        SoundParameter::EnvFAttack => (30, value * 4),
-        SoundParameter::EnvFDecay => (31, value * 4),
-        SoundParameter::EnvFSustain => (32, value * 4),
-        SoundParameter::EnvFRelease => (33, value * 4),
-        SoundParameter::EnvFVelo => (34, value * 4),
-        SoundParameter::EnvFHold => (35, value * 4),
-        SoundParameter::EnvFAfter => (36, value * 4),
-        SoundParameter::EnvFTrigger => (37, value),
-
-        // Env A
-        SoundParameter::EnvAAttack => (38, value * 4),
-        SoundParameter::EnvADecay => (39, value * 4),
-        SoundParameter::EnvASustain => (40, value * 4),
-        SoundParameter::EnvARelease => (41, value * 4),
-        SoundParameter::EnvAVelo => (42, value * 4),
-        SoundParameter::EnvAHold => (43, value * 4),
-        SoundParameter::EnvAAfter => (44, value * 4),
-        SoundParameter::EnvATrigger => (45, value),
-
-        // LFO 1
-        SoundParameter::LFO1Shape => (46, value),
-        SoundParameter::LFO1Speed => (47, value * 4),
-        SoundParameter::LFO1Rise => (48, value * 4),
-        SoundParameter::LFO1Phase => (49, value),
-
-        // LFO 2
-        SoundParameter::LFO2Shape => (50, value),
-        SoundParameter::LFO2Speed => (51, value * 4),
-        SoundParameter::LFO2Rise => (52, value * 4),
-        SoundParameter::LFO2Phase => (53, value),
-
-        // Arpeggiator
-        SoundParameter::ArpMode => (54, value),
-        SoundParameter::ArpGrid => (55, value),
-        SoundParameter::ArpTempo => (56, rescale(value, 20, 199, 0, 1024)),
-        SoundParameter::ArpHold => (57, value),
-
-        // Amplifier
-        SoundParameter::AmpLevel => (58, value * 4),
-        SoundParameter::AmpPan => (59, value * 4),
-
-        // Modulations
-        SoundParameter::ModEnvFAmount => (60, value * 4),
-        SoundParameter::ModEnvFTarget => (61, value),
-        SoundParameter::ModEnvAAmount => (62, value * 4),
-        SoundParameter::ModEnvATarget => (63, value),
-        SoundParameter::ModLFO1Amount => (64, value * 4),
-        SoundParameter::ModLFO1Target => (65, value),
-        SoundParameter::ModLFO2Amount => (66, value * 4),
-        SoundParameter::ModLFO2Target => (67, value),
-        SoundParameter::ModModwheelAmount => (68, value * 4),
-        SoundParameter::ModModwheelTarget => (69, value),
-        SoundParameter::ModPitchAmount => (70, value * 4),
-        SoundParameter::ModPitchTarget => (71, value),
-        SoundParameter::ModVelocityAmount => (72, value * 4),
-        SoundParameter::ModVelocityTarget => (73, value),
-        SoundParameter::ModAftertouchAmount => (74, value * 4),
-        SoundParameter::ModAftertouchTarget => (75, value),
-
-        // Misc
-        SoundParameter::Tune => (84, value),
-        SoundParameter::BendRange => (86, value),
-        SoundParameter::PolyMode => (87, value),
-    };
-
-    let id_low = id & 0x7F;
-    let id_high = (id >> 7) & 0x7F;
-    let value_low = (value & 0x7F) as u8;
-    let value_high = ((value >> 7) & 0x7F) as u8;
-
-    vec![
-        0xF0,
-        SERVICE_PRESET_PARAMETER_DUMP,
-        preset_id,
-        id_low,
-        id_high,
-        value_low,
-        value_high,
-        0xF7,
-    ]
 }
 
 /// Return parameter value as i32 from values vector addressed by index

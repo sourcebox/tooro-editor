@@ -21,7 +21,7 @@ use ui::sound::{
 };
 use ui::style;
 
-pub fn main() -> iced::Result {
+fn main() -> iced::Result {
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
         .init()
@@ -129,9 +129,14 @@ impl Application for EditorApp {
                     self.process_incoming_midi(&message);
                 }
                 if self.midi.is_connected() && self.request_update {
+                    // let multi_id = 0x7F;
+                    // log::info!("Requesting multi with id {:#X}", multi_id);
+                    // let message = midi::sysex::multi_request(multi_id);
+                    // self.midi.send(&message);
                     let preset_id = 0x70;
-                    log::info!("Requesting preset dump for id {}", preset_id);
-                    self.midi.request_preset_dump(preset_id);
+                    log::info!("Requesting preset with id {:#X}", preset_id);
+                    let message = midi::sysex::preset_request(preset_id);
+                    self.midi.send(&message);
                     self.request_update = false;
                 }
             }
@@ -254,7 +259,7 @@ impl EditorApp {
                         if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
                     {
                         let preset_id = message[2];
-                        log::info!("Preset dump received with id {}", preset_id);
+                        log::info!("Preset dump received with id {:#X}", preset_id);
                         match preset_id {
                             0..=99 => {}
                             0x70..=0x73 => {
