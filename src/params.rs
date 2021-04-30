@@ -173,12 +173,99 @@ impl SoundParameter {
 
 pub type SoundParameterValues = HashMap<SoundParameter, i32>;
 
-pub trait GetValue {
-    fn get_value(&self, param: SoundParameter) -> i32;
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+pub enum MultiParameter {
+    // Preset IDs
+    PresetPart1,
+    PresetPart2,
+    PresetPart3,
+    PresetPart4,
+
+    // MIDI channels
+    ChannelPart1,
+    ChannelPart2,
+    ChannelPart3,
+    ChannelPart4,
+
+    // Volumes
+    VolumePart1,
+    VolumePart2,
+    VolumePart3,
+    VolumePart4,
+
+    // Balances
+    BalancePart1,
+    BalancePart2,
+    BalancePart3,
+    BalancePart4,
+
+    // FX
+    FXLength,
+    FXFeedback,
+    FXMix,
+    FXMode,
+    FXSpeed,
+    FXDepth,
 }
 
-impl GetValue for SoundParameterValues {
+impl MultiParameter {
+    pub fn get_range(&self) -> RangeInclusive<i32> {
+        match self {
+            // Preset IDs
+            MultiParameter::PresetPart1
+            | MultiParameter::PresetPart2
+            | MultiParameter::PresetPart3
+            | MultiParameter::PresetPart4 => RangeInclusive::new(0, 99),
+
+            // MIDI channels
+            MultiParameter::ChannelPart1
+            | MultiParameter::ChannelPart2
+            | MultiParameter::ChannelPart3
+            | MultiParameter::ChannelPart4 => RangeInclusive::new(0, 15),
+
+            // Volumes
+            MultiParameter::VolumePart1
+            | MultiParameter::VolumePart2
+            | MultiParameter::VolumePart3
+            | MultiParameter::VolumePart4 => RangeInclusive::new(0, 255),
+
+            // Balances
+            MultiParameter::BalancePart1
+            | MultiParameter::BalancePart2
+            | MultiParameter::BalancePart3
+            | MultiParameter::BalancePart4 => RangeInclusive::new(-128, 128),
+
+            // FX
+            MultiParameter::FXLength
+            | MultiParameter::FXFeedback
+            | MultiParameter::FXMix
+            | MultiParameter::FXSpeed
+            | MultiParameter::FXDepth => RangeInclusive::new(0, 255),
+            MultiParameter::FXMode => RangeInclusive::new(0, 4),
+        }
+    }
+
+    pub fn get_default(&self) -> i32 {
+        match self {
+            _ => 0,
+        }
+    }
+}
+
+pub type MultiParameterValues = HashMap<MultiParameter, i32>;
+
+pub trait GetValue<T> {
+    fn get_value(&self, param: T) -> i32;
+}
+
+impl GetValue<SoundParameter> for SoundParameterValues {
     fn get_value(&self, param: SoundParameter) -> i32 {
+        *self.get(&param).unwrap_or(&param.get_default())
+    }
+}
+
+impl GetValue<MultiParameter> for MultiParameterValues {
+    fn get_value(&self, param: MultiParameter) -> i32 {
         *self.get(&param).unwrap_or(&param.get_default())
     }
 }

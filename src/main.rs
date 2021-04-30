@@ -13,7 +13,7 @@ use simple_logger::SimpleLogger;
 
 use messages::Message;
 use midi::MidiConnector;
-use params::{GetValue, SoundParameterValues};
+use params::{GetValue, MultiParameterValues, SoundParameterValues};
 use ui::sound::{
     amp::AmpSection, arp::ArpSection, enva::EnvASection, envf::EnvFSection, extra::ExtraSection,
     filter::FilterSection, lfo1::LFO1Section, lfo2::LFO2Section, misc::MiscSection,
@@ -28,7 +28,7 @@ fn main() -> iced::Result {
         .unwrap();
     let settings = Settings {
         window: iced::window::Settings {
-            min_size: Some((800, 900)),
+            size: (1024, 900),
             resizable: false,
             ..iced::window::Settings::default()
         },
@@ -53,8 +53,9 @@ struct EditorApp {
     misc_section: MiscSection,
     mod_section: ModSection,
 
-    // Current sound parameter values
+    // Current sound/multi parameter values
     sound_params: SoundParameterValues,
+    multi_params: MultiParameterValues,
 
     // MIDI connection handler
     midi: MidiConnector,
@@ -89,6 +90,7 @@ impl Application for EditorApp {
                 mod_section: ModSection::new(),
 
                 sound_params: SoundParameterValues::with_capacity(128),
+                multi_params: MultiParameterValues::with_capacity(32),
 
                 midi: MidiConnector::new(),
 
