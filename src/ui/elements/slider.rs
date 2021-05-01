@@ -18,11 +18,15 @@ pub fn slider_with_labels<'a>(
 
     Container::new(
         Row::new()
-            .push(Text::new(label).size(16).width(Length::Units(80)))
+            .push(
+                Text::new(label)
+                    .size(style::PARAM_LABEL_TEXT_SIZE)
+                    .width(Length::Units(80)),
+            )
             .push(slider)
             .push(
                 Text::new(format!("{}", value))
-                    .size(16)
+                    .size(style::PARAM_LABEL_TEXT_SIZE)
                     .horizontal_alignment(HorizontalAlignment::Right)
                     .width(Length::Units(30)),
             ),

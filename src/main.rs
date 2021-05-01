@@ -28,8 +28,9 @@ fn main() -> iced::Result {
         .unwrap();
     let settings = Settings {
         window: iced::window::Settings {
-            size: (1024, 900),
-            resizable: false,
+            size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
+            min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT)),
+            resizable: true,
             ..iced::window::Settings::default()
         },
         ..Settings::default()

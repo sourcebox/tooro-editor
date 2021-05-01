@@ -35,7 +35,7 @@ impl Osc2Section {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("Osc 2"))
+            .push(Text::new("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(wavetable_list(

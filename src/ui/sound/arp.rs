@@ -27,7 +27,7 @@ impl ArpSection {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("Arp"))
+            .push(Text::new("Arp").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(arp_mode_list(

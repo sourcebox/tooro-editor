@@ -33,7 +33,7 @@ impl LFO1Section {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("LFO 1"))
+            .push(Text::new("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(lfo_shape_list(

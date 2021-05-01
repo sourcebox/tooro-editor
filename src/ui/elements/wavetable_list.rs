@@ -28,11 +28,15 @@ pub fn wavetable_list<'a>(
         Message::SoundParameterChange(sound_param, v as i32)
     })
     .style(style::PickList)
-    .text_size(16);
+    .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(
         Row::new()
-            .push(Text::new(label).size(16).width(Length::Units(80)))
+            .push(
+                Text::new(label)
+                    .size(style::PARAM_LABEL_TEXT_SIZE)
+                    .width(Length::Units(80)),
+            )
             .push(pick_list),
     )
 }

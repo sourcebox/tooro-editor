@@ -20,7 +20,7 @@ impl AmpSection {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("Amp"))
+            .push(Text::new("Amp").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(

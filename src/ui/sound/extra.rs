@@ -20,7 +20,7 @@ impl ExtraSection {
 
     pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
-            .push(Text::new("Extra"))
+            .push(Text::new("Extra").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(

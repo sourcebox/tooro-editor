@@ -1,7 +1,17 @@
 use iced::{checkbox, container, pick_list, slider, Background, Color};
 
-pub const SECTION_PADDING: u16 = 10;
-pub const SECTION_SPACING: u16 = 5;
+// Default window size
+pub const WINDOW_WIDTH: u32 = 1024;
+pub const WINDOW_HEIGHT: u32 = 680;
+
+// Element spacing
+pub const SECTION_PADDING: u16 = 7;
+pub const SECTION_SPACING: u16 = 1;
+
+// Text sizes
+pub const SECTION_LABEL_TEXT_SIZE: u16 = 16;
+pub const PARAM_LABEL_TEXT_SIZE: u16 = 14;
+pub const LIST_ITEM_TEXT_SIZE: u16 = 14;
 
 pub struct OscSection;
 
@@ -165,7 +175,7 @@ impl slider::StyleSheet for Slider {
         slider::Style {
             rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
             handle: slider::Handle {
-                shape: slider::HandleShape::Circle { radius: 7.0 },
+                shape: slider::HandleShape::Circle { radius: 6.0 },
                 color: ACTIVE,
                 border_width: 0.0,
                 border_color: Color::TRANSPARENT,
