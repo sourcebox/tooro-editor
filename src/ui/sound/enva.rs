@@ -99,7 +99,7 @@ impl EnvASection {
                 params.get_value(SoundParameter::ModEnvATarget),
             ))
             .push(slider_with_labels(
-                "Mod Amount",
+                "Mod Amt",
                 &mut self.mod_amount_slider,
                 SoundParameter::ModEnvAAmount,
                 params.get_value(SoundParameter::ModEnvAAmount),

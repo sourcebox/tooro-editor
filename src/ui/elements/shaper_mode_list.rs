@@ -27,7 +27,7 @@ pub fn shaper_mode_list<'a>(
             .push(
                 Text::new(label)
                     .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(Length::Units(80)),
+                    .width(Length::Units(style::PARAM_LABEL_WIDTH)),
             )
             .push(pick_list),
     )

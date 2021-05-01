@@ -68,7 +68,7 @@ impl LFO1Section {
                 params.get_value(SoundParameter::ModLFO1Target),
             ))
             .push(slider_with_labels(
-                "Mod Amount",
+                "Mod Amt",
                 &mut self.mod_amount_slider,
                 SoundParameter::ModLFO1Amount,
                 params.get_value(SoundParameter::ModLFO1Amount),

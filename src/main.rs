@@ -170,81 +170,57 @@ impl Application for EditorApp {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
-        let row1_col1 = Column::new()
+        let sound_col1 = Column::new()
             .padding(5)
+            .spacing(10)
             .push(self.osc1_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let row1_col2 = Column::new()
-            .padding(5)
-            .push(self.osc2_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let row1_col3 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.extra_section.view(&self.sound_params))
-            .push(self.shaper_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let row1_col4 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.filter_section.view(&self.sound_params))
-            .push(self.amp_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let row2_col1 = Column::new()
-            .padding(5)
-            .spacing(10)
             .push(self.lfo1_section.view(&self.sound_params))
             .push(self.arp_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
-        let row2_col2 = Column::new()
+        let sound_col2 = Column::new()
             .padding(5)
             .spacing(10)
+            .push(self.osc2_section.view(&self.sound_params))
             .push(self.lfo2_section.view(&self.sound_params))
             .push(self.misc_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
-        let row2_col3 = Column::new()
+        let sound_col3 = Column::new()
             .padding(5)
             .spacing(10)
+            .push(self.extra_section.view(&self.sound_params))
+            .push(self.shaper_section.view(&self.sound_params))
             .push(self.envf_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
-        let row2_col4 = Column::new()
+        let sound_col4 = Column::new()
             .padding(5)
             .spacing(10)
+            .push(self.filter_section.view(&self.sound_params))
+            .push(self.amp_section.view(&self.sound_params))
             .push(self.enva_section.view(&self.sound_params))
             .width(Length::FillPortion(4));
 
-        let row3_col1 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.mod_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let row1 = Row::new()
-            .push(row1_col1)
-            .push(row1_col2)
-            .push(row1_col3)
-            .push(row1_col4);
-
-        let row2 = Row::new()
-            .push(row2_col1)
-            .push(row2_col2)
-            .push(row2_col3)
-            .push(row2_col4);
-
-        let row3 = Row::new().push(row3_col1);
-
-        Container::new(Column::new().push(row1).push(row2).push(row3))
-            .padding(10)
-            .height(Length::Fill)
-            .style(style::MainWindow)
-            .into()
+        Container::new(
+            Column::new()
+                .push(
+                    Row::new()
+                        .push(sound_col1)
+                        .push(sound_col2)
+                        .push(sound_col3)
+                        .push(sound_col4),
+                )
+                .push(
+                    Row::new()
+                        .padding(5)
+                        .push(self.mod_section.view(&self.sound_params)),
+                ),
+        )
+        .padding(5)
+        .height(Length::Fill)
+        .style(style::MainWindow)
+        .into()
     }
 }
 

@@ -63,7 +63,7 @@ impl Osc2Section {
                 params.get_value(SoundParameter::Osc2Fine),
             ))
             .push(slider_with_labels(
-                "FM Amount",
+                "FM Amt",
                 &mut self.fm_amount_slider,
                 SoundParameter::Osc2FMAmount,
                 params.get_value(SoundParameter::Osc2FMAmount),

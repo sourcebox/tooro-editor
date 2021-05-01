@@ -47,7 +47,7 @@ impl ModSection {
                             params.get_value(SoundParameter::ModModwheelTarget),
                         ))
                         .push(slider_with_labels(
-                            "MW Amount",
+                            "MW Amt",
                             &mut self.mw_amount_slider,
                             SoundParameter::ModModwheelAmount,
                             params.get_value(SoundParameter::ModModwheelAmount),
@@ -83,7 +83,7 @@ impl ModSection {
                             params.get_value(SoundParameter::ModVelocityTarget),
                         ))
                         .push(slider_with_labels(
-                            "Vel Amount",
+                            "Vel Amt",
                             &mut self.vel_amount_slider,
                             SoundParameter::ModVelocityAmount,
                             params.get_value(SoundParameter::ModVelocityAmount),
@@ -101,7 +101,7 @@ impl ModSection {
                             params.get_value(SoundParameter::ModAftertouchTarget),
                         ))
                         .push(slider_with_labels(
-                            "AT Amount",
+                            "AT Amt",
                             &mut self.at_amount_slider,
                             SoundParameter::ModAftertouchAmount,
                             params.get_value(SoundParameter::ModAftertouchAmount),
