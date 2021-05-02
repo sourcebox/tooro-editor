@@ -1,7 +1,7 @@
 use iced::{checkbox, container, pick_list, slider, Background, Color};
 
 // Default window size
-pub const WINDOW_WIDTH: u32 = 800;
+pub const WINDOW_WIDTH: u32 = 1024;
 pub const WINDOW_HEIGHT: u32 = 630;
 
 // Element spacing
@@ -133,6 +133,20 @@ impl container::StyleSheet for ModSection {
     fn style(&self) -> container::Style {
         container::Style {
             background: Some(Background::Color(Color::from_rgb8(0xF2, 0xCB, 0x68))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct FXSection;
+
+impl container::StyleSheet for FXSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            background: Some(Background::Color(Color::from_rgb8(0x7A, 0x78, 0xFF))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,

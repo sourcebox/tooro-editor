@@ -14,6 +14,7 @@ use simple_logger::SimpleLogger;
 use messages::Message;
 use midi::MidiConnector;
 use params::{GetValue, MultiParameterValues, SoundParameterValues};
+use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
 use ui::style;
 
@@ -37,6 +38,7 @@ fn main() -> iced::Result {
 struct EditorApp {
     // Panels
     sound_panel: SoundPanel,
+    multi_panel: MultiPanel,
 
     // Current part id 0-3 for part 1-4
     part_id: u8,
@@ -64,6 +66,7 @@ impl Application for EditorApp {
         (
             Self {
                 sound_panel: SoundPanel::new(),
+                multi_panel: MultiPanel::new(),
 
                 part_id: 0,
 
@@ -100,6 +103,16 @@ impl Application for EditorApp {
                         midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
                     // log::info!("Sending preset parameter dump {:?}", message);
                     self.midi.send(&message);
+                }
+            }
+            Message::MultiParameterChange(param, value) => {
+                let last_value = self.multi_params.get_value(param);
+                if value != last_value {
+                    self.multi_params.insert(param, value);
+                    // let message =
+                    //    midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
+                    // log::info!("Sending preset parameter dump {:?}", message);
+                    // self.midi.send(&message);
                 }
             }
             Message::Tick => {
@@ -148,11 +161,23 @@ impl Application for EditorApp {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
-        Container::new(self.sound_panel.view(&self.sound_params))
-            .padding(5)
-            .height(Length::Fill)
-            .style(style::MainWindow)
-            .into()
+        Container::new(
+            Row::new()
+                .push(
+                    Column::new()
+                        .push(self.sound_panel.view(&self.sound_params))
+                        .width(Length::FillPortion(4)),
+                )
+                .push(
+                    Column::new()
+                        .push(self.multi_panel.view(&self.multi_params))
+                        .width(Length::FillPortion(1)),
+                ),
+        )
+        .padding(5)
+        .height(Length::Fill)
+        .style(style::MainWindow)
+        .into()
     }
 }
 
@@ -184,6 +209,16 @@ impl EditorApp {
                                 }
                             }
                             _ => {}
+                        }
+                    }
+                    midi::sysex::SERVICE_MULTI_DUMP
+                        if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
+                    {
+                        let multi_id = message[2];
+                        log::info!("Multi dump received with id {:#X}", multi_id);
+                        if multi_id == 0x7F {
+                            let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
+                            midi::sysex::update_multi_params(&mut self.multi_params, &param_values);
                         }
                     }
                     _ => {}

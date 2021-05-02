@@ -1,11 +1,12 @@
 use iced_native;
 
-use crate::params::SoundParameter;
+use crate::params::{MultiParameter, SoundParameter};
 
 #[derive(Debug, Clone)]
 pub enum Message {
     EventOccurred(iced_native::Event),
     SoundParameterChange(SoundParameter, i32),
+    MultiParameterChange(MultiParameter, i32),
     Tick,
     FastTick,
 }

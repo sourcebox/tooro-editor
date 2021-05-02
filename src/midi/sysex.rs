@@ -1,4 +1,4 @@
-use crate::params::{SoundParameter, SoundParameterValues};
+use crate::params::{MultiParameter, MultiParameterValues, SoundParameter, SoundParameterValues};
 
 // Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
@@ -376,6 +376,68 @@ pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) 
     params.insert(SoundParameter::Tune, value_from_index(values, 168));
     params.insert(SoundParameter::BendRange, value_from_index(values, 172));
     params.insert(SoundParameter::PolyMode, value_from_index(values, 174));
+}
+
+/// Update all multi parameters according to sysex data
+///
+/// - `params`  Parameter map to be updated
+/// - `values`  Raw values from unpacked sysex data
+pub fn update_multi_params(params: &mut MultiParameterValues, values: &Vec<u8>) {
+    // Preset IDs
+    params.insert(MultiParameter::PresetPart1, value_from_index(values, 0));
+    params.insert(MultiParameter::PresetPart2, value_from_index(values, 2));
+    params.insert(MultiParameter::PresetPart3, value_from_index(values, 4));
+    params.insert(MultiParameter::PresetPart4, value_from_index(values, 6));
+
+    // MIDI channels
+    params.insert(MultiParameter::ChannelPart1, value_from_index(values, 8));
+    params.insert(MultiParameter::ChannelPart2, value_from_index(values, 10));
+    params.insert(MultiParameter::ChannelPart3, value_from_index(values, 12));
+    params.insert(MultiParameter::ChannelPart4, value_from_index(values, 14));
+
+    // Volumes
+    params.insert(
+        MultiParameter::VolumePart1,
+        value_from_index(values, 16) / 4,
+    );
+    params.insert(
+        MultiParameter::VolumePart2,
+        value_from_index(values, 18) / 4,
+    );
+    params.insert(
+        MultiParameter::VolumePart3,
+        value_from_index(values, 20) / 4,
+    );
+    params.insert(
+        MultiParameter::VolumePart4,
+        value_from_index(values, 22) / 4,
+    );
+
+    // Balances
+    params.insert(
+        MultiParameter::BalancePart1,
+        value_from_index(values, 24) / 4,
+    );
+    params.insert(
+        MultiParameter::BalancePart2,
+        value_from_index(values, 26) / 4,
+    );
+    params.insert(
+        MultiParameter::BalancePart3,
+        value_from_index(values, 28) / 4,
+    );
+    params.insert(
+        MultiParameter::BalancePart4,
+        value_from_index(values, 30) / 4,
+    );
+
+    // FX
+    params.insert(MultiParameter::FXLength, value_from_index(values, 32) / 4);
+    params.insert(MultiParameter::FXFeedback, value_from_index(values, 34) / 4);
+    params.insert(MultiParameter::FXMix, value_from_index(values, 36) / 4);
+    params.insert(MultiParameter::FXMode, value_from_index(values, 38));
+    params.insert(MultiParameter::FXSpeed, value_from_index(values, 40) / 4);
+    params.insert(MultiParameter::FXDepth, value_from_index(values, 40) / 4);
 }
 
 /// Return parameter value as i32 from values vector addressed by index

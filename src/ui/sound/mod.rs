@@ -1,16 +1,16 @@
-pub mod amp;
-pub mod arp;
-pub mod enva;
-pub mod envf;
-pub mod extra;
-pub mod filter;
-pub mod lfo1;
-pub mod lfo2;
-pub mod misc;
-pub mod modulation;
-pub mod osc1;
-pub mod osc2;
-pub mod shaper;
+mod amp;
+mod arp;
+mod enva;
+mod envf;
+mod extra;
+mod filter;
+mod lfo1;
+mod lfo2;
+mod misc;
+mod modulation;
+mod osc1;
+mod osc2;
+mod shaper;
 
 use iced::{Column, Container, Element, Length, Row};
 
