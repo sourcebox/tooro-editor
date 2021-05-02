@@ -14,11 +14,7 @@ use simple_logger::SimpleLogger;
 use messages::Message;
 use midi::MidiConnector;
 use params::{GetValue, MultiParameterValues, SoundParameterValues};
-use ui::sound::{
-    amp::AmpSection, arp::ArpSection, enva::EnvASection, envf::EnvFSection, extra::ExtraSection,
-    filter::FilterSection, lfo1::LFO1Section, lfo2::LFO2Section, misc::MiscSection,
-    modulation::ModSection, osc1::Osc1Section, osc2::Osc2Section, shaper::ShaperSection,
-};
+use ui::sound::SoundPanel;
 use ui::style;
 
 fn main() -> iced::Result {
@@ -39,20 +35,11 @@ fn main() -> iced::Result {
 }
 
 struct EditorApp {
-    // Sections
-    osc1_section: Osc1Section,
-    osc2_section: Osc2Section,
-    extra_section: ExtraSection,
-    shaper_section: ShaperSection,
-    filter_section: FilterSection,
-    amp_section: AmpSection,
-    lfo1_section: LFO1Section,
-    lfo2_section: LFO2Section,
-    envf_section: EnvFSection,
-    enva_section: EnvASection,
-    arp_section: ArpSection,
-    misc_section: MiscSection,
-    mod_section: ModSection,
+    // Panels
+    sound_panel: SoundPanel,
+
+    // Current part id 0-3 for part 1-4
+    part_id: u8,
 
     // Current sound/multi parameter values
     sound_params: SoundParameterValues,
@@ -61,7 +48,7 @@ struct EditorApp {
     // MIDI connection handler
     midi: MidiConnector,
 
-    // Flag for preset update on next tick
+    // Flag for parameter update from device on next tick
     request_update: bool,
 
     // Exit flag
@@ -76,19 +63,9 @@ impl Application for EditorApp {
     fn new(_flags: ()) -> (Self, Command<Message>) {
         (
             Self {
-                osc1_section: Osc1Section::new(),
-                osc2_section: Osc2Section::new(),
-                extra_section: ExtraSection::new(),
-                shaper_section: ShaperSection::new(),
-                filter_section: FilterSection::new(),
-                amp_section: AmpSection::new(),
-                lfo1_section: LFO1Section::new(),
-                lfo2_section: LFO2Section::new(),
-                envf_section: EnvFSection::new(),
-                enva_section: EnvASection::new(),
-                arp_section: ArpSection::new(),
-                misc_section: MiscSection::new(),
-                mod_section: ModSection::new(),
+                sound_panel: SoundPanel::new(),
+
+                part_id: 0,
 
                 sound_params: SoundParameterValues::with_capacity(128),
                 multi_params: MultiParameterValues::with_capacity(32),
@@ -119,7 +96,8 @@ impl Application for EditorApp {
                 let last_value = self.sound_params.get_value(param);
                 if value != last_value {
                     self.sound_params.insert(param, value);
-                    let message = midi::sysex::preset_param_dump(0x70, &param, value);
+                    let message =
+                        midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
                     // log::info!("Sending preset parameter dump {:?}", message);
                     self.midi.send(&message);
                 }
@@ -136,7 +114,7 @@ impl Application for EditorApp {
                     // log::info!("Requesting multi with id {:#X}", multi_id);
                     // let message = midi::sysex::multi_request(multi_id);
                     // self.midi.send(&message);
-                    let preset_id = 0x70;
+                    let preset_id = 0x70 + self.part_id;
                     log::info!("Requesting preset with id {:#X}", preset_id);
                     let message = midi::sysex::preset_request(preset_id);
                     self.midi.send(&message);
@@ -170,65 +148,19 @@ impl Application for EditorApp {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
-        let sound_col1 = Column::new()
+        Container::new(self.sound_panel.view(&self.sound_params))
             .padding(5)
-            .spacing(10)
-            .push(self.osc1_section.view(&self.sound_params))
-            .push(self.lfo1_section.view(&self.sound_params))
-            .push(self.arp_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let sound_col2 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.osc2_section.view(&self.sound_params))
-            .push(self.lfo2_section.view(&self.sound_params))
-            .push(self.misc_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let sound_col3 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.extra_section.view(&self.sound_params))
-            .push(self.shaper_section.view(&self.sound_params))
-            .push(self.envf_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        let sound_col4 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.filter_section.view(&self.sound_params))
-            .push(self.amp_section.view(&self.sound_params))
-            .push(self.enva_section.view(&self.sound_params))
-            .width(Length::FillPortion(4));
-
-        Container::new(
-            Column::new()
-                .push(
-                    Row::new()
-                        .push(sound_col1)
-                        .push(sound_col2)
-                        .push(sound_col3)
-                        .push(sound_col4),
-                )
-                .push(
-                    Row::new()
-                        .padding(5)
-                        .push(self.mod_section.view(&self.sound_params)),
-                ),
-        )
-        .padding(5)
-        .height(Length::Fill)
-        .style(style::MainWindow)
-        .into()
+            .height(Length::Fill)
+            .style(style::MainWindow)
+            .into()
     }
 }
 
 impl EditorApp {
     fn process_incoming_midi(&mut self, message: &Vec<u8>) {
         match message[0] {
-            0xB0 => {
-                // Control change
+            0xB0..=0xBF => {
+                // Control change (all channels)
                 self.request_update = true;
             }
             0xF0 => {
@@ -242,13 +174,14 @@ impl EditorApp {
                         match preset_id {
                             0..=99 => {}
                             0x70..=0x73 => {
-                                let part_no = preset_id - 0x70;
-                                let param_values =
-                                    midi::sysex::unpack_data(&message[3..message.len()]);
-                                midi::sysex::update_sound_params(
-                                    &mut self.sound_params,
-                                    &param_values,
-                                );
+                                if self.part_id == preset_id - 0x70 {
+                                    let param_values =
+                                        midi::sysex::unpack_data(&message[3..message.len()]);
+                                    midi::sysex::update_sound_params(
+                                        &mut self.sound_params,
+                                        &param_values,
+                                    );
+                                }
                             }
                             _ => {}
                         }
