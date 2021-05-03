@@ -1,4 +1,6 @@
-use crate::params::{MultiParameter, MultiParameterValues, SoundParameter, SoundParameterValues};
+use crate::params::{
+    GetValue, MultiParameter, MultiParameterValues, SoundParameter, SoundParameterValues,
+};
 
 // Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
@@ -13,18 +15,18 @@ pub const MULTI_DUMP_LENGTH: usize = 104;
 pub const PRESET_DUMP_LENGTH: usize = 264;
 pub const PRESET_PARAMETER_DUMP_LENGTH: usize = 8;
 
-/// Return message for multi request
-///
-/// - `multi_id`   Multi id, either 0..9 or 0x7F
-pub fn multi_request(multi_id: u8) -> Vec<u8> {
-    vec![0xF0, SERVICE_MULTI_REQUEST, multi_id, 0xF7]
-}
-
 /// Return message for preset request
 ///
 /// - `preset_id`   Preset id, either 0..99 or 0x70..0x73
 pub fn preset_request(preset_id: u8) -> Vec<u8> {
     vec![0xF0, SERVICE_PRESET_REQUEST, preset_id, 0xF7]
+}
+
+/// Return message for multi request
+///
+/// - `multi_id`   Multi id, either 0..9 or 0x7F
+pub fn multi_request(multi_id: u8) -> Vec<u8> {
+    vec![0xF0, SERVICE_MULTI_REQUEST, multi_id, 0xF7]
 }
 
 /// Return message for preset parameter dump
@@ -157,6 +159,99 @@ pub fn preset_param_dump(preset_id: u8, param: &SoundParameter, value: i32) -> V
     ]
 }
 
+/// Return message for multi dump
+///
+/// - `multi_id`   Multi id, either 0..9 or 0x7F
+pub fn multi_dump(multi_id: u8, params: &MultiParameterValues) -> Vec<u8> {
+    let mut data = Vec::<u8>::new();
+
+    // Preset IDs
+    push_param(&mut data, params.get_value(MultiParameter::PresetPart1));
+    push_param(&mut data, params.get_value(MultiParameter::PresetPart2));
+    push_param(&mut data, params.get_value(MultiParameter::PresetPart3));
+    push_param(&mut data, params.get_value(MultiParameter::PresetPart4));
+
+    // MIDI channels
+    push_param(&mut data, params.get_value(MultiParameter::ChannelPart1));
+    push_param(&mut data, params.get_value(MultiParameter::ChannelPart2));
+    push_param(&mut data, params.get_value(MultiParameter::ChannelPart3));
+    push_param(&mut data, params.get_value(MultiParameter::ChannelPart4));
+
+    // Volumes
+    push_param(&mut data, params.get_value(MultiParameter::VolumePart1) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::VolumePart2) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::VolumePart3) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::VolumePart4) * 4);
+
+    // Balances
+    push_param(
+        &mut data,
+        params.get_value(MultiParameter::BalancePart1) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(MultiParameter::BalancePart2) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(MultiParameter::BalancePart3) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(MultiParameter::BalancePart4) * 4,
+    );
+
+    // FX
+    push_param(&mut data, params.get_value(MultiParameter::FXLength) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::FXFeedback) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::FXMix) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::FXMode));
+    push_param(&mut data, params.get_value(MultiParameter::FXSpeed) * 4);
+    push_param(&mut data, params.get_value(MultiParameter::FXDepth) * 4);
+
+    // Flags etc. and name
+    data.append(&mut vec![0_u8; 4]);
+    data.append(&mut vec![32_u8; 32]);
+
+    // Build message
+    let mut message = Vec::with_capacity(MULTI_DUMP_LENGTH);
+    message.append(&mut vec![0xF0, SERVICE_MULTI_DUMP, multi_id]);
+    message.append(&mut pack_data(&data));
+    message.push(0xF7);
+
+    message
+}
+
+/// Pack the data and return a vector of it
+///
+/// - `data`    Data to be packed
+pub fn pack_data(data: &[u8]) -> Vec<u8> {
+    let mut result = Vec::new();
+    let mut cursor = 0;
+    let blocks = data.len() / 4;
+
+    for _ in 0..blocks {
+        let mut tops = 0;
+
+        result.push(data[cursor] & 0x7F);
+        tops |= (data[cursor] & 0x80) >> 7;
+        cursor += 1;
+        result.push(data[cursor] & 0x7F);
+        tops |= (data[cursor] & 0x80) >> 6;
+        cursor += 1;
+        result.push(data[cursor] & 0x7F);
+        tops |= (data[cursor] & 0x80) >> 5;
+        cursor += 1;
+        result.push(data[cursor] & 0x7F);
+        tops |= (data[cursor] & 0x80) >> 4;
+        cursor += 1;
+
+        result.push(tops);
+    }
+
+    result
+}
+
 /// Unpack the data and return a vector of it
 ///
 /// - `data`    Slice of 7-bit sysex payload
@@ -167,6 +262,7 @@ pub fn unpack_data(data: &[u8]) -> Vec<u8> {
 
     for _ in 0..blocks {
         let tops = data[cursor + 4];
+
         result.push(data[cursor] | ((tops << 7) & 0x80));
         cursor += 1;
         result.push(data[cursor] | ((tops << 6) & 0x80));
@@ -449,4 +545,13 @@ fn value_from_index(values: &Vec<u8>, index: usize) -> i32 {
 
 fn rescale(value: i32, in_min: i32, in_max: i32, out_min: i32, out_max: i32) -> i32 {
     (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+}
+
+/// Push a parameter value to a vector of u8
+///
+/// - `vector`  Vector to be updated
+/// - `value`   Parameter value
+fn push_param(vector: &mut Vec<u8>, value: i32) {
+    vector.push((value & 0xFF) as u8);
+    vector.push((value >> 8) as u8);
 }
