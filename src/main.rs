@@ -152,8 +152,8 @@ impl Application for EditorApp {
                     self.process_midi(&message);
                 }
 
-                if self.midi.is_connected() && !self.waiting_for_dump {
-                    if self.request_sound_update {
+                if self.device_connected {
+                    if self.request_sound_update && !self.waiting_for_dump {
                         let preset_id = 0x70 + self.part_id;
                         log::info!("Requesting preset with id {:#X}", preset_id);
                         let message = midi::sysex::preset_request(preset_id);
