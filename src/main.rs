@@ -23,6 +23,7 @@ fn main() -> iced::Result {
         .with_level(log::LevelFilter::Debug)
         .init()
         .unwrap();
+
     let settings = Settings {
         window: iced::window::Settings {
             size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
@@ -32,6 +33,7 @@ fn main() -> iced::Result {
         },
         ..Settings::default()
     };
+
     EditorApp::run(settings)
 }
 
@@ -50,8 +52,15 @@ struct EditorApp {
     // MIDI connection handler
     midi: MidiConnector,
 
-    // Flag for parameter update from device on next tick
-    request_update: bool,
+    // Device connection state
+    device_connected: bool,
+
+    // Flag set after a dump request was sent
+    waiting_for_dump: bool,
+
+    // Flags for parameter update from device
+    request_sound_update: bool,
+    request_multi_update: bool,
 
     // Exit flag
     should_exit: bool,
@@ -74,8 +83,12 @@ impl Application for EditorApp {
                 multi_params: MultiParameterValues::with_capacity(32),
 
                 midi: MidiConnector::new(),
+                device_connected: false,
 
-                request_update: true,
+                waiting_for_dump: false,
+                request_sound_update: false,
+                request_multi_update: false,
+
                 should_exit: false,
             },
             Command::none(),
@@ -83,7 +96,7 @@ impl Application for EditorApp {
     }
 
     fn title(&self) -> String {
-        String::from("Töörö Editor")
+        format!("Töörö Editor v{}", env!("CARGO_PKG_VERSION"))
     }
 
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
@@ -95,8 +108,10 @@ impl Application for EditorApp {
                     self.should_exit = true;
                 }
             }
+
             Message::SoundParameterChange(param, value) => {
                 let last_value = self.sound_params.get_value(param);
+
                 if value != last_value {
                     self.sound_params.insert(param, value);
                     let message =
@@ -105,8 +120,10 @@ impl Application for EditorApp {
                     self.midi.send(&message);
                 }
             }
+
             Message::MultiParameterChange(param, value) => {
                 let last_value = self.multi_params.get_value(param);
+
                 if value != last_value {
                     self.multi_params.insert(param, value);
                     // let message =
@@ -115,23 +132,44 @@ impl Application for EditorApp {
                     // self.midi.send(&message);
                 }
             }
+
             Message::Tick => {
                 self.midi.scan();
+                let connection_state = self.midi.is_connected();
+
+                if connection_state != self.device_connected {
+                    if connection_state {
+                        self.on_device_connected();
+                    } else {
+                        self.on_device_disconnected();
+                    }
+                    self.device_connected = connection_state;
+                }
             }
+
             Message::FastTick => {
                 if let Some(message) = self.midi.receive() {
-                    self.process_incoming_midi(&message);
+                    self.process_midi(&message);
                 }
-                if self.midi.is_connected() && self.request_update {
-                    // let multi_id = 0x7F;
-                    // log::info!("Requesting multi with id {:#X}", multi_id);
-                    // let message = midi::sysex::multi_request(multi_id);
-                    // self.midi.send(&message);
-                    let preset_id = 0x70 + self.part_id;
-                    log::info!("Requesting preset with id {:#X}", preset_id);
-                    let message = midi::sysex::preset_request(preset_id);
-                    self.midi.send(&message);
-                    self.request_update = false;
+
+                if self.midi.is_connected() && !self.waiting_for_dump {
+                    if self.request_sound_update {
+                        let preset_id = 0x70 + self.part_id;
+                        log::info!("Requesting preset with id {:#X}", preset_id);
+                        let message = midi::sysex::preset_request(preset_id);
+                        self.midi.send(&message);
+                        self.waiting_for_dump = true;
+                        self.request_sound_update = false;
+                    }
+
+                    if self.request_multi_update && !self.waiting_for_dump {
+                        let multi_id = 0x7F;
+                        log::info!("Requesting multi with id {:#X}", multi_id);
+                        let message = midi::sysex::multi_request(multi_id);
+                        self.midi.send(&message);
+                        self.waiting_for_dump = true;
+                        self.request_multi_update = false;
+                    }
                 }
             }
         }
@@ -182,49 +220,88 @@ impl Application for EditorApp {
 }
 
 impl EditorApp {
-    fn process_incoming_midi(&mut self, message: &Vec<u8>) {
+    /// Called when device is connected
+    fn on_device_connected(&mut self) {
+        log::info!("Device connected");
+        self.request_sound_update = true;
+        self.request_multi_update = true;
+    }
+
+    /// Called when device is disconnected
+    fn on_device_disconnected(&mut self) {
+        log::info!("Device disconnected");
+        self.request_sound_update = false;
+        self.request_multi_update = false;
+        self.waiting_for_dump = false;
+    }
+
+    /// Process an incoming MIDI message from the device
+    ///
+    /// - `message` MIDI message
+    fn process_midi(&mut self, message: &Vec<u8>) {
         match message[0] {
             0xB0..=0xBF => {
                 // Control change (all channels)
-                self.request_update = true;
+                self.request_sound_update = true;
+                self.request_multi_update = true;
             }
+
             0xF0 => {
                 // Sysex
                 match message[1] {
                     midi::sysex::SERVICE_PRESET_DUMP
                         if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
                     {
-                        let preset_id = message[2];
-                        log::info!("Preset dump received with id {:#X}", preset_id);
-                        match preset_id {
-                            0..=99 => {}
-                            0x70..=0x73 => {
-                                if self.part_id == preset_id - 0x70 {
-                                    let param_values =
-                                        midi::sysex::unpack_data(&message[3..message.len()]);
-                                    midi::sysex::update_sound_params(
-                                        &mut self.sound_params,
-                                        &param_values,
-                                    );
-                                }
-                            }
-                            _ => {}
-                        }
+                        self.process_preset_dump(&message);
                     }
                     midi::sysex::SERVICE_MULTI_DUMP
                         if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
                     {
-                        let multi_id = message[2];
-                        log::info!("Multi dump received with id {:#X}", multi_id);
-                        if multi_id == 0x7F {
-                            let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
-                            midi::sysex::update_multi_params(&mut self.multi_params, &param_values);
-                        }
+                        self.process_multi_dump(&message);
                     }
                     _ => {}
                 }
             }
+
             _ => {}
         }
+    }
+
+    /// Process an incoming preset dump from the device
+    ///
+    /// - `message` MIDI message containing dump
+    fn process_preset_dump(&mut self, message: &Vec<u8>) {
+        let preset_id = message[2];
+
+        log::info!("Preset dump received with id {:#X}", preset_id);
+
+        match preset_id {
+            0..=99 => {}
+            0x70..=0x73 => {
+                if self.part_id == preset_id - 0x70 {
+                    let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
+                    midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
+                }
+            }
+            _ => {}
+        }
+
+        self.waiting_for_dump = false;
+    }
+
+    /// Process an incoming multi dump from the device
+    ///
+    /// - `message` MIDI message containing dump
+    fn process_multi_dump(&mut self, message: &Vec<u8>) {
+        let multi_id = message[2];
+
+        log::info!("Multi dump received with id {:#X}", multi_id);
+
+        if multi_id == 0x7F {
+            let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
+            midi::sysex::update_multi_params(&mut self.multi_params, &param_values);
+        }
+
+        self.waiting_for_dump = false;
     }
 }
