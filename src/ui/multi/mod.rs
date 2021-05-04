@@ -19,13 +19,12 @@ impl MultiPanel {
     }
 
     pub fn view(&mut self, params: &MultiParameterValues) -> Element<Message> {
-        let col1 = Column::new()
+        let col = Column::new()
             .padding(5)
             .spacing(10)
-            .push(self.fx_section.view(params))
-            .width(Length::FillPortion(4));
+            .push(self.fx_section.view(params));
 
-        Container::new(Column::new().push(Row::new().push(col1)))
+        Container::new(Column::new().push(Row::new().push(col)))
             .padding(5)
             .height(Length::Fill)
             .style(style::MainWindow)

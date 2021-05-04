@@ -7,6 +7,8 @@ pub enum Message {
     EventOccurred(iced_native::Event),
     SoundParameterChange(SoundParameter, i32),
     MultiParameterChange(MultiParameter, i32),
+    PartChange(u8),
+    UpdateFromDevice,
     Tick,
     FastTick,
 }

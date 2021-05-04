@@ -1,4 +1,4 @@
-use iced::{checkbox, container, pick_list, slider, Background, Color};
+use iced::{button, checkbox, container, pick_list, slider, Background, Color, Vector};
 
 // Default window size
 pub const WINDOW_WIDTH: u32 = 1024;
@@ -14,157 +14,10 @@ pub const PARAM_LABEL_TEXT_SIZE: u16 = 14;
 pub const PARAM_LABEL_WIDTH: u16 = 65;
 pub const PARAM_VALUE_WIDTH: u16 = 25;
 pub const LIST_ITEM_TEXT_SIZE: u16 = 13;
+pub const BUTTON_TEXT_SIZE: u16 = 14;
 
-pub struct OscSection;
-
-impl container::StyleSheet for OscSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0x90, 0xFC, 0xA2))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct ShaperSection;
-
-impl container::StyleSheet for ShaperSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0x9B, 0xD1, 0xE8))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct FilterSection;
-
-impl container::StyleSheet for FilterSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xFF, 0x6E, 0x6E))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct AmpSection;
-
-impl container::StyleSheet for AmpSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0x80, 0xBE, 0x8B))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct LFOSection;
-
-impl container::StyleSheet for LFOSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x4B))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct EnvSection;
-
-impl container::StyleSheet for EnvSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x8B))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct ArpSection;
-
-impl container::StyleSheet for ArpSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xDE, 0xB2, 0x97))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct MiscSection;
-
-impl container::StyleSheet for MiscSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xD6, 0xDE, 0x97))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct ModSection;
-
-impl container::StyleSheet for ModSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0xF2, 0xCB, 0x68))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct FXSection;
-
-impl container::StyleSheet for FXSection {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0x7A, 0x78, 0xFF))),
-            border_width: 0.0,
-            border_color: Color::from_rgb(0.7, 0.7, 0.7),
-            border_radius: 5.0,
-            ..Default::default()
-        }
-    }
-}
-
-pub struct MainWindow;
-
-impl container::StyleSheet for MainWindow {
-    fn style(&self) -> container::Style {
-        container::Style {
-            background: Some(Background::Color(Color::from_rgb8(0x20, 0x20, 0x20))),
-            ..Default::default()
-        }
-    }
-}
+// Colors
+const SECTION_TEXT_COLOR: Color = Color::from_rgb(0_f32, 0_f32, 0_f32);
 
 const ACTIVE: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
@@ -183,6 +36,168 @@ const SURFACE: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
     0x20 as f32 / 255.0,
 );
+
+pub struct OscSection;
+
+impl container::StyleSheet for OscSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0x90, 0xFC, 0xA2))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct ShaperSection;
+
+impl container::StyleSheet for ShaperSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0x9B, 0xD1, 0xE8))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct FilterSection;
+
+impl container::StyleSheet for FilterSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xFF, 0x6E, 0x6E))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct AmpSection;
+
+impl container::StyleSheet for AmpSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0x80, 0xBE, 0x8B))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct LFOSection;
+
+impl container::StyleSheet for LFOSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x4B))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct EnvSection;
+
+impl container::StyleSheet for EnvSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x8B))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct ArpSection;
+
+impl container::StyleSheet for ArpSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xDE, 0xB2, 0x97))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct MiscSection;
+
+impl container::StyleSheet for MiscSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xD6, 0xDE, 0x97))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct ModSection;
+
+impl container::StyleSheet for ModSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xF2, 0xCB, 0x68))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct FXSection;
+
+impl container::StyleSheet for FXSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0x7A, 0x78, 0xFF))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
+pub struct MainWindow;
+
+impl container::StyleSheet for MainWindow {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(Color::from_rgb8(0xFF, 0xFF, 0xFF)),
+            background: Some(Background::Color(Color::from_rgb8(0x20, 0x20, 0x20))),
+            ..Default::default()
+        }
+    }
+}
 
 pub struct Slider;
 
@@ -277,6 +292,34 @@ impl pick_list::StyleSheet for PickList {
     fn hovered(&self) -> pick_list::Style {
         pick_list::Style {
             background: Background::Color(HOVERED),
+            ..self.active()
+        }
+    }
+}
+
+pub enum Button {
+    Primary,
+    Secondary,
+}
+
+impl button::StyleSheet for Button {
+    fn active(&self) -> button::Style {
+        button::Style {
+            background: Some(Background::Color(match self {
+                Button::Primary => Color::from_rgb(0.11, 0.42, 0.87),
+                Button::Secondary => Color::from_rgb(0.5, 0.5, 0.5),
+            })),
+            border_radius: 5.0,
+            shadow_offset: Vector::new(1.0, 1.0),
+            text_color: Color::from_rgb8(0xEE, 0xEE, 0xEE),
+            ..button::Style::default()
+        }
+    }
+
+    fn hovered(&self) -> button::Style {
+        button::Style {
+            text_color: Color::WHITE,
+            shadow_offset: Vector::new(1.0, 2.0),
             ..self.active()
         }
     }

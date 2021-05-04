@@ -14,6 +14,7 @@ use simple_logger::SimpleLogger;
 use messages::Message;
 use midi::MidiConnector;
 use params::{GetValue, MultiParameterValues, SoundParameterValues};
+use ui::manager::ManagerPanel;
 use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
 use ui::style;
@@ -41,6 +42,7 @@ struct EditorApp {
     // Panels
     sound_panel: SoundPanel,
     multi_panel: MultiPanel,
+    manager_panel: ManagerPanel,
 
     // Current part id 0-3 for part 1-4
     part_id: u8,
@@ -76,6 +78,7 @@ impl Application for EditorApp {
             Self {
                 sound_panel: SoundPanel::new(),
                 multi_panel: MultiPanel::new(),
+                manager_panel: ManagerPanel::new(),
 
                 part_id: 0,
 
@@ -130,6 +133,16 @@ impl Application for EditorApp {
                     // log::info!("Sending multi dump {:?}", message);
                     self.midi.send(&message);
                 }
+            }
+
+            Message::PartChange(part_id) => {
+                self.part_id = part_id;
+                self.request_sound_update = true;
+            }
+
+            Message::UpdateFromDevice => {
+                self.request_sound_update = true;
+                self.request_multi_update = true;
             }
 
             Message::Tick => {
@@ -207,6 +220,7 @@ impl Application for EditorApp {
                 )
                 .push(
                     Column::new()
+                        .push(self.manager_panel.view(self.part_id, &self.multi_params))
                         .push(self.multi_panel.view(&self.multi_params))
                         .width(Length::FillPortion(1)),
                 ),
