@@ -4,7 +4,7 @@ Cross-platform sound editor for the Fred's Lab Töörö hardware synthesizer.
 
 ## Features
 
-- Editing of most preset parameters
+- Editing of most preset and multi parameters
 - MIT license
 
 ## System Requirements
@@ -25,11 +25,4 @@ Use `cargo build` to compile or `cargo run` to compile and run.
 
 - Application bundle for macOS
 - Installer for Windows
-- Make MIDI port selectable via dropdown list
-- More intelligent handling of device connect/disconnect
 - Status bar
-- Multi parameters
-- Presets selection
-- Parts selection
-- Update from device button
-- Preferences storage
