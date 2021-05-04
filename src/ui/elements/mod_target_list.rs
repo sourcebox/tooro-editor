@@ -23,7 +23,7 @@ pub fn mod_target_list<'a>(
         9 => Some(ModTarget::Osc2Sync),
         10 => Some(ModTarget::Osc1Level),
         11 => Some(ModTarget::Osc2Level),
-        12 => Some(ModTarget::ExtraRingMod),
+        12 => Some(ModTarget::ExtraNoise),
         13 => Some(ModTarget::ExtraRingMod),
         14 => Some(ModTarget::FilterCutoff),
         15 => Some(ModTarget::ShaperCutoff),
