@@ -8,6 +8,7 @@ pub struct ManagerPanel {
     part_list: pick_list::State<PartList>,
     refresh_button: button::State,
     load_syx_button: button::State,
+    save_preset_syx_button: button::State,
 }
 
 impl ManagerPanel {
@@ -16,6 +17,7 @@ impl ManagerPanel {
             part_list: pick_list::State::<PartList>::default(),
             refresh_button: button::State::new(),
             load_syx_button: button::State::new(),
+            save_preset_syx_button: button::State::new(),
         }
     }
 
@@ -33,14 +35,25 @@ impl ManagerPanel {
                 .style(style::Button::Primary),
             );
 
-        let row2 = Row::new().padding(5).spacing(10).push(
-            Button::new(
-                &mut self.load_syx_button,
-                Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
+        let row2 = Row::new()
+            .padding(5)
+            .spacing(10)
+            .push(
+                Button::new(
+                    &mut self.load_syx_button,
+                    Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
+                )
+                .on_press(Message::LoadSysexFile)
+                .style(style::Button::Primary),
             )
-            .on_press(Message::LoadSysexFile)
-            .style(style::Button::Primary),
-        );
+            .push(
+                Button::new(
+                    &mut self.save_preset_syx_button,
+                    Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
+                )
+                .on_press(Message::SavePresetSysexFile)
+                .style(style::Button::Primary),
+            );
 
         Container::new(Column::new().push(row1).push(row2))
             .padding(5)

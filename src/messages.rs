@@ -10,6 +10,7 @@ pub enum Message {
     PartChange(u8),
     UpdateFromDevice,
     LoadSysexFile,
+    SavePresetSysexFile,
     Tick,
     FastTick,
 }

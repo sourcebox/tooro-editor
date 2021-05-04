@@ -10,7 +10,7 @@ use iced::{
 use iced_native;
 use log;
 use simple_logger::SimpleLogger;
-use tinyfiledialogs::open_file_dialog;
+use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
 use messages::Message;
 use midi::MidiConnector;
@@ -65,6 +65,9 @@ struct EditorApp {
     request_sound_update: bool,
     request_multi_update: bool,
 
+    // File to capture next received preset dump
+    preset_capture_file: Option<String>,
+
     // Exit flag
     should_exit: bool,
 }
@@ -92,6 +95,8 @@ impl Application for EditorApp {
                 waiting_for_dump: false,
                 request_sound_update: false,
                 request_multi_update: false,
+
+                preset_capture_file: None,
 
                 should_exit: false,
             },
@@ -181,6 +186,20 @@ impl Application for EditorApp {
                                 }
                             }
                         }
+                    }
+                    None => {}
+                }
+            }
+
+            Message::SavePresetSysexFile => {
+                match save_file_dialog_with_filter("Save syx file", "", &["*.syx"], "Sysex files") {
+                    Some(file) => {
+                        let mut file = std::path::PathBuf::from(file);
+                        file.set_extension("syx");
+                        log::info!("Capturing next preset dump in file {:?}", file);
+                        self.preset_capture_file =
+                            Some(file.into_os_string().into_string().unwrap());
+                        self.request_sound_update = true;
                     }
                     None => {}
                 }
@@ -335,6 +354,13 @@ impl EditorApp {
                 if self.part_id == preset_id - 0x70 {
                     let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
                     midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
+                    if let Some(file) = &self.preset_capture_file {
+                        log::info!("Preset dump captured in file {}", file);
+                        let mut message = message.clone();
+                        message[2] = 0x70;
+                        std::fs::write(file, message).ok();
+                        self.preset_capture_file = None;
+                    }
                 }
             }
             _ => {}
