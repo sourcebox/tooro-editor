@@ -187,6 +187,21 @@ impl container::StyleSheet for FXSection {
     }
 }
 
+pub struct MixerSection;
+
+impl container::StyleSheet for MixerSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
 pub struct MainWindow;
 
 impl container::StyleSheet for MainWindow {
