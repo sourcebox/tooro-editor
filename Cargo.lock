@@ -2519,6 +2519,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyfiledialogs"
+version = "3.3.10"
+source = "git+https://github.com/jdm/tinyfiledialogs-rs.git?rev=83dea8cda8a6a9120765cf341883a6f2ada3fba5#83dea8cda8a6a9120765cf341883a6f2ada3fba5"
+dependencies = [
+ "cc",
+ "libc",
+]
+
+[[package]]
 name = "tinyvec"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2563,6 +2572,7 @@ dependencies = [
  "log",
  "midir",
  "simple_logger",
+ "tinyfiledialogs",
 ]
 
 [[package]]

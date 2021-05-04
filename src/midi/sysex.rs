@@ -5,7 +5,6 @@ use crate::params::{
 // Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
 pub const SERVICE_PRESET_REQUEST: u8 = 0x02;
-pub const SERVICE_PRESET_PARAMETER_REQUEST: u8 = 0x03;
 pub const SERVICE_MULTI_DUMP: u8 = 0x11;
 pub const SERVICE_PRESET_DUMP: u8 = 0x12;
 pub const SERVICE_PRESET_PARAMETER_DUMP: u8 = 0x13;
@@ -13,7 +12,6 @@ pub const SERVICE_PRESET_PARAMETER_DUMP: u8 = 0x13;
 // Total dump lengths in bytes (incl. 0xF0 & 0xF7)
 pub const MULTI_DUMP_LENGTH: usize = 104;
 pub const PRESET_DUMP_LENGTH: usize = 264;
-pub const PRESET_PARAMETER_DUMP_LENGTH: usize = 8;
 
 /// Return message for preset request
 ///

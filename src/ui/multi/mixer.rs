@@ -1,4 +1,4 @@
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{slider, Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, MultiParameter, MultiParameterValues};

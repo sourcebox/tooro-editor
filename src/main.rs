@@ -10,6 +10,7 @@ use iced::{
 use iced_native;
 use log;
 use simple_logger::SimpleLogger;
+use tinyfiledialogs::open_file_dialog;
 
 use messages::Message;
 use midi::MidiConnector;
@@ -145,6 +146,46 @@ impl Application for EditorApp {
                 self.request_multi_update = true;
             }
 
+            Message::LoadSysexFile => {
+                match open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files"))) {
+                    Some(file) => {
+                        log::info!("Loading file {}", file);
+                        let data = std::fs::read(file);
+
+                        if data.is_ok() {
+                            let mut message = data.unwrap();
+
+                            match message[1] {
+                                midi::sysex::SERVICE_PRESET_DUMP
+                                    if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
+                                {
+                                    let preset_id = 0x70 + self.part_id;
+                                    log::info!("Sending preset dump with id {:#X}", preset_id);
+                                    message[2] = preset_id;
+                                    self.midi.send(&message);
+                                    self.request_sound_update = true;
+                                }
+
+                                midi::sysex::SERVICE_MULTI_DUMP
+                                    if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
+                                {
+                                    let multi_id = 0x7F;
+                                    log::info!("Sending multi dump with id {:#X}", multi_id);
+                                    message[2] = multi_id;
+                                    self.midi.send(&message);
+                                    self.request_multi_update = true;
+                                }
+
+                                _ => {
+                                    log::info!("Invalid data");
+                                }
+                            }
+                        }
+                    }
+                    None => {}
+                }
+            }
+
             Message::Tick => {
                 self.midi.scan();
                 let connection_state = self.midi.is_connected();
@@ -220,7 +261,7 @@ impl Application for EditorApp {
                 )
                 .push(
                     Column::new()
-                        .push(self.manager_panel.view(self.part_id, &self.multi_params))
+                        .push(self.manager_panel.view(self.part_id))
                         .push(self.multi_panel.view(&self.multi_params))
                         .width(Length::FillPortion(1)),
                 ),

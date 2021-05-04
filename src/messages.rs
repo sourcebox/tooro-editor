@@ -9,6 +9,7 @@ pub enum Message {
     MultiParameterChange(MultiParameter, i32),
     PartChange(u8),
     UpdateFromDevice,
+    LoadSysexFile,
     Tick,
     FastTick,
 }
