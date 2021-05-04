@@ -26,3 +26,5 @@ Use `cargo build` to compile or `cargo run` to compile and run.
 - Application bundle for macOS
 - Installer for Windows
 - Status bar
+- Fix arp tempo display
+- Check what to do with tune and bend range (no firmware support yet)
