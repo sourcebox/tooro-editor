@@ -135,8 +135,8 @@ impl Application for EditorApp {
 
                 if value != last_value {
                     self.multi_params.insert(param, value);
-                    let message = midi::sysex::multi_dump(0x7F, &self.multi_params);
-                    // log::info!("Sending multi dump {:?}", message);
+                    let message = midi::sysex::multi_param_dump(&param, value);
+                    // log::info!("Sending multi parameter dump {:?}", message);
                     self.midi.send(&message);
                 }
             }

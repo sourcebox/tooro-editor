@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::params::{
     GetValue, MultiParameter, MultiParameterValues, SoundParameter, SoundParameterValues,
 };
@@ -5,13 +7,18 @@ use crate::params::{
 // Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
 pub const SERVICE_PRESET_REQUEST: u8 = 0x02;
+pub const SERVICE_PRESET_PARAM_REQUEST: u8 = 0x03;
+pub const SERVICE_MULTI_PARAM_REQUEST: u8 = 0x04;
 pub const SERVICE_MULTI_DUMP: u8 = 0x11;
 pub const SERVICE_PRESET_DUMP: u8 = 0x12;
 pub const SERVICE_PRESET_PARAMETER_DUMP: u8 = 0x13;
+pub const SERVICE_MULTI_PARAMETER_DUMP: u8 = 0x14;
 
 // Total dump lengths in bytes (incl. 0xF0 & 0xF7)
 pub const MULTI_DUMP_LENGTH: usize = 104;
 pub const PRESET_DUMP_LENGTH: usize = 264;
+pub const PRESET_PARAM_DUMP_LENGTH: usize = 8;
+pub const MULTI_PARAM_DUMP_LENGTH: usize = 8;
 
 /// Return message for preset request
 ///
@@ -149,6 +156,62 @@ pub fn preset_param_dump(preset_id: u8, param: &SoundParameter, value: i32) -> V
         0xF0,
         SERVICE_PRESET_PARAMETER_DUMP,
         preset_id,
+        id_low,
+        id_high,
+        value_low,
+        value_high,
+        0xF7,
+    ]
+}
+
+/// Return message for multi parameter dump
+///
+/// - `param`       Multi parameter enum value
+/// - `value`       Multi parameter value
+pub fn multi_param_dump(param: &MultiParameter, value: i32) -> Vec<u8> {
+    let (id, value) = match param {
+        // Preset IDs
+        MultiParameter::PresetPart1 => (0, value),
+        MultiParameter::PresetPart2 => (1, value),
+        MultiParameter::PresetPart3 => (2, value),
+        MultiParameter::PresetPart4 => (3, value),
+
+        // MIDI channels
+        MultiParameter::ChannelPart1 => (4, value),
+        MultiParameter::ChannelPart2 => (5, value),
+        MultiParameter::ChannelPart3 => (6, value),
+        MultiParameter::ChannelPart4 => (7, value),
+
+        // Volumes
+        MultiParameter::VolumePart1 => (8, value * 4),
+        MultiParameter::VolumePart2 => (9, value * 4),
+        MultiParameter::VolumePart3 => (10, value * 4),
+        MultiParameter::VolumePart4 => (11, value * 4),
+
+        // Balances
+        MultiParameter::BalancePart1 => (12, value * 4),
+        MultiParameter::BalancePart2 => (13, value * 4),
+        MultiParameter::BalancePart3 => (14, value * 4),
+        MultiParameter::BalancePart4 => (15, value * 4),
+
+        // FX
+        MultiParameter::FXLength => (16, value * 4),
+        MultiParameter::FXFeedback => (17, value * 4),
+        MultiParameter::FXMix => (18, value * 4),
+        MultiParameter::FXMode => (19, value),
+        MultiParameter::FXSpeed => (20, value * 4),
+        MultiParameter::FXDepth => (21, value * 4),
+    };
+
+    let id_low = id & 0x7F;
+    let id_high = (id >> 7) & 0x7F;
+    let value_low = (value & 0x7F) as u8;
+    let value_high = ((value >> 7) & 0x7F) as u8;
+
+    vec![
+        0xF0,
+        SERVICE_MULTI_PARAMETER_DUMP,
+        0,
         id_low,
         id_high,
         value_low,
@@ -536,11 +599,19 @@ pub fn update_multi_params(params: &mut MultiParameterValues, values: &Vec<u8>) 
 
 /// Return parameter value as i32 from values vector addressed by index
 ///
+/// - `values`  Vector containing values
 /// - `index`   Start index in values vector
 fn value_from_index(values: &Vec<u8>, index: usize) -> i32 {
     i16::from_le_bytes([values[index], values[index + 1]]) as i32
 }
 
+/// Rescale a value from one range to another
+///
+/// - `value`   Input value
+/// - `in_min`  Minimum input value
+/// - `in_max`  Maximum input value
+/// - `out_min` Minimum output value
+/// - `out_max` Maximum output value
 fn rescale(value: i32, in_min: i32, in_max: i32, out_min: i32, out_max: i32) -> i32 {
     (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }
