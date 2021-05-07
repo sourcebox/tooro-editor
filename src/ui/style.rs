@@ -202,6 +202,21 @@ impl container::StyleSheet for MixerSection {
     }
 }
 
+pub struct MidiSection;
+
+impl container::StyleSheet for MidiSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xA0, 0xA0, 0xA0))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+            ..Default::default()
+        }
+    }
+}
+
 pub struct MainWindow;
 
 impl container::StyleSheet for MainWindow {
@@ -312,6 +327,7 @@ impl pick_list::StyleSheet for PickList {
     }
 }
 
+#[allow(dead_code)]
 pub enum Button {
     Primary,
     Secondary,
