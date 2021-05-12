@@ -116,7 +116,7 @@ pub fn preset_param_dump(preset_id: u8, param: &SoundParameter, value: i32) -> V
         // Arpeggiator
         SoundParameter::ArpMode => (54, value),
         SoundParameter::ArpGrid => (55, value),
-        SoundParameter::ArpTempo => (56, rescale(value, 20, 199, 0, 1024)),
+        SoundParameter::ArpTempo => (56, (value - 20) * 4),
         SoundParameter::ArpHold => (57, value),
 
         // Amplifier
@@ -467,7 +467,7 @@ pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) 
     params.insert(SoundParameter::ArpGrid, value_from_index(values, 110));
     params.insert(
         SoundParameter::ArpTempo,
-        rescale(value_from_index(values, 112), 0, 1024, 20, 199),
+        value_from_index(values, 112) / 4 + 20,
     );
     params.insert(SoundParameter::ArpHold, value_from_index(values, 114));
 

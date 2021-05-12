@@ -13,7 +13,7 @@ Cross-platform sound editor for the Fred's Lab Töörö hardware synthesizer.
 
 ## Build Requirements
 
-- [Rust toolchain](https://www.rust-lang.org/) (tested with version 1.51)
+- [Rust toolchain](https://www.rust-lang.org/) (tested with version 1.52.1)
 
 Use `cargo build` to compile or `cargo run` to compile and run.
 
@@ -26,5 +26,4 @@ Use `cargo build` to compile or `cargo run` to compile and run.
 - Application bundle for macOS
 - Installer for Windows
 - Status bar
-- Fix arp tempo display
 - Check what to do with tune and bend range (no firmware support yet)

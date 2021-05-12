@@ -137,7 +137,7 @@ impl SoundParameter {
             SoundParameter::ShaperTrack | SoundParameter::FilterTrack => {
                 RangeInclusive::new(-20, 20)
             }
-            SoundParameter::ArpTempo => RangeInclusive::new(64, 320),
+            SoundParameter::ArpTempo => RangeInclusive::new(20, 199),
 
             // Lists
             SoundParameter::Osc1Table | SoundParameter::Osc2Table => RangeInclusive::new(0, 10),
