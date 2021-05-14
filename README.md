@@ -37,6 +37,7 @@ The following platforms were tested during development:
 
 - Windows 10
 - macOS 10.13 (High Sierra)
+- macOS 10.11 (El Capitan) - working, but has some issues
 
 An **OpenGL ES3** compatible graphics adapter is required on Linux. This can be an issue, especially on older notebooks.
 

@@ -23,4 +23,4 @@ lto = true
 [package.metadata.bundle]
 name = "Töörö Editor"
 identifier = "de.sourcebox.tooro-editor"
-osx_minimum_system_version = "10.13"
+osx_minimum_system_version = "10.11"
