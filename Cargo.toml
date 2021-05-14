@@ -3,9 +3,10 @@ name = "tooro-editor"
 version = "0.1.0"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
 edition = "2018"
-description = "Töörö Editor"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Editor for the Fred's Lab Töörö hardware synthesizer"
+repository = "https://github.com/sourcebox/tooro-editor"
+license = "MIT"
+keywords = ["midi", "synthesizer"]
 
 [dependencies]
 iced = { git = "https://github.com/hecrj/iced.git", rev = "4b8ba8309f6645cdcb5bd605f8dd88097f8ee5a7", features=["tokio", "glow"]}
