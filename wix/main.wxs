@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<!--
+  Copyright (C) 2017 Christopher R. Field.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!--
+  Please do not remove these pre-processor If-Else blocks. These are used with
+  the `cargo wix` subcommand to automatically determine the installation
+  destination for 32-bit versus 64-bit installers. Removal of these lines will
+  cause installation errors.
+-->
+<?if $(var.Platform) = x64 ?>
+	<?define Win64 = "yes" ?>
+	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?else ?>
+  <?define Win64 = "no" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+<?endif ?>
+
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+
+	<Product
+		Id='*'
+		Name='T&#246;&#246;r&#246; Editor'
+		UpgradeCode='73B1D8BE-677F-4814-A3A6-06CCBD58A603'
+		Manufacturer='Oliver Rockstedt'
+		Language='1033'
+		Codepage='1252'
+		Version='$(var.Version)'>
+
+		<Package Id='*'
+			Keywords='Installer'
+			Description='Editor for the Fred&#39;s Lab T&#246;&#246;r&#246; hardware synthesizer'
+			Manufacturer='Oliver Rockstedt'
+			InstallerVersion='450'
+			Languages='1033'
+			Compressed='yes'
+			InstallScope='perMachine'
+			SummaryCodepage='1252'
+			Platform='$(var.Platform)'/>
+
+		<MajorUpgrade
+			Schedule='afterInstallInitialize'
+			DowngradeErrorMessage='A newer version of [ProductName] is already installed. Setup will now exit.'/>
+
+		<Icon Id='SetupIcon' SourceFile='wix\SetupIcon.ico'/>		
+		<Media Id='1' Cabinet='media1.cab' EmbedCab='yes' DiskPrompt='CD-ROM #1'/>
+		<Property Id='DiskPrompt' Value='tooro-editor Installation'/>
+
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+			<Directory Id='$(var.PlatformProgramFilesFolder)' Name='PFiles'>
+				<Directory Id='APPLICATIONFOLDER' Name='tooro-editor'>
+					<Component Id='License' Guid='*' Win64='$(var.Win64)'>
+						<File Id='LicenseFile'
+							Name='License.rtf'
+							DiskId='1'
+							Source='wix\License.rtf'
+							KeyPath='yes'/>
+					</Component>
+
+					<Directory Id='Bin' Name='bin'>
+						<Component Id='Executable' Guid='*' Win64='$(var.Win64)'>
+							<File
+								Id='Executable'
+								Name='tooro-editor.exe'
+								DiskId='1'
+								Source='target\$(var.Profile)\tooro-editor.exe'
+								KeyPath='yes'/>
+						</Component>
+					</Directory>
+					
+				</Directory>
+			</Directory>
+			
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="T&#246;&#246;r&#246; Editor"/>
+			</Directory>
+			
+			<Directory Id="DesktopFolder" Name="Desktop">
+			</Directory>
+	
+		</Directory>
+
+		<DirectoryRef Id="ApplicationProgramsFolder">
+			<Component Id="AppStart" Guid="43601f50-c7a8-4048-b5da-370969987415">
+				<Shortcut Id="AppStartShortcut" 
+					Name="T&#246;&#246;r&#246; Editor" 
+					Description="Editor for the Fred&#39;s Lab T&#246;&#246;r&#246; hardware synthesizer"
+					Target="[APPLICATIONFOLDER]bin\tooro-editor.exe"
+					WorkingDirectory="APPLICATIONROOTDIRECTORY"
+					Icon="SetupIcon"/>
+				<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+				<RegistryValue Root="HKCU" Key="Software\SourceBox\TooroEditor" Name="StartShortcut" Type="integer" Value="1" KeyPath="yes"/>
+		   </Component>
+		</DirectoryRef>
+		
+		<DirectoryRef Id="DesktopFolder">
+		    <Component Id="AppDesk" Guid="8aa790a4-913f-4b59-a49c-d9634dc56d8a">
+				<Shortcut Id="AppDeskShortcut"
+					Name="T&#246;&#246;r&#246; Editor"
+					Description="Editor for the Fred&#39;s Lab T&#246;&#246;r&#246; hardware synthesizer"
+					Target="[APPLICATIONFOLDER]bin\tooro-editor.exe"
+					WorkingDirectory="APPLICATIONROOTDIRECTORY"
+					Icon="SetupIcon"/>
+				<RemoveFolder Id="DesktopFolder" On="uninstall"/>
+				<RegistryValue Root="HKCU" Key="Software\SourceBox\TooroEditor" Name="DeskShortcut" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+		
+		<Feature
+			Id='Binaries'
+			Title='Application'
+			Description='Installs all binaries and the license.'
+			Level='1'
+			ConfigurableDirectory='APPLICATIONFOLDER'
+			AllowAdvertise='no'
+			Display='expand'
+			Absent='disallow'>
+
+			<ComponentRef Id='License'/>
+			<ComponentRef Id='Executable'/>
+		</Feature>
+
+		<Feature
+			Id='StartShort'
+			Title='Start menu shortcut'
+			Description='Add a shortcut to the start menu'
+			Level='1'
+			AllowAdvertise='no'
+			Display='expand'
+			Absent='disallow'>
+
+			<ComponentRef Id="AppStart" /> 
+		</Feature>
+		
+		<Feature
+			Id='DeskShort'
+			Title='Desktop shortcut'
+			Description='Add a shortcut to the desktop'
+			Level='1'
+			AllowAdvertise='no'
+			Display='expand'
+			Absent='disallow'>
+
+			<ComponentRef Id="AppDesk" /> 
+		</Feature>
+
+		<SetProperty Id='ARPINSTALLLOCATION' Value='[APPLICATIONFOLDER]' After='CostFinalize'/>
+		<Property Id='ARPPRODUCTICON' Value='SetupIcon'/>
+		<Property Id='ARPHELPLINK' Value='https://github.com/sourcebox/tooro-editor'/>
+		
+		<UI>
+			<UIRef Id='WixUI_FeatureTree'/>
+		</UI>
+
+		<WixVariable Id='WixUILicenseRtf' Value='wix\License.rtf'/>
+		<WixVariable Id='WixUIDialogBmp' Value='wix\DialogBmp.bmp'/>
+
+	</Product>
+
+</Wix>
