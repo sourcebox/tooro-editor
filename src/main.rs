@@ -7,7 +7,6 @@ use iced::{
     executor, time, Align, Application, Clipboard, Column, Command, Container, Element, Length,
     Row, Settings, Subscription, Text,
 };
-use iced_native::{self, Widget};
 use log;
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
