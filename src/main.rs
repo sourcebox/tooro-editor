@@ -4,10 +4,10 @@ mod params;
 mod ui;
 
 use iced::{
-    executor, time, Application, Clipboard, Column, Command, Container, Element, Length, Row,
-    Settings, Subscription,
+    executor, time, Align, Application, Clipboard, Column, Command, Container, Element, Length,
+    Row, Settings, Subscription, Text,
 };
-use iced_native;
+use iced_native::{self, Widget};
 use log;
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
@@ -44,6 +44,10 @@ struct EditorApp {
     sound_panel: SoundPanel,
     multi_panel: MultiPanel,
     manager_panel: ManagerPanel,
+
+    // Status bar info
+    status_connection: String,
+    status_communication: String,
 
     // Current part id 0-3 for part 1-4
     part_id: u8,
@@ -84,6 +88,9 @@ impl Application for EditorApp {
                 multi_panel: MultiPanel::new(),
                 manager_panel: ManagerPanel::new(),
 
+                status_connection: String::from("Device disconnected"),
+                status_communication: String::from("Initializing..."),
+
                 part_id: 0,
 
                 sound_params: SoundParameterValues::with_capacity(128),
@@ -105,7 +112,7 @@ impl Application for EditorApp {
     }
 
     fn title(&self) -> String {
-        format!("Töörö Editor v{}", env!("CARGO_PKG_VERSION"))
+        format!("Töörö Editor")
     }
 
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
@@ -146,12 +153,12 @@ impl Application for EditorApp {
                 self.request_sound_update = true;
             }
 
-            Message::UpdateFromDevice => {
+            Message::UpdateFromDevice if self.device_connected => {
                 self.request_sound_update = true;
                 self.request_multi_update = true;
             }
 
-            Message::LoadSysexFile => {
+            Message::LoadSysexFile if self.device_connected => {
                 match open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files"))) {
                     Some(file) => {
                         log::info!("Loading file {}", file);
@@ -191,7 +198,7 @@ impl Application for EditorApp {
                 }
             }
 
-            Message::SavePresetSysexFile => {
+            Message::SavePresetSysexFile if self.device_connected => {
                 match save_file_dialog_with_filter("Save syx file", "", &["*.syx"], "Sysex files") {
                     Some(file) => {
                         let mut file = std::path::PathBuf::from(file);
@@ -228,6 +235,7 @@ impl Application for EditorApp {
                     if self.request_sound_update && !self.waiting_for_dump {
                         let preset_id = 0x70 + self.part_id;
                         log::info!("Requesting preset with id {:#X}", preset_id);
+                        self.status_communication = String::from("Requesting preset dump...");
                         let message = midi::sysex::preset_request(preset_id);
                         self.midi.send(&message);
                         self.waiting_for_dump = true;
@@ -237,6 +245,7 @@ impl Application for EditorApp {
                     if self.request_multi_update && !self.waiting_for_dump {
                         let multi_id = 0x7F;
                         log::info!("Requesting multi with id {:#X}", multi_id);
+                        self.status_communication = String::from("Requesting multi dump...");
                         let message = midi::sysex::multi_request(multi_id);
                         self.midi.send(&message);
                         self.waiting_for_dump = true;
@@ -244,6 +253,8 @@ impl Application for EditorApp {
                     }
                 }
             }
+
+            _ => {}
         }
 
         Command::none()
@@ -272,17 +283,51 @@ impl Application for EditorApp {
 
     fn view(&mut self) -> Element<Self::Message> {
         Container::new(
-            Row::new()
+            Column::new()
                 .push(
-                    Column::new()
-                        .push(self.sound_panel.view(&self.sound_params))
-                        .width(Length::FillPortion(4)),
+                    Row::new()
+                        .push(
+                            Column::new()
+                                .push(self.sound_panel.view(&self.sound_params))
+                                .width(Length::FillPortion(4)),
+                        )
+                        .push(
+                            Column::new()
+                                .push(self.manager_panel.view(self.part_id))
+                                .push(self.multi_panel.view(&self.multi_params))
+                                .width(Length::FillPortion(1)),
+                        )
+                        .height(Length::Units(625)),
                 )
                 .push(
-                    Column::new()
-                        .push(self.manager_panel.view(self.part_id))
-                        .push(self.multi_panel.view(&self.multi_params))
-                        .width(Length::FillPortion(1)),
+                    Row::new()
+                        .push(Column::new().width(Length::Units(10)))
+                        .push(
+                            Column::new()
+                                .push(
+                                    Text::new(&self.status_connection)
+                                        .size(style::STATUS_TEXT_SIZE),
+                                )
+                                .width(Length::FillPortion(1)),
+                        )
+                        .push(
+                            Column::new()
+                                .push(
+                                    Text::new(&self.status_communication)
+                                        .size(style::STATUS_TEXT_SIZE),
+                                )
+                                .width(Length::FillPortion(3)),
+                        )
+                        .push(
+                            Column::new()
+                                .push(
+                                    Text::new(format!("v{}", env!("CARGO_PKG_VERSION")))
+                                        .size(style::STATUS_TEXT_SIZE),
+                                )
+                                .width(Length::FillPortion(1))
+                                .align_items(Align::End),
+                        )
+                        .push(Column::new().width(Length::Units(10))),
                 ),
         )
         .padding(5)
@@ -296,6 +341,7 @@ impl EditorApp {
     /// Called when device is connected
     fn on_device_connected(&mut self) {
         log::info!("Device connected");
+        self.status_connection = String::from("Device connected");
         self.request_sound_update = true;
         self.request_multi_update = true;
     }
@@ -303,6 +349,7 @@ impl EditorApp {
     /// Called when device is disconnected
     fn on_device_disconnected(&mut self) {
         log::info!("Device disconnected");
+        self.status_connection = String::from("Device disconnected");
         self.request_sound_update = false;
         self.request_multi_update = false;
         self.waiting_for_dump = false;
@@ -347,6 +394,7 @@ impl EditorApp {
         let preset_id = message[2];
 
         log::info!("Preset dump received with id {:#X}", preset_id);
+        self.status_communication = String::from("");
 
         match preset_id {
             0..=99 => {}
@@ -376,6 +424,7 @@ impl EditorApp {
         let multi_id = message[2];
 
         log::info!("Multi dump received with id {:#X}", multi_id);
+        self.status_communication = String::from("");
 
         if multi_id == 0x7F {
             let param_values = midi::sysex::unpack_data(&message[3..message.len()]);

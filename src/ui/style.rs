@@ -2,7 +2,7 @@ use iced::{button, checkbox, container, pick_list, slider, Background, Color, Ve
 
 // Default window size
 pub const WINDOW_WIDTH: u32 = 1024;
-pub const WINDOW_HEIGHT: u32 = 640;
+pub const WINDOW_HEIGHT: u32 = 655;
 
 // Element spacing
 pub const SECTION_PADDING: u16 = 7;
@@ -15,6 +15,7 @@ pub const PARAM_LABEL_WIDTH: u16 = 65;
 pub const PARAM_VALUE_WIDTH: u16 = 25;
 pub const LIST_ITEM_TEXT_SIZE: u16 = 13;
 pub const BUTTON_TEXT_SIZE: u16 = 14;
+pub const STATUS_TEXT_SIZE: u16 = 14;
 
 // Colors
 const SECTION_TEXT_COLOR: Color = Color::from_rgb(0_f32, 0_f32, 0_f32);
