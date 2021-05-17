@@ -18,6 +18,7 @@ It currently supports:
 Using the editor is mostly self-explanatory, but there are a few things to be noted:
 
 - The Töörö must be connected to the computer via USB. DIN MIDI will not work.
+- When using a DAW at the same time as the editor, make sure it does not loopback sysex messages to the Töörö.
 - The Töörö firmware must be V1.5 or higher. Otherwise, not all parameters can be edited.
 - The application tries to detect when you change a parameter on the device itself. Unfortunately, this will not work in all cases. Use the **Update from device** button to force a reload of all parameters.
 - A manual update must also be requested when you change a preset or change a parameter via MIDI CCs from another application or source.

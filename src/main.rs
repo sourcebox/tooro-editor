@@ -395,6 +395,9 @@ impl EditorApp {
         log::info!("Preset dump received with id {:#X}", preset_id);
         self.status_communication = String::from("");
 
+        // Wait a little bit because the dump is possibly echoed by the DAW
+        std::thread::sleep(std::time::Duration::from_millis(100));
+
         match preset_id {
             0..=99 => {}
             0x70..=0x73 => {
@@ -424,6 +427,9 @@ impl EditorApp {
 
         log::info!("Multi dump received with id {:#X}", multi_id);
         self.status_communication = String::from("");
+
+        // Wait a little bit because the dump is possibly echoed by the DAW
+        std::thread::sleep(std::time::Duration::from_millis(100));
 
         if multi_id == 0x7F {
             let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
