@@ -61,6 +61,7 @@ To build the application from source, a [Rust toolchain](https://www.rust-lang.o
 
 - Run `cargo bundle --release` to build the bundle.
 - The bundle will be created in the `target/release/bundle/osx` folder.
+- If the custom app icon does not show up, copy/paste it manually from the icons folder using the finder info dialog.
 
 ## Donations
 

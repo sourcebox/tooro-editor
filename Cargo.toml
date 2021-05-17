@@ -24,3 +24,4 @@ lto = true
 name = "Töörö Editor"
 identifier = "de.sourcebox.tooro-editor"
 osx_minimum_system_version = "10.11"
+icon = ["icons/icon_32x32.png", "icons/icon_128x128.png", "icons/icon_256x256.png"]
