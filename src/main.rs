@@ -131,10 +131,12 @@ impl Application for EditorApp {
 
                 if value != last_value {
                     self.sound_params.insert(param, value);
-                    let message =
-                        midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
-                    // log::info!("Sending preset parameter dump {:?}", message);
-                    self.midi.send(&message);
+                    if self.device_connected {
+                        let message =
+                            midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
+                        // log::info!("Sending preset parameter dump {:?}", message);
+                        self.midi.send(&message);
+                    }
                 }
             }
 
@@ -143,9 +145,11 @@ impl Application for EditorApp {
 
                 if value != last_value {
                     self.multi_params.insert(param, value);
-                    let message = midi::sysex::multi_param_dump(&param, value);
-                    // log::info!("Sending multi parameter dump {:?}", message);
-                    self.midi.send(&message);
+                    if self.device_connected {
+                        let message = midi::sysex::multi_param_dump(&param, value);
+                        // log::info!("Sending multi parameter dump {:?}", message);
+                        self.midi.send(&message);
+                    }
                 }
             }
 
