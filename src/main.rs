@@ -3,6 +3,8 @@ mod midi;
 mod params;
 mod ui;
 
+use std::time::{Duration, Instant};
+
 use iced::{
     executor, time, Align, Application, Clipboard, Column, Command, Container, Element, Length,
     Row, Settings, Subscription, Text,
@@ -61,12 +63,12 @@ struct EditorApp {
     // Device connection state
     device_connected: bool,
 
-    // Flag set after a dump request was sent
-    waiting_for_dump: bool,
-
     // Flags for parameter update from device
     request_sound_update: bool,
     request_multi_update: bool,
+
+    // Time of last dump request
+    request_time: Option<Instant>,
 
     // File to capture next received preset dump
     preset_capture_file: Option<String>,
@@ -98,9 +100,9 @@ impl Application for EditorApp {
                 midi: MidiConnector::new(),
                 device_connected: false,
 
-                waiting_for_dump: false,
                 request_sound_update: false,
                 request_multi_update: false,
+                request_time: None,
 
                 preset_capture_file: None,
 
@@ -231,24 +233,32 @@ impl Application for EditorApp {
                 }
 
                 if self.device_connected {
-                    if self.request_sound_update && !self.waiting_for_dump {
+                    if self.request_sound_update && self.request_time.is_none() {
                         let preset_id = 0x70 + self.part_id;
                         log::info!("Requesting preset with id {:#X}", preset_id);
                         self.status_communication = String::from("Requesting preset dump...");
                         let message = midi::sysex::preset_request(preset_id);
                         self.midi.send(&message);
-                        self.waiting_for_dump = true;
+                        self.request_time = Some(Instant::now());
                         self.request_sound_update = false;
                     }
 
-                    if self.request_multi_update && !self.waiting_for_dump {
+                    if self.request_multi_update && self.request_time.is_none() {
                         let multi_id = 0x7F;
                         log::info!("Requesting multi with id {:#X}", multi_id);
                         self.status_communication = String::from("Requesting multi dump...");
                         let message = midi::sysex::multi_request(multi_id);
                         self.midi.send(&message);
-                        self.waiting_for_dump = true;
+                        self.request_time = Some(Instant::now());
                         self.request_multi_update = false;
+                    }
+
+                    if let Some(request_time) = self.request_time {
+                        if request_time.elapsed() >= Duration::new(1, 0) {
+                            log::error!("Response timeout");
+                            self.status_communication = String::from("Error: response timeout");
+                            self.request_time = None;
+                        }
                     }
                 }
             }
@@ -262,10 +272,9 @@ impl Application for EditorApp {
     fn subscription(&self) -> Subscription<Self::Message> {
         let event_subscription = iced_native::subscription::events().map(Message::EventOccurred);
 
-        let tick_subscription =
-            time::every(std::time::Duration::from_millis(1000)).map(|_| Message::Tick);
+        let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
         let fast_tick_subscription =
-            time::every(std::time::Duration::from_millis(100)).map(|_| Message::FastTick);
+            time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
 
         let subscriptions = vec![
             tick_subscription,
@@ -359,7 +368,7 @@ impl EditorApp {
         self.status_connection = String::from("Device disconnected");
         self.request_sound_update = false;
         self.request_multi_update = false;
-        self.waiting_for_dump = false;
+        self.request_time = None;
     }
 
     /// Process an incoming MIDI message from the device
@@ -404,7 +413,7 @@ impl EditorApp {
         self.status_communication = String::from("");
 
         // Wait a little bit because the dump is possibly echoed by the DAW
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(Duration::from_millis(100));
 
         match preset_id {
             0..=99 => {}
@@ -424,7 +433,7 @@ impl EditorApp {
             _ => {}
         }
 
-        self.waiting_for_dump = false;
+        self.request_time = None;
     }
 
     /// Process an incoming multi dump from the device
@@ -437,13 +446,13 @@ impl EditorApp {
         self.status_communication = String::from("");
 
         // Wait a little bit because the dump is possibly echoed by the DAW
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(Duration::from_millis(100));
 
         if multi_id == 0x7F {
             let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
             midi::sysex::update_multi_params(&mut self.multi_params, &param_values);
         }
 
-        self.waiting_for_dump = false;
+        self.request_time = None;
     }
 }
