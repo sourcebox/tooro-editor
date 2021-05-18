@@ -315,11 +315,19 @@ impl Application for EditorApp {
                                     Text::new(&self.status_communication)
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
-                                .width(Length::FillPortion(3)),
+                                .width(Length::FillPortion(3))
+                                .align_items(Align::Center),
                         )
                         .push(
                             Column::new()
                                 .push(
+                                    #[cfg(debug_assertions)]
+                                    Text::new(format!(
+                                        "v{} (debug build)",
+                                        env!("CARGO_PKG_VERSION")
+                                    ))
+                                    .size(style::STATUS_TEXT_SIZE),
+                                    #[cfg(not(debug_assertions))]
                                     Text::new(format!("v{}", env!("CARGO_PKG_VERSION")))
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
