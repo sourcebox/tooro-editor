@@ -15,7 +15,7 @@ iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "4b8ba8309f664
 midir = "0.7.0"
 log = "0.4.14"
 simple_logger = "1.11.0"
-tinyfiledialogs = { git = "https://github.com/jdm/tinyfiledialogs-rs.git", rev = "83dea8cda8a6a9120765cf341883a6f2ada3fba5"}
+tinyfiledialogs = "3.8.3"
 
 [profile.release]
 lto = true
