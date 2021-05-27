@@ -1,3 +1,5 @@
+//! User interface panel containing the preset parameters
+
 mod amp;
 mod arp;
 mod enva;

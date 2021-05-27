@@ -1,3 +1,5 @@
+//! Module for the control elements
+
 pub mod arp_grid_list;
 pub mod arp_mode_list;
 pub mod checkbox;

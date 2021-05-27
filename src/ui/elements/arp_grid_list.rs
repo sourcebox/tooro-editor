@@ -1,3 +1,5 @@
+//! Dropdown menu for the arpeggiator grid values
+
 use iced::{pick_list, Container, Length, PickList, Row, Text};
 
 use crate::messages::Message;

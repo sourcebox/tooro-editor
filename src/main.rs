@@ -1,3 +1,5 @@
+//! Cross-platform editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer
+
 mod messages;
 mod midi;
 mod params;
@@ -21,6 +23,7 @@ use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
 use ui::style;
 
+/// The main entry point
 fn main() -> iced::Result {
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
@@ -40,6 +43,7 @@ fn main() -> iced::Result {
     EditorApp::run(settings)
 }
 
+/// Holds the application data and state
 struct EditorApp {
     // Panels
     sound_panel: SoundPanel,
@@ -82,6 +86,7 @@ impl Application for EditorApp {
     type Message = Message;
     type Flags = ();
 
+    /// Constructs a new application
     fn new(_flags: ()) -> (Self, Command<Message>) {
         (
             Self {
@@ -112,10 +117,12 @@ impl Application for EditorApp {
         )
     }
 
+    /// Returns the name of the application shown in the title bar
     fn title(&self) -> String {
         format!("Töörö Editor")
     }
 
+    /// Process a message and update the state accordingly
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
         match message {
             Message::EventOccurred(event) => {
@@ -273,6 +280,7 @@ impl Application for EditorApp {
         Command::none()
     }
 
+    /// Return a subscripton event
     fn subscription(&self) -> Subscription<Self::Message> {
         let event_subscription = iced_native::subscription::events().map(Message::EventOccurred);
 
@@ -289,10 +297,12 @@ impl Application for EditorApp {
         Subscription::batch(subscriptions.into_iter())
     }
 
+    /// Return whether the application should exit
     fn should_exit(&self) -> bool {
         self.should_exit
     }
 
+    /// Returns the widgets to display
     fn view(&mut self) -> Element<Self::Message> {
         Container::new(
             Column::new()
@@ -376,8 +386,6 @@ impl EditorApp {
     }
 
     /// Process an incoming MIDI message from the device
-    ///
-    /// - `message` MIDI message
     fn process_midi(&mut self, message: &Vec<u8>) {
         match message[0] {
             0xB0..=0xBF => {
@@ -408,8 +416,6 @@ impl EditorApp {
     }
 
     /// Process an incoming preset dump from the device
-    ///
-    /// - `message` MIDI message containing dump
     fn process_preset_dump(&mut self, message: &Vec<u8>) {
         let preset_id = message[2];
 
@@ -441,8 +447,6 @@ impl EditorApp {
     }
 
     /// Process an incoming multi dump from the device
-    ///
-    /// - `message` MIDI message containing dump
     fn process_multi_dump(&mut self, message: &Vec<u8>) {
         let multi_id = message[2];
 

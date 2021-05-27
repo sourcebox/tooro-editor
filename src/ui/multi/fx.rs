@@ -1,3 +1,5 @@
+//! Section containing the multi fx parameters
+
 use iced::{pick_list, slider, Column, Container, Element, Text};
 
 use crate::messages::Message;

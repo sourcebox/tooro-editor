@@ -1,3 +1,5 @@
+//! Module containing all MIDI-related code
+
 pub mod sysex;
 
 use std::sync::mpsc;
@@ -5,13 +7,20 @@ use std::sync::mpsc;
 use log;
 use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 
+/// Container for connections and state
 pub struct MidiConnector {
+    /// MIDI output connection to the device
     midi_out: Option<MidiOutputConnection>,
+
+    /// MIDI input connection from the device
     midi_in: Option<MidiInputConnection<OnReceiveArgs>>,
+
+    /// MPSC channel to transfer incoming messages from callback to main thread
     midi_in_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
 }
 
 impl MidiConnector {
+    /// Constructs a new instance
     pub fn new() -> Self {
         Self {
             midi_out: None,

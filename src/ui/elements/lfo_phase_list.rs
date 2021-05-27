@@ -1,3 +1,5 @@
+//! Dropdown menu for the LFO phase values
+
 use iced::{pick_list, Container, Length, PickList, Row, Text};
 
 use crate::messages::Message;

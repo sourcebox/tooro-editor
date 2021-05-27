@@ -1,3 +1,5 @@
+//! Module containing MIDI sysex definitions and processing
+
 #![allow(dead_code)]
 
 use crate::params::{

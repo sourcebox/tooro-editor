@@ -1,3 +1,5 @@
+//! Section containing the LFO 2 parameters
+
 use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
 
 use crate::messages::Message;

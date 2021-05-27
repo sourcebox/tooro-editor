@@ -1,3 +1,5 @@
+//! Section containing the MIDI settings
+
 use iced::{pick_list, Column, Container, Element, Length, Text};
 
 use crate::messages::Message;

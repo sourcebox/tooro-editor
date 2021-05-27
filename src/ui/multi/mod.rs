@@ -1,3 +1,5 @@
+//! User interface panel containing the multi parameters
+
 mod fx;
 mod midi;
 mod mixer;

@@ -1,3 +1,5 @@
+//! Section containing the filter envelope parameters
+
 use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
 
 use crate::messages::Message;

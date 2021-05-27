@@ -1,3 +1,5 @@
+//! Slider control wrapped in a container with label and value display
+
 use iced::{slider, Container, HorizontalAlignment, Length, Row, Slider, Text};
 
 use crate::messages::Message;

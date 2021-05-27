@@ -1,3 +1,5 @@
+//! Section containing the amplifier parameters
+
 use iced::{slider, Column, Container, Element, Text};
 
 use crate::messages::Message;

@@ -1,3 +1,5 @@
+//! Module containing the user interface
+
 pub mod elements;
 pub mod manager;
 pub mod multi;

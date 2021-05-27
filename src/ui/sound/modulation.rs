@@ -1,3 +1,5 @@
+//! Section containing the modulation parameters
+
 use iced::{pick_list, slider, Column, Container, Element, Length, Row};
 
 use crate::messages::Message;

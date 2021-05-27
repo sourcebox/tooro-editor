@@ -1,3 +1,5 @@
+//! User interface panel containing global controls
+
 use iced::{button, pick_list, Button, Column, Container, Element, Length, Row, Text};
 
 use super::style;
@@ -14,9 +16,16 @@ pub struct ManagerPanel {
 impl ManagerPanel {
     pub fn new() -> Self {
         Self {
+            /// Drop down list for selecting the current part
             part_list: pick_list::State::<PartList>::default(),
+
+            /// Button to request an update from the device
             update_button: button::State::new(),
+
+            /// Button to open the load file dialog
             load_syx_button: button::State::new(),
+
+            /// Button to open the save file dialog
             save_preset_syx_button: button::State::new(),
         }
     }

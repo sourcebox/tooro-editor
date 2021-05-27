@@ -1,3 +1,5 @@
+//! Section containing the mixer parameters
+
 use iced::{slider, Column, Container, Element, Text};
 
 use crate::messages::Message;

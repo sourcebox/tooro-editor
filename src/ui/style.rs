@@ -1,3 +1,5 @@
+//! User interface style definitions
+
 use iced::{button, checkbox, container, pick_list, slider, Background, Color, Vector};
 
 // Default window size

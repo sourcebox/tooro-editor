@@ -1,3 +1,5 @@
+//! Checkbox control wrapped in a container with label
+
 use iced::{Checkbox, Container, Length, Row, Text};
 
 use crate::messages::Message;

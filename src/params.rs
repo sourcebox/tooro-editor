@@ -1,6 +1,9 @@
+//! This module contains the definitions and methods for the preset and multi parameters
+
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
+/// Enum containing all preset parameters
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum SoundParameter {
     // Osc 1
@@ -110,6 +113,7 @@ pub enum SoundParameter {
 }
 
 impl SoundParameter {
+    /// Return the value range of the parameter
     pub fn get_range(&self) -> RangeInclusive<i32> {
         match self {
             // Default for bipolar
@@ -164,6 +168,7 @@ impl SoundParameter {
         }
     }
 
+    /// Return the default value for the parameter
     pub fn get_default(&self) -> i32 {
         match self {
             _ => 0,
@@ -171,8 +176,10 @@ impl SoundParameter {
     }
 }
 
+/// Hashmap type for preset parameters
 pub type SoundParameterValues = HashMap<SoundParameter, i32>;
 
+/// Enum containing all multi parameters
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum MultiParameter {
     // Preset IDs
@@ -209,6 +216,7 @@ pub enum MultiParameter {
 }
 
 impl MultiParameter {
+    /// Return the value range of the parameter
     pub fn get_range(&self) -> RangeInclusive<i32> {
         match self {
             // Preset IDs
@@ -245,6 +253,7 @@ impl MultiParameter {
         }
     }
 
+    /// Return the default value for the parameter
     pub fn get_default(&self) -> i32 {
         match self {
             _ => 0,
@@ -252,19 +261,26 @@ impl MultiParameter {
     }
 }
 
+/// Hashmap type for preset parameters
 pub type MultiParameterValues = HashMap<MultiParameter, i32>;
 
+/// Trait for returning the current value of a parameter
 pub trait GetValue<T> {
+    /// Return the value of the requested parameter
     fn get_value(&self, param: T) -> i32;
 }
 
+/// GetValue trait implementation for preset parameters
 impl GetValue<SoundParameter> for SoundParameterValues {
+    /// Return the value of the requested preset parameter
     fn get_value(&self, param: SoundParameter) -> i32 {
         *self.get(&param).unwrap_or(&param.get_default())
     }
 }
 
+/// GetValue trait implementation for multi parameters
 impl GetValue<MultiParameter> for MultiParameterValues {
+    /// Return the value of the requested multi parameter
     fn get_value(&self, param: MultiParameter) -> i32 {
         *self.get(&param).unwrap_or(&param.get_default())
     }
