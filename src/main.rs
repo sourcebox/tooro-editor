@@ -77,6 +77,9 @@ struct EditorApp {
     // File to capture next received preset dump
     preset_capture_file: Option<String>,
 
+    // Flag for app init complete
+    init_complete: bool,
+
     // Exit flag
     should_exit: bool,
 }
@@ -111,6 +114,7 @@ impl Application for EditorApp {
 
                 preset_capture_file: None,
 
+                init_complete: false,
                 should_exit: false,
             },
             Command::none(),
@@ -235,6 +239,16 @@ impl Application for EditorApp {
                         self.on_device_disconnected();
                     }
                     self.device_connected = connection_state;
+                }
+
+                if !self.init_complete {
+                    log::info!("Init complete");
+                    self.status_communication = if self.device_connected {
+                        String::new()
+                    } else {
+                        String::from("Communication disabled")
+                    };
+                    self.init_complete = true;
                 }
             }
 
