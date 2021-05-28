@@ -388,8 +388,9 @@ impl EditorApp {
     /// Process an incoming MIDI message from the device
     fn process_midi(&mut self, message: &Vec<u8>) {
         match message[0] {
-            0xB0..=0xBF => {
-                // Control change (all channels)
+            0xB0..=0xBF | 0xC0..=0xCF => {
+                // Whenever the device sends a CC or program change message,
+                // a full parameter update will be requested to keep editor in sync
                 self.request_sound_update = true;
                 self.request_multi_update = true;
             }
