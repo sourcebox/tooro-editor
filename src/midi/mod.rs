@@ -9,89 +9,122 @@ use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 
 /// Container for connections and state
 pub struct MidiConnector {
-    /// MIDI output connection to the device
-    midi_out: Option<MidiOutputConnection>,
+    /// Output connection to the device
+    device_output: Option<MidiOutputConnection>,
 
-    /// MIDI input connection from the device
-    midi_in: Option<MidiInputConnection<OnReceiveArgs>>,
+    /// Input connection from the device
+    device_input: Option<MidiInputConnection<OnReceiveArgs>>,
 
     /// MPSC channel to transfer incoming messages from callback to main thread
-    midi_in_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
+    device_input_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
+
+    /// Objects used for port scanning
+    scan_input: Option<MidiInput>,
+    scan_output: Option<MidiOutput>,
 }
 
 impl MidiConnector {
     /// Constructs a new instance
     pub fn new() -> Self {
         Self {
-            midi_out: None,
-            midi_in: None,
-            midi_in_mpsc_channel: None,
+            device_output: None,
+            device_input: None,
+            device_input_mpsc_channel: None,
+            scan_input: None,
+            scan_output: None,
         }
     }
 
     /// Scans the ports and establishes a connection to the device if found
-    pub fn scan(&mut self) {
-        match MidiOutput::new("midi scan output") {
-            Ok(midi_out) => {
-                let mut connected = false;
-                for p in midi_out.ports().iter() {
-                    let port_name = midi_out.port_name(p).unwrap();
-                    if port_name.starts_with("Tooro") {
-                        if self.midi_out.is_none() {
-                            log::info!("MIDI out connected to port {}", port_name);
-                            self.midi_out = Some(midi_out.connect(p, "tooro output").unwrap());
-                        }
-                        connected = true;
-                        break;
-                    }
+    pub fn scan_ports(&mut self) {
+        if self.scan_input.is_none() {
+            match MidiInput::new(&(env!("CARGO_PKG_NAME").to_owned() + " scan input")) {
+                Ok(input) => {
+                    self.scan_input = Some(input);
                 }
-                if !connected && self.midi_out.is_some() {
-                    log::info!("MIDI out disconnected");
-                    self.midi_out = None;
+                Err(error) => {
+                    log::error!("MIDI scan input error: {}", error);
                 }
-            }
-            Err(error) => {
-                log::error!("MIDI out error: {}", error);
             }
         }
 
-        match MidiInput::new("midi scan input") {
-            Ok(midi_in) => {
-                let mut connected = false;
-                for p in midi_in.ports().iter() {
-                    let port_name = midi_in.port_name(p).unwrap();
-                    if port_name.starts_with("Tooro") {
-                        if self.midi_in.is_none() {
-                            log::info!("MIDI in connected to port {}", port_name);
-                            self.midi_in_mpsc_channel = Some(mpsc::channel());
-                            let on_receive_args = OnReceiveArgs {
-                                sender: Some(self.midi_in_mpsc_channel.as_ref().unwrap().0.clone()),
-                            };
-                            self.midi_in = Some(
-                                midi_in
-                                    .connect(p, "tooro input", on_receive, on_receive_args)
-                                    .unwrap(),
-                            );
-                        }
-                        connected = true;
-                        break;
+        if self.scan_input.is_some() {
+            let mut connected = false;
+            let input = self.scan_input.as_ref().unwrap();
+
+            for port in input.ports().iter() {
+                let port_name = input.port_name(port).unwrap();
+                if port_name.starts_with("Tooro") {
+                    if self.device_input.is_none() {
+                        log::info!("MIDI input connected to port {}", port_name);
+                        self.device_input_mpsc_channel = Some(mpsc::channel());
+                        let on_receive_args = OnReceiveArgs {
+                            sender: Some(
+                                self.device_input_mpsc_channel.as_ref().unwrap().0.clone(),
+                            ),
+                        };
+                        self.device_input = Some(
+                            self.scan_input
+                                .take()
+                                .unwrap()
+                                .connect(port, "tooro input", on_device_receive, on_receive_args)
+                                .unwrap(),
+                        );
                     }
-                }
-                if !connected && self.midi_in.is_some() {
-                    log::info!("MIDI in disconnected");
-                    self.midi_in = None;
-                    self.midi_in_mpsc_channel = None;
+                    connected = true;
+                    break;
                 }
             }
-            Err(error) => {
-                log::error!("MIDI in error: {}", error);
+
+            if !connected && self.device_input.is_some() {
+                log::info!("MIDI input disconnected");
+                self.device_input = None;
+            }
+        }
+
+        if self.scan_output.is_none() {
+            match MidiOutput::new(&(env!("CARGO_PKG_NAME").to_owned() + " scan output")) {
+                Ok(output) => {
+                    self.scan_output = Some(output);
+                }
+                Err(error) => {
+                    log::error!("MIDI scan output error: {}", error);
+                }
+            }
+        }
+
+        if self.scan_output.is_some() {
+            let mut connected = false;
+            let output = self.scan_output.as_ref().unwrap();
+
+            for port in output.ports().iter() {
+                let port_name = output.port_name(port).unwrap();
+                if port_name.starts_with("Tooro") {
+                    if self.device_output.is_none() {
+                        log::info!("MIDI output connected to port {}", port_name);
+                        self.device_output = Some(
+                            self.scan_output
+                                .take()
+                                .unwrap()
+                                .connect(port, "tooro output")
+                                .unwrap(),
+                        );
+                    }
+                    connected = true;
+                    break;
+                }
+            }
+
+            if !connected && self.device_output.is_some() {
+                log::info!("MIDI output disconnected");
+                self.device_output = None;
             }
         }
     }
 
     /// Sends a message
     pub fn send(&mut self, message: &[u8]) {
-        match self.midi_out.as_mut() {
+        match self.device_output.as_mut() {
             Some(conn) => {
                 conn.send(message).ok();
             }
@@ -99,13 +132,13 @@ impl MidiConnector {
         }
     }
 
-    /// Receive a message
+    /// Receives a message
     pub fn receive(&mut self) -> Option<Vec<u8>> {
-        if self.midi_in_mpsc_channel.is_none() {
+        if self.device_input_mpsc_channel.is_none() {
             return None;
         }
 
-        let receiver = &self.midi_in_mpsc_channel.as_ref().unwrap().1;
+        let receiver = &self.device_input_mpsc_channel.as_ref().unwrap().1;
         let result = receiver.try_recv();
 
         if result.is_err() {
@@ -117,7 +150,7 @@ impl MidiConnector {
 
     /// Returns if device is connected
     pub fn is_connected(&self) -> bool {
-        self.midi_in.is_some() && self.midi_out.is_some()
+        self.device_input.is_some() && self.device_output.is_some()
     }
 }
 
@@ -126,8 +159,8 @@ struct OnReceiveArgs {
     sender: Option<mpsc::Sender<Vec<u8>>>,
 }
 
-/// Callback for received MIDI messages
-fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
+/// Callback for received messages from device
+fn on_device_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
     if args.sender.is_some() {
         let message = Vec::<u8>::from(message);
         args.sender.as_ref().unwrap().send(message).ok();

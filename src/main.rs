@@ -229,7 +229,7 @@ impl Application for EditorApp {
             }
 
             Message::Tick => {
-                self.midi.scan();
+                self.midi.scan_ports();
                 let connection_state = self.midi.is_connected();
 
                 if connection_state != self.device_connected {
@@ -246,7 +246,7 @@ impl Application for EditorApp {
                     self.status_communication = if self.device_connected {
                         String::new()
                     } else {
-                        String::from("Communication disabled")
+                        String::from("MIDI communication disabled")
                     };
                     self.init_complete = true;
                 }
