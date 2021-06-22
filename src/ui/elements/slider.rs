@@ -1,6 +1,6 @@
 //! Slider control wrapped in a container with label and value display
 
-use iced::{slider, Container, HorizontalAlignment, Length, Row, Slider, Text};
+use iced::{slider, Column, Container, HorizontalAlignment, Length, Row, Slider, Text};
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
@@ -21,16 +21,24 @@ pub fn slider_with_labels<'a>(
     Container::new(
         Row::new()
             .push(
-                Text::new(label)
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                Column::new()
+                    .push(
+                        Text::new(label)
+                            .size(style::PARAM_LABEL_TEXT_SIZE)
+                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                    )
+                    .padding([3, 0, 0, 0]),
             )
             .push(slider)
             .push(
-                Text::new(format!("{}", value))
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .horizontal_alignment(HorizontalAlignment::Right)
-                    .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                Column::new()
+                    .push(
+                        Text::new(format!("{}", value))
+                            .size(style::PARAM_LABEL_TEXT_SIZE)
+                            .horizontal_alignment(HorizontalAlignment::Right)
+                            .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                    )
+                    .padding([3, 0, 0, 5]),
             ),
     )
 }
@@ -50,16 +58,24 @@ pub fn multi_slider_with_labels<'a>(
     Container::new(
         Row::new()
             .push(
-                Text::new(label)
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                Column::new()
+                    .push(
+                        Text::new(label)
+                            .size(style::PARAM_LABEL_TEXT_SIZE)
+                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                    )
+                    .padding([3, 0, 0, 0]),
             )
             .push(slider)
             .push(
-                Text::new(format!("{}", value))
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .horizontal_alignment(HorizontalAlignment::Right)
-                    .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                Column::new()
+                    .push(
+                        Text::new(format!("{}", value))
+                            .size(style::PARAM_LABEL_TEXT_SIZE)
+                            .horizontal_alignment(HorizontalAlignment::Right)
+                            .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                    )
+                    .padding([3, 0, 0, 5]),
             ),
     )
 }

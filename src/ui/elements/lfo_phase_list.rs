@@ -1,6 +1,6 @@
 //! Dropdown menu for the LFO phase values
 
-use iced::{pick_list, Container, Length, PickList, Row, Text};
+use iced::{pick_list, Column, Container, Length, PickList, Row, Text};
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -31,9 +31,13 @@ pub fn lfo_phase_list<'a>(
     Container::new(
         Row::new()
             .push(
-                Text::new(label)
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                Column::new()
+                    .push(
+                        Text::new(label)
+                            .size(style::PARAM_LABEL_TEXT_SIZE)
+                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                    )
+                    .padding([4, 0, 0, 0]),
             )
             .push(pick_list),
     )

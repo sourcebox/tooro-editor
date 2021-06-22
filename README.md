@@ -28,7 +28,6 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 ## Known Issues
 
 - The connection state is not always detected correctly when the Töörö is connected or disconnected while the application is running.
-- Spacing and alignment of the text labels could be improved.
 - Resizing the window height is possible but has no use.
 - Using more than one Töörö at a time is not supported.
 
