@@ -1,4 +1,4 @@
-//! Cross-platform editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer
+//! Cross-platform sound editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer
 
 mod messages;
 mod midi;
@@ -45,45 +45,55 @@ fn main() -> iced::Result {
 
 /// Holds the application data and state
 struct EditorApp {
-    // Panels
+    /// UI section containing the sound (preset) parameters
     sound_panel: SoundPanel,
+
+    /// UI section containing the multi parameters
     multi_panel: MultiPanel,
+
+    /// UI section containing global controls
     manager_panel: ManagerPanel,
 
-    // Status bar info
+    /// Status bar info if connection is enabled or disabled
     status_connection: String,
+
+    /// Status bar info on communication
     status_communication: String,
 
-    // Drop down list for the MIDI merge input
+    /// Drop down list for the MIDI merge input
     merge_input_list: pick_list::State<String>,
 
-    // Current part id 0-3 for part 1-4
+    /// Current part id 0-3 for part 1-4
     part_id: u8,
 
-    // Current sound/multi parameter values
+    /// Current sound (preset) parameter values
     sound_params: SoundParameterValues,
+
+    /// Current multi parameter values
     multi_params: MultiParameterValues,
 
-    // MIDI connection handler
+    /// MIDI connection handler for all ports
     midi: MidiConnector,
 
-    // Device connection state
+    /// Device connection state
     device_connected: bool,
 
-    // Flags for parameter update from device
+    /// Flag for requested sound (preset) parameter update from device
     request_sound_update: bool,
+
+    /// Flag for requested multi parameter update from device
     request_multi_update: bool,
 
-    // Time of last dump request
+    /// Time of last dump request
     request_time: Option<Instant>,
 
-    // File to capture next received preset dump
+    /// File to capture next received preset dump
     preset_capture_file: Option<String>,
 
-    // Flag for app init complete
+    /// Flag for app initialisation complete
     init_complete: bool,
 
-    // Exit flag
+    /// Application exit flag
     should_exit: bool,
 }
 

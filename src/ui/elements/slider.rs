@@ -6,6 +6,7 @@ use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
 use crate::style;
 
+/// Returns a slider for a sound (preset) parameter
 pub fn slider_with_labels<'a>(
     label: &'a str,
     state: &'a mut slider::State,
@@ -43,6 +44,7 @@ pub fn slider_with_labels<'a>(
     )
 }
 
+/// Returns a slider for a multi parameter
 pub fn multi_slider_with_labels<'a>(
     label: &'a str,
     state: &'a mut slider::State,

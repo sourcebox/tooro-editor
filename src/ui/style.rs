@@ -1,45 +1,65 @@
-//! User interface style definitions
+//! Style definitions for the different elements
 
 use iced::{button, checkbox, container, pick_list, slider, Background, Color, Vector};
 
-// Default window size
+/// Default window width
 pub const WINDOW_WIDTH: u32 = 1024;
+
+/// Default window height
 pub const WINDOW_HEIGHT: u32 = 655;
 
-// Element spacing
+/// Common element padding
 pub const SECTION_PADDING: u16 = 7;
+
+/// Common element spacing
 pub const SECTION_SPACING: u16 = 1;
 
-// Text sizes
+/// Text size for section labels
 pub const SECTION_LABEL_TEXT_SIZE: u16 = 16;
+
+/// Text size for parameter labels
 pub const PARAM_LABEL_TEXT_SIZE: u16 = 14;
+
+/// Width of parameter labels
 pub const PARAM_LABEL_WIDTH: u16 = 65;
+
+/// Width of parameter values
 pub const PARAM_VALUE_WIDTH: u16 = 25;
+
+/// Text size of dropdown menu items
 pub const LIST_ITEM_TEXT_SIZE: u16 = 13;
+
+/// Button text size
 pub const BUTTON_TEXT_SIZE: u16 = 14;
+
+/// Text size of status bar items
 pub const STATUS_TEXT_SIZE: u16 = 14;
 
-// Colors
+/// Text color for all section elements
 const SECTION_TEXT_COLOR: Color = Color::from_rgb(0_f32, 0_f32, 0_f32);
 
+/// Color for active elements
 const ACTIVE: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
     0x20 as f32 / 255.0,
     0x20 as f32 / 255.0,
 );
 
+/// Color for hovered elements
 const HOVERED: Color = Color::from_rgb(
     0x67 as f32 / 255.0,
     0x7B as f32 / 255.0,
     0xC4 as f32 / 255.0,
 );
 
+/// Surface color for checkboxes
 const SURFACE: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
     0x20 as f32 / 255.0,
     0x20 as f32 / 255.0,
 );
 
+/// Styles for the oscillator sections
 pub struct OscSection;
 
 impl container::StyleSheet for OscSection {
@@ -55,6 +75,7 @@ impl container::StyleSheet for OscSection {
     }
 }
 
+/// Styles for the shaper section
 pub struct ShaperSection;
 
 impl container::StyleSheet for ShaperSection {
@@ -70,6 +91,7 @@ impl container::StyleSheet for ShaperSection {
     }
 }
 
+/// Styles for the filter section
 pub struct FilterSection;
 
 impl container::StyleSheet for FilterSection {
@@ -85,6 +107,7 @@ impl container::StyleSheet for FilterSection {
     }
 }
 
+/// Styles for the amplifier section
 pub struct AmpSection;
 
 impl container::StyleSheet for AmpSection {
@@ -100,6 +123,7 @@ impl container::StyleSheet for AmpSection {
     }
 }
 
+/// Styles for the LFO sections
 pub struct LFOSection;
 
 impl container::StyleSheet for LFOSection {
@@ -115,6 +139,7 @@ impl container::StyleSheet for LFOSection {
     }
 }
 
+/// Styles for the envelope sections
 pub struct EnvSection;
 
 impl container::StyleSheet for EnvSection {
@@ -130,6 +155,7 @@ impl container::StyleSheet for EnvSection {
     }
 }
 
+/// Styles for the arpeggiator section
 pub struct ArpSection;
 
 impl container::StyleSheet for ArpSection {
@@ -145,6 +171,7 @@ impl container::StyleSheet for ArpSection {
     }
 }
 
+/// Styles for the misc section
 pub struct MiscSection;
 
 impl container::StyleSheet for MiscSection {
@@ -160,6 +187,7 @@ impl container::StyleSheet for MiscSection {
     }
 }
 
+/// Styles for the modulation section
 pub struct ModSection;
 
 impl container::StyleSheet for ModSection {
@@ -175,6 +203,7 @@ impl container::StyleSheet for ModSection {
     }
 }
 
+/// Styles for the FX section
 pub struct FXSection;
 
 impl container::StyleSheet for FXSection {
@@ -190,6 +219,7 @@ impl container::StyleSheet for FXSection {
     }
 }
 
+/// Styles for the mixer section
 pub struct MixerSection;
 
 impl container::StyleSheet for MixerSection {
@@ -205,6 +235,7 @@ impl container::StyleSheet for MixerSection {
     }
 }
 
+/// Styles for the MIDI section
 pub struct MidiSection;
 
 impl container::StyleSheet for MidiSection {
@@ -220,6 +251,7 @@ impl container::StyleSheet for MidiSection {
     }
 }
 
+/// Styles for the main window
 pub struct MainWindow;
 
 impl container::StyleSheet for MainWindow {
@@ -232,6 +264,7 @@ impl container::StyleSheet for MainWindow {
     }
 }
 
+/// Styles for all sliders
 pub struct Slider;
 
 impl slider::StyleSheet for Slider {
@@ -272,6 +305,7 @@ impl slider::StyleSheet for Slider {
     }
 }
 
+/// Styles for all checkboxes
 pub struct Checkbox;
 
 impl checkbox::StyleSheet for Checkbox {
@@ -297,6 +331,7 @@ impl checkbox::StyleSheet for Checkbox {
     }
 }
 
+/// Styles for all dropdown menus
 pub struct PickList;
 
 impl pick_list::StyleSheet for PickList {
@@ -330,6 +365,7 @@ impl pick_list::StyleSheet for PickList {
     }
 }
 
+/// Different button variations
 #[allow(dead_code)]
 pub enum Button {
     Primary,

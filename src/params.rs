@@ -1,4 +1,4 @@
-//! This module contains the definitions and methods for the preset and multi parameters
+//! Definitions and methods for the preset and multi parameters
 
 use std::collections::HashMap;
 use std::ops::RangeInclusive;

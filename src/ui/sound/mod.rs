@@ -1,4 +1,4 @@
-//! User interface panel containing the preset parameters
+//! Panel containing the sound (preset) parameters
 
 mod amp;
 mod arp;

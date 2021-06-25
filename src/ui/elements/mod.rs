@@ -1,4 +1,4 @@
-//! Module for the control elements
+//! Individual control elements used in various places
 
 pub mod arp_grid_list;
 pub mod arp_mode_list;

@@ -181,7 +181,7 @@ impl MidiConnector {
         Some(result.unwrap())
     }
 
-    /// Returns if device is connected
+    /// Returns the device connection state
     pub fn is_connected(&self) -> bool {
         self.device_input.is_some() && self.device_output.is_some()
     }

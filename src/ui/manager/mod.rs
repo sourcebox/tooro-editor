@@ -1,4 +1,4 @@
-//! User interface panel containing global controls
+//! Panel containing global controls
 
 use iced::{button, pick_list, Button, Column, Container, Element, Length, Row, Text};
 

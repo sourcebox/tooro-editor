@@ -1,4 +1,4 @@
-//! Module containing MIDI sysex definitions and processing
+//! MIDI sysex definitions and processing
 
 #![allow(dead_code)]
 
