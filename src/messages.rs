@@ -1,7 +1,5 @@
 //! Application messages definitions
 
-use iced_native;
-
 use crate::params::{MultiParameter, SoundParameter};
 
 #[derive(Debug, Clone)]

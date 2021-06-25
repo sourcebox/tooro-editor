@@ -343,7 +343,7 @@ pub fn unpack_data(data: &[u8]) -> Vec<u8> {
 ///
 /// - `params`  Parameter map to be updated
 /// - `values`  Raw values from unpacked sysex data
-pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) {
+pub fn update_sound_params(params: &mut SoundParameterValues, values: &[u8]) {
     // Osc 1
     params.insert(SoundParameter::Osc1Wave, value_from_index(values, 0) / 4);
     params.insert(SoundParameter::Osc1Coarse, value_from_index(values, 2));
@@ -541,7 +541,7 @@ pub fn update_sound_params(params: &mut SoundParameterValues, values: &Vec<u8>) 
 ///
 /// - `params`  Parameter map to be updated
 /// - `values`  Raw values from unpacked sysex data
-pub fn update_multi_params(params: &mut MultiParameterValues, values: &Vec<u8>) {
+pub fn update_multi_params(params: &mut MultiParameterValues, values: &[u8]) {
     // Preset IDs
     params.insert(MultiParameter::PresetPart1, value_from_index(values, 0));
     params.insert(MultiParameter::PresetPart2, value_from_index(values, 2));
@@ -603,7 +603,7 @@ pub fn update_multi_params(params: &mut MultiParameterValues, values: &Vec<u8>) 
 ///
 /// - `values`  Vector containing values
 /// - `index`   Start index in values vector
-fn value_from_index(values: &Vec<u8>, index: usize) -> i32 {
+fn value_from_index(values: &[u8], index: usize) -> i32 {
     i16::from_le_bytes([values[index], values[index + 1]]) as i32
 }
 

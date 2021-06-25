@@ -11,7 +11,6 @@ use iced::{
     executor, pick_list, time, Align, Application, Clipboard, Column, Command, Container, Element,
     Length, PickList, Row, Settings, Subscription, Text,
 };
-use log;
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
@@ -138,16 +137,14 @@ impl Application for EditorApp {
 
     /// Returns the name of the application shown in the title bar
     fn title(&self) -> String {
-        format!("Töörö Editor")
+        String::from("Töörö Editor")
     }
 
     /// Process a message and update the state accordingly
     fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
         match message {
             Message::EventOccurred(event) => {
-                if let iced_native::Event::Window(iced_native::window::Event::CloseRequested) =
-                    event
-                {
+                if event == iced_native::Event::Window(iced_native::window::Event::CloseRequested) {
                     self.should_exit = true;
                 }
             }
@@ -195,56 +192,51 @@ impl Application for EditorApp {
             }
 
             Message::LoadSysexFile if self.device_connected => {
-                match open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files"))) {
-                    Some(file) => {
-                        log::info!("Loading file {}", file);
-                        let data = std::fs::read(file);
+                if let Some(file) =
+                    open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files")))
+                {
+                    log::info!("Loading file {}", file);
+                    let data = std::fs::read(file);
 
-                        if data.is_ok() {
-                            let mut message = data.unwrap();
+                    if let Ok(mut message) = data {
+                        match message[1] {
+                            midi::sysex::SERVICE_PRESET_DUMP
+                                if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
+                            {
+                                let preset_id = 0x70 + self.part_id;
+                                log::info!("Sending preset dump with id {:#X}", preset_id);
+                                message[2] = preset_id;
+                                self.midi.send(&message);
+                                self.request_sound_update = true;
+                            }
 
-                            match message[1] {
-                                midi::sysex::SERVICE_PRESET_DUMP
-                                    if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
-                                {
-                                    let preset_id = 0x70 + self.part_id;
-                                    log::info!("Sending preset dump with id {:#X}", preset_id);
-                                    message[2] = preset_id;
-                                    self.midi.send(&message);
-                                    self.request_sound_update = true;
-                                }
+                            midi::sysex::SERVICE_MULTI_DUMP
+                                if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
+                            {
+                                let multi_id = 0x7F;
+                                log::info!("Sending multi dump with id {:#X}", multi_id);
+                                message[2] = multi_id;
+                                self.midi.send(&message);
+                                self.request_multi_update = true;
+                            }
 
-                                midi::sysex::SERVICE_MULTI_DUMP
-                                    if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
-                                {
-                                    let multi_id = 0x7F;
-                                    log::info!("Sending multi dump with id {:#X}", multi_id);
-                                    message[2] = multi_id;
-                                    self.midi.send(&message);
-                                    self.request_multi_update = true;
-                                }
-
-                                _ => {
-                                    log::info!("Invalid data");
-                                }
+                            _ => {
+                                log::info!("Invalid data");
                             }
                         }
                     }
-                    None => {}
                 }
             }
 
             Message::SavePresetSysexFile if self.device_connected => {
-                match save_file_dialog_with_filter("Save syx file", "", &["*.syx"], "Sysex files") {
-                    Some(file) => {
-                        let mut file = std::path::PathBuf::from(file);
-                        file.set_extension("syx");
-                        log::info!("Capturing next preset dump in file {:?}", file);
-                        self.preset_capture_file =
-                            Some(file.into_os_string().into_string().unwrap());
-                        self.request_sound_update = true;
-                    }
-                    None => {}
+                if let Some(file) =
+                    save_file_dialog_with_filter("Save syx file", "", &["*.syx"], "Sysex files")
+                {
+                    let mut file = std::path::PathBuf::from(file);
+                    file.set_extension("syx");
+                    log::info!("Capturing next preset dump in file {:?}", file);
+                    self.preset_capture_file = Some(file.into_os_string().into_string().unwrap());
+                    self.request_sound_update = true;
                 }
             }
 
@@ -385,7 +377,7 @@ impl Application for EditorApp {
                                                     inputs
                                                 },
                                                 Some(self.midi.get_merge_input_name()),
-                                                move |v| Message::MergeInputChange(v),
+                                                Message::MergeInputChange,
                                             )
                                             .style(style::PickList)
                                             .text_size(style::LIST_ITEM_TEXT_SIZE),
@@ -448,7 +440,7 @@ impl EditorApp {
     }
 
     /// Process an incoming MIDI message from the device
-    fn process_midi(&mut self, message: &Vec<u8>) {
+    fn process_midi(&mut self, message: &[u8]) {
         match message[0] {
             0xB0..=0xBF | 0xC0..=0xCF => {
                 // Whenever the device sends a CC or program change message,
@@ -479,7 +471,7 @@ impl EditorApp {
     }
 
     /// Process an incoming preset dump from the device
-    fn process_preset_dump(&mut self, message: &Vec<u8>) {
+    fn process_preset_dump(&mut self, message: &[u8]) {
         let preset_id = message[2];
 
         log::info!("Preset dump received with id {:#X}", preset_id);
@@ -496,7 +488,7 @@ impl EditorApp {
                     midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
                     if let Some(file) = &self.preset_capture_file {
                         log::info!("Preset dump captured in file {}", file);
-                        let mut message = message.clone();
+                        let mut message: Vec<u8> = message.to_vec();
                         message[2] = 0x70;
                         std::fs::write(file, message).ok();
                         self.preset_capture_file = None;
@@ -510,7 +502,7 @@ impl EditorApp {
     }
 
     /// Process an incoming multi dump from the device
-    fn process_multi_dump(&mut self, message: &Vec<u8>) {
+    fn process_multi_dump(&mut self, message: &[u8]) {
         let multi_id = message[2];
 
         log::info!("Multi dump received with id {:#X}", multi_id);

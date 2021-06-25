@@ -4,8 +4,9 @@ pub mod sysex;
 
 use std::sync::mpsc;
 
-use log;
 use midir::{MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
+
+type MpscChannel = (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>);
 
 /// Container for connections and state
 pub struct MidiConnector {
@@ -16,7 +17,7 @@ pub struct MidiConnector {
     device_input: Option<MidiInputConnection<OnReceiveArgs>>,
 
     /// MPSC channel to transfer incoming messages from callback to main thread
-    device_input_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
+    device_input_mpsc_channel: Option<MpscChannel>,
 
     /// Objects used for port scanning
     scan_input: Option<MidiInput>,
@@ -32,7 +33,7 @@ pub struct MidiConnector {
     merge_input_name: String,
 
     /// MPSC channel to transfer incoming messages from merge input callback to main thread
-    merge_input_mpsc_channel: Option<(mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>)>,
+    merge_input_mpsc_channel: Option<MpscChannel>,
 }
 
 impl MidiConnector {
@@ -157,19 +158,14 @@ impl MidiConnector {
 
     /// Sends a message
     pub fn send(&mut self, message: &[u8]) {
-        match self.device_output.as_mut() {
-            Some(conn) => {
-                conn.send(message).ok();
-            }
-            None => {}
+        if let Some(conn) = self.device_output.as_mut() {
+            conn.send(message).ok();
         }
     }
 
     /// Receives a message
     pub fn receive(&mut self) -> Option<Vec<u8>> {
-        if self.device_input_mpsc_channel.is_none() {
-            return None;
-        }
+        self.device_input_mpsc_channel.as_ref()?;
 
         let receiver = &self.device_input_mpsc_channel.as_ref().unwrap().1;
         let result = receiver.try_recv();

@@ -70,7 +70,6 @@ impl container::StyleSheet for OscSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -86,7 +85,6 @@ impl container::StyleSheet for ShaperSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -102,7 +100,6 @@ impl container::StyleSheet for FilterSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -118,7 +115,6 @@ impl container::StyleSheet for AmpSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -134,7 +130,6 @@ impl container::StyleSheet for LFOSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -150,7 +145,6 @@ impl container::StyleSheet for EnvSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -166,7 +160,6 @@ impl container::StyleSheet for ArpSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -182,7 +175,6 @@ impl container::StyleSheet for MiscSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -198,7 +190,6 @@ impl container::StyleSheet for ModSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -214,7 +205,6 @@ impl container::StyleSheet for FXSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -230,7 +220,6 @@ impl container::StyleSheet for MixerSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }
@@ -246,7 +235,6 @@ impl container::StyleSheet for MidiSection {
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
-            ..Default::default()
         }
     }
 }

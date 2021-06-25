@@ -170,9 +170,7 @@ impl SoundParameter {
 
     /// Return the default value for the parameter
     pub fn get_default(&self) -> i32 {
-        match self {
-            _ => 0,
-        }
+        0
     }
 }
 
@@ -255,9 +253,7 @@ impl MultiParameter {
 
     /// Return the default value for the parameter
     pub fn get_default(&self) -> i32 {
-        match self {
-            _ => 0,
-        }
+        0
     }
 }
 

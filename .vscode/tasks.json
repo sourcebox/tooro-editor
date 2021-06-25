@@ -20,7 +20,16 @@
 				"$rustc"
 			],
 			"label": "rust: cargo run",
+			"group": "build"
+		},
+		{
+			"type": "cargo",
+			"command": "clippy",
+			"problemMatcher": [
+				"$rustc"
+			],
 			"group": "build",
+			"label": "rust: cargo clippy"
 		}
 	]
 }

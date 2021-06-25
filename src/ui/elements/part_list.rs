@@ -5,10 +5,7 @@ use iced::{pick_list, Container, PickList};
 use crate::messages::Message;
 use crate::style;
 
-pub fn part_list<'a>(
-    state: &'a mut pick_list::State<PartList>,
-    value: u8,
-) -> Container<'a, Message> {
+pub fn part_list(state: &mut pick_list::State<PartList>, value: u8) -> Container<Message> {
     let value = match value {
         0 => Some(PartList::Part1),
         1 => Some(PartList::Part2),
