@@ -9,9 +9,9 @@ license = "MIT"
 keywords = ["midi", "synthesizer"]
 
 [dependencies]
-iced = { git = "https://github.com/hecrj/iced.git", rev = "b62fcca9b956ae11ec4f267656204fe38aa27ea9", features=["tokio", "glow"]}
-iced_native = { git = "https://github.com/hecrj/iced.git", rev = "b62fcca9b956ae11ec4f267656204fe38aa27ea9"}
-iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "b62fcca9b956ae11ec4f267656204fe38aa27ea9"}
+iced = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a", features=["tokio", "glow"]}
+iced_native = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
+iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
 midir = "0.7.0"
 log = "0.4.14"
 simple_logger = "1.11.0"
