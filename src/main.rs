@@ -8,8 +8,8 @@ mod ui;
 use std::time::{Duration, Instant};
 
 use iced::{
-    executor, time, Align, Application, Clipboard, Column, Command, Container, Element, Length,
-    Row, Settings, Subscription, Text,
+    executor, pick_list, time, Align, Application, Clipboard, Column, Command, Container, Element,
+    Length, PickList, Row, Settings, Subscription, Text,
 };
 use log;
 use simple_logger::SimpleLogger;
@@ -53,6 +53,9 @@ struct EditorApp {
     // Status bar info
     status_connection: String,
     status_communication: String,
+
+    // Drop down list for the MIDI merge input
+    merge_input_list: pick_list::State<String>,
 
     // Current part id 0-3 for part 1-4
     part_id: u8,
@@ -99,6 +102,8 @@ impl Application for EditorApp {
 
                 status_connection: String::from("Device disconnected"),
                 status_communication: String::from("Initializing..."),
+
+                merge_input_list: pick_list::State::<String>::default(),
 
                 part_id: 0,
 
@@ -167,6 +172,11 @@ impl Application for EditorApp {
             Message::PartChange(part_id) => {
                 self.part_id = part_id;
                 self.request_sound_update = true;
+            }
+
+            Message::MergeInputChange(input_name) => {
+                log::info!("Merge input changed to {:?}", input_name);
+                self.midi.select_merge_input(input_name);
             }
 
             Message::UpdateFromDevice if self.device_connected => {
@@ -253,6 +263,8 @@ impl Application for EditorApp {
             }
 
             Message::FastTick => {
+                self.midi.update();
+
                 if let Some(message) = self.midi.receive() {
                     self.process_midi(&message);
                 }
@@ -300,7 +312,7 @@ impl Application for EditorApp {
 
         let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
         let fast_tick_subscription =
-            time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
+            time::every(Duration::from_millis(10)).map(|_| Message::FastTick);
 
         let subscriptions = vec![
             tick_subscription,
@@ -349,10 +361,36 @@ impl Application for EditorApp {
                         .push(
                             Column::new()
                                 .push(
+                                    Row::new()
+                                        .push(
+                                            Text::new("Merge Input:").size(style::STATUS_TEXT_SIZE),
+                                        )
+                                        .push(
+                                            PickList::new(
+                                                &mut self.merge_input_list,
+                                                {
+                                                    let mut inputs =
+                                                        self.midi.get_merge_inputs().clone();
+                                                    inputs.insert(0, String::from(""));
+                                                    inputs
+                                                },
+                                                Some(self.midi.get_merge_input_name()),
+                                                move |v| Message::MergeInputChange(v),
+                                            )
+                                            .style(style::PickList)
+                                            .text_size(style::LIST_ITEM_TEXT_SIZE),
+                                        )
+                                        .spacing(10),
+                                )
+                                .width(Length::FillPortion(1)),
+                        )
+                        .push(
+                            Column::new()
+                                .push(
                                     Text::new(&self.status_communication)
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
-                                .width(Length::FillPortion(3))
+                                .width(Length::FillPortion(2))
                                 .align_items(Align::Center),
                         )
                         .push(

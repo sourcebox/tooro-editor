@@ -10,6 +10,7 @@ pub enum Message {
     SoundParameterChange(SoundParameter, i32),
     MultiParameterChange(MultiParameter, i32),
     PartChange(u8),
+    MergeInputChange(String),
     UpdateFromDevice,
     LoadSysexFile,
     SavePresetSysexFile,
