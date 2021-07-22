@@ -125,7 +125,6 @@ impl SoundParameter {
             | SoundParameter::FilterLFO1Amount
             | SoundParameter::FilterAfter
             | SoundParameter::AmpPan
-            | SoundParameter::Tune
             | SoundParameter::ModEnvFAmount
             | SoundParameter::ModEnvAAmount
             | SoundParameter::ModLFO1Amount
@@ -143,6 +142,7 @@ impl SoundParameter {
             }
             SoundParameter::ArpTempo => RangeInclusive::new(1, 199),
             SoundParameter::BendRange => RangeInclusive::new(0, 127),
+            SoundParameter::Tune => RangeInclusive::new(-99, 99),
 
             // Lists
             SoundParameter::Osc1Table | SoundParameter::Osc2Table => RangeInclusive::new(0, 10),
