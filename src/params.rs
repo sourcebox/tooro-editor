@@ -142,6 +142,7 @@ impl SoundParameter {
                 RangeInclusive::new(-20, 20)
             }
             SoundParameter::ArpTempo => RangeInclusive::new(1, 199),
+            SoundParameter::BendRange => RangeInclusive::new(0, 127),
 
             // Lists
             SoundParameter::Osc1Table | SoundParameter::Osc2Table => RangeInclusive::new(0, 10),
