@@ -137,7 +137,7 @@ impl SoundParameter {
 
             // Special ranges
             SoundParameter::Osc1Coarse | SoundParameter::Osc2Coarse => RangeInclusive::new(-36, 36),
-            SoundParameter::Osc1Fine | SoundParameter::Osc2Fine => RangeInclusive::new(-100, 100),
+            SoundParameter::Osc1Fine | SoundParameter::Osc2Fine => RangeInclusive::new(-99, 99),
             SoundParameter::ShaperTrack | SoundParameter::FilterTrack => {
                 RangeInclusive::new(-20, 20)
             }
