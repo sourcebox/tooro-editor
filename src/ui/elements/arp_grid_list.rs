@@ -20,9 +20,6 @@ pub fn arp_grid_list<'a>(
         4 => Some(ArpGrid::Div12),
         5 => Some(ArpGrid::Div8),
         6 => Some(ArpGrid::Div6),
-        7 => Some(ArpGrid::Div3),
-        8 => Some(ArpGrid::Div2),
-        9 => Some(ArpGrid::Div1),
         _ => None,
     };
     let pick_list = PickList::new(state, &ArpGrid::ALL[..], value, move |v| {
@@ -55,13 +52,10 @@ pub enum ArpGrid {
     Div12,
     Div8,
     Div6,
-    Div3,
-    Div2,
-    Div1,
 }
 
 impl ArpGrid {
-    const ALL: [ArpGrid; 10] = [
+    const ALL: [ArpGrid; 7] = [
         ArpGrid::Div48,
         ArpGrid::Div32,
         ArpGrid::Div24,
@@ -69,9 +63,6 @@ impl ArpGrid {
         ArpGrid::Div12,
         ArpGrid::Div8,
         ArpGrid::Div6,
-        ArpGrid::Div3,
-        ArpGrid::Div2,
-        ArpGrid::Div1,
     ];
 }
 
@@ -88,9 +79,6 @@ impl std::fmt::Display for ArpGrid {
                 ArpGrid::Div12 => "1/8",
                 ArpGrid::Div8 => "1/8 triplet",
                 ArpGrid::Div6 => "1/16",
-                ArpGrid::Div3 => "1/32",
-                ArpGrid::Div2 => "1/32 triplet",
-                ArpGrid::Div1 => "1/64 triplet",
             }
         )
     }

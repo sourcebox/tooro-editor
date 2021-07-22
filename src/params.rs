@@ -150,7 +150,7 @@ impl SoundParameter {
             SoundParameter::LFO1Shape | SoundParameter::LFO2Shape => RangeInclusive::new(0, 7),
             SoundParameter::LFO1Phase | SoundParameter::LFO2Phase => RangeInclusive::new(0, 5),
             SoundParameter::ArpMode => RangeInclusive::new(0, 7),
-            SoundParameter::ArpGrid => RangeInclusive::new(0, 9),
+            SoundParameter::ArpGrid => RangeInclusive::new(0, 6),
             SoundParameter::ModEnvFTarget
             | SoundParameter::ModEnvATarget
             | SoundParameter::ModLFO1Target
