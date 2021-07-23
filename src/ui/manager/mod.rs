@@ -1,6 +1,6 @@
 //! Panel containing global controls
 
-use iced::{button, pick_list, Button, Column, Container, Element, Length, Row, Text};
+use iced::{button, pick_list, Align, Button, Column, Container, Element, Length, Row, Text};
 
 use super::style;
 use crate::messages::Message;
@@ -34,35 +34,52 @@ impl ManagerPanel {
         let row1 = Row::new()
             .padding(5)
             .spacing(10)
-            .push(part_list(&mut self.part_list, part_id))
             .push(
-                Button::new(
-                    &mut self.update_button,
-                    Text::new("Update from device").size(style::BUTTON_TEXT_SIZE),
-                )
-                .on_press(Message::UpdateFromDevice)
-                .style(style::Button::Primary),
+                Column::new()
+                    .push(part_list(&mut self.part_list, part_id))
+                    .width(Length::FillPortion(2)),
+            )
+            .push(
+                Column::new()
+                    .push(
+                        Button::new(
+                            &mut self.update_button,
+                            Text::new("Update from device").size(style::BUTTON_TEXT_SIZE),
+                        )
+                        .on_press(Message::UpdateFromDevice)
+                        .style(style::Button::Primary),
+                    )
+                    .width(Length::FillPortion(4))
+                    .align_items(Align::End),
             );
 
         let row2 = Row::new()
             .padding(5)
             .spacing(10)
-			//.justify_content(Justify::SpaceBetween)
             .push(
-                Button::new(
-                    &mut self.load_syx_button,
-                    Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
-                )
-                .on_press(Message::LoadSysexFile)
-                .style(style::Button::Primary),
+                Column::new()
+                    .push(
+                        Button::new(
+                            &mut self.load_syx_button,
+                            Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
+                        )
+                        .on_press(Message::LoadSysexFile)
+                        .style(style::Button::Primary),
+                    )
+                    .width(Length::FillPortion(2)),
             )
             .push(
-                Button::new(
-                    &mut self.save_preset_syx_button,
-                    Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
-                )
-                .on_press(Message::SavePresetSysexFile)
-                .style(style::Button::Primary),
+                Column::new()
+                    .push(
+                        Button::new(
+                            &mut self.save_preset_syx_button,
+                            Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
+                        )
+                        .on_press(Message::SavePresetSysexFile)
+                        .style(style::Button::Primary),
+                    )
+                    .width(Length::FillPortion(2))
+                    .align_items(Align::End),
             );
 
         Container::new(Column::new().push(row1).push(row2))
