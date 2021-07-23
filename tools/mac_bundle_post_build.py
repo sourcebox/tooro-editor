@@ -59,6 +59,8 @@ def create_dmg(bundle_dir):
     name, ext = os.path.splitext(os.path.basename(bundle_dir))
     dmg_file = os.path.join(os.path.dirname(bundle_dir), name + '.dmg')
     print(f"Creating DMG file {dmg_file}")
+    if os.path.exists(dmg_file):
+        os.remove(dmg_file)
     subprocess.call(['hdiutil', 'create', '-fs', 'HFS+',
                     '-volname', name, '-srcfolder', bundle_dir, dmg_file])
 
