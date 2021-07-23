@@ -59,11 +59,15 @@ To build the application from source, a [Rust toolchain](https://www.rust-lang.o
 
 ### Mac Application Bundle (optional)
 
-[cargo-bundle](https://github.com/burtonageo/cargo-bundle) must be installed to create the macOS app bundle.
+To build a macOS application bundle, additional dependencies must be installed:
 
-- Run `cargo bundle --release` to build the bundle.
-- The bundle will be created in the `target/release/bundle/osx` folder.
-- If the custom app icon does not show up, copy/paste it manually from the icons folder using the finder info dialog.
+- [cargo-bundle](https://github.com/burtonageo/cargo-bundle)
+- [Python3](https://python.org) (any recent version should work)
+
+Run `./build-mac-bundle.sh` from the project directory. Make sure the script has executable permissions.
+
+The bundle will be created in the `target/release/bundle/osx` folder.
+If the custom app icon does not show up, copy/paste it manually from the icons folder using the finder info dialog.
 
 ## Donations
 
