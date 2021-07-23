@@ -240,14 +240,17 @@ impl MidiConnector {
             return;
         }
 
-        let receiver = &self.merge_input_mpsc_channel.as_ref().unwrap().1;
-        let result = receiver.try_recv();
+        loop {
+            let receiver = &self.merge_input_mpsc_channel.as_ref().unwrap().1;
+            let result = receiver.try_recv();
 
-        if result.is_err() {
-            return;
+            if result.is_err() {
+                // No message in queue
+                return;
+            }
+
+            self.send(&result.unwrap());
         }
-
-        self.send(&result.unwrap());
     }
 }
 
