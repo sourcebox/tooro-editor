@@ -157,7 +157,7 @@ impl Application for EditorApp {
                     if self.device_connected {
                         let message =
                             midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
-                        // log::info!("Sending preset parameter dump {:?}", message);
+                        // log::debug!("Sending preset parameter dump {:?}", message);
                         self.midi.send(&message);
                     }
                 }
@@ -170,7 +170,7 @@ impl Application for EditorApp {
                     self.multi_params.insert(param, value);
                     if self.device_connected {
                         let message = midi::sysex::multi_param_dump(&param, value);
-                        // log::info!("Sending multi parameter dump {:?}", message);
+                        // log::debug!("Sending multi parameter dump {:?}", message);
                         self.midi.send(&message);
                     }
                 }
@@ -182,7 +182,7 @@ impl Application for EditorApp {
             }
 
             Message::MergeInputChange(input_name) => {
-                log::info!("Merge input changed to {:?}", input_name);
+                log::debug!("Merge input changed to {:?}", input_name);
                 self.midi.select_merge_input(input_name);
             }
 
@@ -195,7 +195,7 @@ impl Application for EditorApp {
                 if let Some(file) =
                     open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files")))
                 {
-                    log::info!("Loading file {}", file);
+                    log::debug!("Loading file {}", file);
                     let data = std::fs::read(file);
 
                     if let Ok(mut message) = data {
@@ -204,7 +204,7 @@ impl Application for EditorApp {
                                 if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
                             {
                                 let preset_id = 0x70 + self.part_id;
-                                log::info!("Sending preset dump with id {:#X}", preset_id);
+                                log::debug!("Sending preset dump with id {:#X}", preset_id);
                                 message[2] = preset_id;
                                 self.midi.send(&message);
                                 self.request_sound_update = true;
@@ -214,14 +214,14 @@ impl Application for EditorApp {
                                 if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
                             {
                                 let multi_id = 0x7F;
-                                log::info!("Sending multi dump with id {:#X}", multi_id);
+                                log::debug!("Sending multi dump with id {:#X}", multi_id);
                                 message[2] = multi_id;
                                 self.midi.send(&message);
                                 self.request_multi_update = true;
                             }
 
                             _ => {
-                                log::info!("Invalid data");
+                                log::error!("Invalid sysex data");
                             }
                         }
                     }
@@ -234,7 +234,7 @@ impl Application for EditorApp {
                 {
                     let mut file = std::path::PathBuf::from(file);
                     file.set_extension("syx");
-                    log::info!("Capturing next preset dump in file {:?}", file);
+                    log::debug!("Capturing next preset dump in file {:?}", file);
                     self.preset_capture_file = Some(file.into_os_string().into_string().unwrap());
                     self.request_sound_update = true;
                 }
@@ -254,7 +254,7 @@ impl Application for EditorApp {
                 }
 
                 if !self.init_complete {
-                    log::info!("Init complete");
+                    log::debug!("Init complete");
                     self.status_communication = if self.device_connected {
                         String::new()
                     } else {
@@ -272,7 +272,7 @@ impl Application for EditorApp {
                 if self.device_connected {
                     if self.request_sound_update && self.request_time.is_none() {
                         let preset_id = 0x70 + self.part_id;
-                        log::info!("Requesting preset with id {:#X}", preset_id);
+                        log::debug!("Requesting preset with id {:#X}", preset_id);
                         self.status_communication = String::from("Requesting preset dump...");
                         let message = midi::sysex::preset_request(preset_id);
                         self.midi.send(&message);
@@ -282,7 +282,7 @@ impl Application for EditorApp {
 
                     if self.request_multi_update && self.request_time.is_none() {
                         let multi_id = 0x7F;
-                        log::info!("Requesting multi with id {:#X}", multi_id);
+                        log::debug!("Requesting multi with id {:#X}", multi_id);
                         self.status_communication = String::from("Requesting multi dump...");
                         let message = midi::sysex::multi_request(multi_id);
                         self.midi.send(&message);
@@ -429,7 +429,7 @@ impl Application for EditorApp {
 impl EditorApp {
     /// Called when device is connected
     fn on_device_connected(&mut self) {
-        log::info!("Device connected");
+        log::debug!("Device connected");
         self.status_connection = String::from("Device connected");
         self.request_sound_update = true;
         self.request_multi_update = true;
@@ -437,7 +437,7 @@ impl EditorApp {
 
     /// Called when device is disconnected
     fn on_device_disconnected(&mut self) {
-        log::info!("Device disconnected");
+        log::debug!("Device disconnected");
         self.status_connection = String::from("Device disconnected");
         self.request_sound_update = false;
         self.request_multi_update = false;
@@ -479,7 +479,7 @@ impl EditorApp {
     fn process_preset_dump(&mut self, message: &[u8]) {
         let preset_id = message[2];
 
-        log::info!("Preset dump received with id {:#X}", preset_id);
+        log::debug!("Preset dump received with id {:#X}", preset_id);
         self.status_communication = String::from("");
 
         // Wait a little bit because the dump is possibly echoed by the DAW
@@ -492,7 +492,7 @@ impl EditorApp {
                     let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
                     midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
                     if let Some(file) = &self.preset_capture_file {
-                        log::info!("Preset dump captured in file {}", file);
+                        log::debug!("Preset dump captured in file {}", file);
                         let mut message: Vec<u8> = message.to_vec();
                         message[2] = 0x70;
                         std::fs::write(file, message).ok();
@@ -510,7 +510,7 @@ impl EditorApp {
     fn process_multi_dump(&mut self, message: &[u8]) {
         let multi_id = message[2];
 
-        log::info!("Multi dump received with id {:#X}", multi_id);
+        log::debug!("Multi dump received with id {:#X}", multi_id);
         self.status_communication = String::from("");
 
         // Wait a little bit because the dump is possibly echoed by the DAW

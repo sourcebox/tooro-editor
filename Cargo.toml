@@ -13,7 +13,7 @@ iced = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf5450
 iced_native = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
 iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
 midir = "0.7.0"
-log = "0.4.14"
+log = { version="0.4.14", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "1.11.0"
 tinyfiledialogs = "3.8.3"
 
