@@ -35,7 +35,7 @@ fn main() -> iced::Result {
         window: iced::window::Settings {
             size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
             min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT)),
-			max_size: Some((style::WINDOW_WIDTH * 2, style::WINDOW_HEIGHT)),
+            max_size: Some((style::WINDOW_WIDTH * 2, style::WINDOW_HEIGHT)),
             resizable: true,
             ..iced::window::Settings::default()
         },
