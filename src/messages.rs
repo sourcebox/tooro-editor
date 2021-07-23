@@ -33,4 +33,7 @@ pub enum Message {
 
     /// Fast regular ticks for processing more time critical tasks
     FastTick,
+
+    /// Tick for MIDI update processing
+    MidiUpdateTick,
 }

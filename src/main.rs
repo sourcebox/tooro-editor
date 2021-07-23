@@ -265,8 +265,6 @@ impl Application for EditorApp {
             }
 
             Message::FastTick => {
-                self.midi.update();
-
                 if let Some(message) = self.midi.receive() {
                     self.process_midi(&message);
                 }
@@ -302,6 +300,10 @@ impl Application for EditorApp {
                 }
             }
 
+            Message::MidiUpdateTick => {
+                self.midi.update();
+            }
+
             _ => {}
         }
 
@@ -314,11 +316,14 @@ impl Application for EditorApp {
 
         let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
         let fast_tick_subscription =
-            time::every(Duration::from_millis(10)).map(|_| Message::FastTick);
+            time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
+        let midi_update_tick_subscription =
+            time::every(Duration::from_millis(10)).map(|_| Message::MidiUpdateTick);
 
         let subscriptions = vec![
             tick_subscription,
             fast_tick_subscription,
+            midi_update_tick_subscription,
             event_subscription,
         ];
 
