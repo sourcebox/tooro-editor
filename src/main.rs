@@ -1,5 +1,7 @@
 //! Cross-platform sound editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer
 
+#![windows_subsystem = "windows"]
+
 mod messages;
 mod midi;
 mod params;
