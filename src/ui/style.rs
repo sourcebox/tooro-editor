@@ -66,7 +66,22 @@ impl container::StyleSheet for OscSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0x90, 0xFC, 0xA2))),
+            background: Some(Background::Color(Color::from_rgb8(0xab, 0xa3, 0x39))),
+            border_width: 0.0,
+            border_color: Color::from_rgb(0.7, 0.7, 0.7),
+            border_radius: 5.0,
+        }
+    }
+}
+
+/// Styles for the extra section
+pub struct ExtraSection;
+
+impl container::StyleSheet for ExtraSection {
+    fn style(&self) -> container::Style {
+        container::Style {
+            text_color: Some(SECTION_TEXT_COLOR),
+            background: Some(Background::Color(Color::from_rgb8(0xf9, 0xb0, 0x8b))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -81,7 +96,7 @@ impl container::StyleSheet for ShaperSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0x9B, 0xD1, 0xE8))),
+            background: Some(Background::Color(Color::from_rgb8(0xd8, 0x00, 0x00))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -96,7 +111,7 @@ impl container::StyleSheet for FilterSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xFF, 0x6E, 0x6E))),
+            background: Some(Background::Color(Color::from_rgb8(0xd8, 0x00, 0x00))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -111,7 +126,7 @@ impl container::StyleSheet for AmpSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0x80, 0xBE, 0x8B))),
+            background: Some(Background::Color(Color::from_rgb8(0x65, 0xa4, 0x7e))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -126,7 +141,7 @@ impl container::StyleSheet for LFOSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x4B))),
+            background: Some(Background::Color(Color::from_rgb8(0xd2, 0x6a, 0x25))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -141,7 +156,7 @@ impl container::StyleSheet for EnvSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xBE, 0x8B))),
+            background: Some(Background::Color(Color::from_rgb8(0xff, 0xbd, 0x00))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -156,7 +171,7 @@ impl container::StyleSheet for ArpSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xDE, 0xB2, 0x97))),
+            background: Some(Background::Color(Color::from_rgb8(0xf9, 0xb0, 0x8b))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -171,7 +186,7 @@ impl container::StyleSheet for MiscSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xD6, 0xDE, 0x97))),
+            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -186,7 +201,7 @@ impl container::StyleSheet for ModSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xF2, 0xCB, 0x68))),
+            background: Some(Background::Color(Color::from_rgb8(0xb4, 0xcb, 0xd9))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -201,7 +216,7 @@ impl container::StyleSheet for FXSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0x7A, 0x78, 0xFF))),
+            background: Some(Background::Color(Color::from_rgb8(0x65, 0xa4, 0x7e))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
@@ -231,7 +246,7 @@ impl container::StyleSheet for MidiSection {
     fn style(&self) -> container::Style {
         container::Style {
             text_color: Some(SECTION_TEXT_COLOR),
-            background: Some(Background::Color(Color::from_rgb8(0xA0, 0xA0, 0xA0))),
+            background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
             border_width: 0.0,
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,

@@ -37,6 +37,6 @@ impl ExtraSection {
                 SoundParameter::ExtraRingMod,
                 params.get_value(SoundParameter::ExtraRingMod),
             ));
-        Container::new(content).style(style::OscSection).into()
+        Container::new(content).style(style::ExtraSection).into()
     }
 }

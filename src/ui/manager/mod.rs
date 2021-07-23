@@ -47,6 +47,7 @@ impl ManagerPanel {
         let row2 = Row::new()
             .padding(5)
             .spacing(10)
+			//.justify_content(Justify::SpaceBetween)
             .push(
                 Button::new(
                     &mut self.load_syx_button,
