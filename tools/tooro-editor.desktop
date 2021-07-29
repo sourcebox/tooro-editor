@@ -1,0 +1,6 @@
+[Desktop Entry]
+Categories=Utility;
+Icon=icon_128x128
+Name=tooro-editor
+Type=Application
+Exec=tooro-editor
