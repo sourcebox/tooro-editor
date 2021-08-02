@@ -2,6 +2,8 @@
 
 Cross-platform sound editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer.
 
+![Screenshot](screenshot.png)
+
 The application is written in Rust and features the [Iced GUI library](https://github.com/hecrj/iced) and the [midir](https://github.com/Boddlnagg/midir) crate for MIDI processing.
 
 ## Features
