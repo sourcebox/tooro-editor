@@ -1,6 +1,6 @@
 [package]
 name = "tooro-editor"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
 edition = "2018"
 description = "Editor for the Fred's Lab Töörö hardware synthesizer"
