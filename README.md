@@ -1,6 +1,6 @@
 # Töörö Editor
 
-Cross-platform sound editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer.
+Cross-platform sound editor for the [Fred's Lab Töörö](https://fredslab.net/en/tooro-module.php) hardware synthesizer. This application was developed in close cooperation with the manufacturer.
 
 ![Screenshot](screenshot.png)
 
