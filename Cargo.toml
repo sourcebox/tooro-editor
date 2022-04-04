@@ -2,7 +2,8 @@
 name = "tooro-editor"
 version = "1.0.0"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.59"
 description = "Editor for the Fred's Lab Töörö hardware synthesizer"
 repository = "https://github.com/sourcebox/tooro-editor"
 license = "MIT"
@@ -19,6 +20,7 @@ tinyfiledialogs = "3.8.3"
 
 [profile.release]
 lto = true
+strip = true
 
 [package.metadata.bundle]
 name = "Töörö Editor"
