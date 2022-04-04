@@ -1,6 +1,6 @@
 [package]
 name = "tooro-editor"
-version = "1.0.0"
+version = "1.1.0-beta1"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
 edition = "2021"
 rust-version = "1.59"
@@ -10,12 +10,12 @@ license = "MIT"
 keywords = ["midi", "synthesizer"]
 
 [dependencies]
-iced = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a", features=["tokio", "glow"]}
-iced_native = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
-iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "d2c8a3e04b02a1fcf54504bcbd41c488a8bba88a"}
-midir = "0.7.0"
-log = { version="0.4.14", features = ["max_level_debug", "release_max_level_warn"] }
-simple_logger = "1.11.0"
+iced = { git = "https://github.com/hecrj/iced.git", rev = "3042fa2cb63c651ebed2abe6f4054e61f70b0331", default-features = false, features = ["tokio", "glow"]}
+iced_native = { git = "https://github.com/hecrj/iced.git", rev = "3042fa2cb63c651ebed2abe6f4054e61f70b0331"}
+iced_futures = { git = "https://github.com/hecrj/iced.git", rev = "3042fa2cb63c651ebed2abe6f4054e61f70b0331"}
+midir = "0.7"
+log = { version="0.4", features = ["max_level_debug", "release_max_level_warn"] }
+simple_logger = "2.1"
 tinyfiledialogs = "3.8.3"
 
 [profile.release]

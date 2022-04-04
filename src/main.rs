@@ -10,8 +10,8 @@ mod ui;
 use std::time::{Duration, Instant};
 
 use iced::{
-    executor, pick_list, time, Align, Application, Clipboard, Column, Command, Container, Element,
-    Length, PickList, Row, Settings, Subscription, Text,
+    executor, pick_list, time, Alignment, Application, Column, Command, Container, Element, Length,
+    PickList, Row, Settings, Subscription, Text,
 };
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
@@ -144,7 +144,7 @@ impl Application for EditorApp {
     }
 
     /// Process a message and update the state accordingly
-    fn update(&mut self, message: Self::Message, _clipboard: &mut Clipboard) -> Command<Message> {
+    fn update(&mut self, message: Self::Message) -> Command<Message> {
         match message {
             Message::EventOccurred(event) => {
                 if event == iced_native::Event::Window(iced_native::window::Event::CloseRequested) {
@@ -401,7 +401,7 @@ impl Application for EditorApp {
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
                                 .width(Length::FillPortion(2))
-                                .align_items(Align::Center),
+                                .align_items(Alignment::Center),
                         )
                         .push(
                             Column::new()
@@ -417,7 +417,7 @@ impl Application for EditorApp {
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
                                 .width(Length::FillPortion(1))
-                                .align_items(Align::End),
+                                .align_items(Alignment::End),
                         )
                         .push(Column::new().width(Length::Units(10))),
                 ),

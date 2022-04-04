@@ -1,6 +1,6 @@
 //! Panel containing global controls
 
-use iced::{button, pick_list, Align, Button, Column, Container, Element, Length, Row, Text};
+use iced::{button, pick_list, Alignment, Button, Column, Container, Element, Length, Row, Text};
 
 use super::style;
 use crate::messages::Message;
@@ -50,7 +50,7 @@ impl ManagerPanel {
                         .style(style::Button::Primary),
                     )
                     .width(Length::FillPortion(4))
-                    .align_items(Align::End),
+                    .align_items(Alignment::End),
             );
 
         let row2 = Row::new()
@@ -79,7 +79,7 @@ impl ManagerPanel {
                         .style(style::Button::Primary),
                     )
                     .width(Length::FillPortion(2))
-                    .align_items(Align::End),
+                    .align_items(Alignment::End),
             );
 
         Container::new(Column::new().push(row1).push(row2))

@@ -314,6 +314,7 @@ pub struct Checkbox;
 impl checkbox::StyleSheet for Checkbox {
     fn active(&self, is_checked: bool) -> checkbox::Style {
         checkbox::Style {
+            text_color: Some(Color::from_rgb8(0xFF, 0xFF, 0xFF)),
             background: if is_checked { ACTIVE } else { SURFACE }.into(),
             checkmark_color: Color::WHITE,
             border_radius: 2.0,
@@ -341,6 +342,7 @@ impl pick_list::StyleSheet for PickList {
     fn active(&self) -> pick_list::Style {
         pick_list::Style {
             text_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
+            placeholder_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
             background: Background::Color(Color::from_rgb8(0x20, 0x20, 0x20)),
             border_radius: 5.0,
             border_width: 1.0,

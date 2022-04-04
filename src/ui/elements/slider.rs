@@ -1,6 +1,6 @@
 //! Slider control wrapped in a container with label and value display
 
-use iced::{slider, Column, Container, HorizontalAlignment, Length, Row, Slider, Text};
+use iced::{alignment, slider, Column, Container, Length, Row, Slider, Text};
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
@@ -36,7 +36,7 @@ pub fn slider_with_labels<'a>(
                     .push(
                         Text::new(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .horizontal_alignment(HorizontalAlignment::Right)
+                            .horizontal_alignment(alignment::Horizontal::Right)
                             .width(Length::Units(style::PARAM_VALUE_WIDTH)),
                     )
                     .padding([3, 0, 0, 5]),
@@ -74,7 +74,7 @@ pub fn multi_slider_with_labels<'a>(
                     .push(
                         Text::new(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .horizontal_alignment(HorizontalAlignment::Right)
+                            .horizontal_alignment(alignment::Horizontal::Right)
                             .width(Length::Units(style::PARAM_VALUE_WIDTH)),
                     )
                     .padding([3, 0, 0, 5]),
