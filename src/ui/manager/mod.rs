@@ -30,7 +30,7 @@ impl ManagerPanel {
         }
     }
 
-    pub fn view(&mut self, part_id: u8) -> Element<Message> {
+    pub fn view(&mut self, part_id: u8, device_connected: bool) -> Element<Message> {
         let row1 = Row::new()
             .padding(5)
             .spacing(10)
@@ -41,14 +41,17 @@ impl ManagerPanel {
             )
             .push(
                 Column::new()
-                    .push(
-                        Button::new(
+                    .push({
+                        let mut button = Button::new(
                             &mut self.update_button,
                             Text::new("Update from device").size(style::BUTTON_TEXT_SIZE),
                         )
-                        .on_press(Message::UpdateFromDevice)
-                        .style(style::Button::Primary),
-                    )
+                        .style(style::Button::Primary);
+                        if device_connected {
+                            button = button.on_press(Message::UpdateFromDevice);
+                        }
+                        button
+                    })
                     .width(Length::FillPortion(4))
                     .align_items(Alignment::End),
             );
@@ -58,26 +61,32 @@ impl ManagerPanel {
             .spacing(10)
             .push(
                 Column::new()
-                    .push(
-                        Button::new(
+                    .push({
+                        let mut button = Button::new(
                             &mut self.load_syx_button,
                             Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
                         )
-                        .on_press(Message::LoadSysexFile)
-                        .style(style::Button::Primary),
-                    )
+                        .style(style::Button::Primary);
+                        if device_connected {
+                            button = button.on_press(Message::LoadSysexFile);
+                        }
+                        button
+                    })
                     .width(Length::FillPortion(2)),
             )
             .push(
                 Column::new()
-                    .push(
-                        Button::new(
+                    .push({
+                        let mut button = Button::new(
                             &mut self.save_preset_syx_button,
                             Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
                         )
-                        .on_press(Message::SavePresetSysexFile)
-                        .style(style::Button::Primary),
-                    )
+                        .style(style::Button::Primary);
+                        if device_connected {
+                            button = button.on_press(Message::SavePresetSysexFile);
+                        }
+                        button
+                    })
                     .width(Length::FillPortion(2))
                     .align_items(Alignment::End),
             );

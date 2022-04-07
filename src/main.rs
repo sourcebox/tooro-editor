@@ -351,7 +351,7 @@ impl Application for EditorApp {
                         )
                         .push(
                             Column::new()
-                                .push(self.manager_panel.view(self.part_id))
+                                .push(self.manager_panel.view(self.part_id, self.device_connected))
                                 .push(self.multi_panel.view(&self.multi_params))
                                 .width(Length::FillPortion(1)),
                         )

@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Strip symbols from release builds for smaller binaries.
+- Disable buttons when device is not connected.
 
 ### Changed
 
-- Use 2021 edition of Rust
-- Updated dependencies
+- Use 2021 edition of Rust.
+- Updated dependencies.
 
 ## [1.0.0] - 2021-08-02
 
