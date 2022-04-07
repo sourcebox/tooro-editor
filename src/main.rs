@@ -463,12 +463,12 @@ impl EditorApp {
                     midi::sysex::SERVICE_PRESET_DUMP
                         if message.len() == midi::sysex::PRESET_DUMP_LENGTH =>
                     {
-                        self.process_preset_dump(&message);
+                        self.process_preset_dump(message);
                     }
                     midi::sysex::SERVICE_MULTI_DUMP
                         if message.len() == midi::sysex::MULTI_DUMP_LENGTH =>
                     {
-                        self.process_multi_dump(&message);
+                        self.process_multi_dump(message);
                     }
                     _ => {}
                 }
