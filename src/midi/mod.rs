@@ -17,7 +17,7 @@ pub struct MidiConnector {
     device_input: Option<MidiInputConnection<OnReceiveArgs>>,
 
     /// MPSC channel to transfer incoming messages from callback to main thread
-    device_input_mpsc_channel: Option<MpscChannel>,
+    device_input_mpsc_channel: MpscChannel,
 
     /// Objects used for port scanning
     scan_input: Option<MidiInput>,
@@ -33,7 +33,7 @@ pub struct MidiConnector {
     merge_input_name: String,
 
     /// MPSC channel to transfer incoming messages from merge input callback to main thread
-    merge_input_mpsc_channel: Option<MpscChannel>,
+    merge_input_mpsc_channel: MpscChannel,
 }
 
 impl MidiConnector {
@@ -42,13 +42,13 @@ impl MidiConnector {
         Self {
             device_output: None,
             device_input: None,
-            device_input_mpsc_channel: None,
+            device_input_mpsc_channel: mpsc::channel(),
             scan_input: None,
             scan_output: None,
             merge_inputs_list: Vec::new(),
             merge_input: None,
             merge_input_name: String::new(),
-            merge_input_mpsc_channel: None,
+            merge_input_mpsc_channel: mpsc::channel(),
         }
     }
 
@@ -91,11 +91,8 @@ impl MidiConnector {
                 if port_name.starts_with("Tooro") {
                     if self.device_input.is_none() {
                         log::info!("MIDI input connected to port {}", port_name);
-                        self.device_input_mpsc_channel = Some(mpsc::channel());
                         let on_receive_args = OnReceiveArgs {
-                            sender: Some(
-                                self.device_input_mpsc_channel.as_ref().unwrap().0.clone(),
-                            ),
+                            sender: Some(self.device_input_mpsc_channel.0.clone()),
                         };
                         self.device_input = Some(
                             self.scan_input
@@ -165,9 +162,7 @@ impl MidiConnector {
 
     /// Receives a message
     pub fn receive(&mut self) -> Option<Vec<u8>> {
-        self.device_input_mpsc_channel.as_ref()?;
-
-        let receiver = &self.device_input_mpsc_channel.as_ref().unwrap().1;
+        let receiver = &self.device_input_mpsc_channel.1;
         let result = receiver.try_recv();
 
         if result.is_err() {
@@ -217,9 +212,8 @@ impl MidiConnector {
             let port_name = input.port_name(port).unwrap();
             if port_name == input_name {
                 log::info!("Merge MIDI input connected to port {}", port_name);
-                self.merge_input_mpsc_channel = Some(mpsc::channel());
                 let on_receive_args = OnReceiveArgs {
-                    sender: Some(self.merge_input_mpsc_channel.as_ref().unwrap().0.clone()),
+                    sender: Some(self.merge_input_mpsc_channel.0.clone()),
                 };
                 self.merge_input = Some(
                     self.scan_input
@@ -236,12 +230,8 @@ impl MidiConnector {
 
     /// Receives a message from the merge input and echo it to the device
     pub fn process_merge(&mut self) {
-        if self.merge_input_mpsc_channel.is_none() {
-            return;
-        }
-
         loop {
-            let receiver = &self.merge_input_mpsc_channel.as_ref().unwrap().1;
+            let receiver = &self.merge_input_mpsc_channel.1;
             let result = receiver.try_recv();
 
             if result.is_err() {
