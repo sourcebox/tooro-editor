@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Parameter labels now match the panel printing more precise.
 - Use 2021 edition of Rust.
 - Updated dependencies.
 

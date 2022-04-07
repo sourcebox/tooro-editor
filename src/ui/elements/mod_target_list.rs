@@ -130,7 +130,7 @@ impl std::fmt::Display for ModTarget {
                 ModTarget::Osc1Level => "Osc 1 Level",
                 ModTarget::Osc2Level => "Osc 2 Level",
                 ModTarget::ExtraNoise => "Extra Noise",
-                ModTarget::ExtraRingMod => "Extra RingMod",
+                ModTarget::ExtraRingMod => "Extra O1xO2",
                 ModTarget::FilterCutoff => "Filter Cutoff",
                 ModTarget::ShaperCutoff => "Shaper Cutoff",
                 ModTarget::FilterResonance => "Filter Resonance",

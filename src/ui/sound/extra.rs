@@ -32,7 +32,7 @@ impl ExtraSection {
                 params.get_value(SoundParameter::ExtraNoise),
             ))
             .push(slider_with_labels(
-                "RingMod",
+                "O1xO2",
                 &mut self.ringmod_slider,
                 SoundParameter::ExtraRingMod,
                 params.get_value(SoundParameter::ExtraRingMod),

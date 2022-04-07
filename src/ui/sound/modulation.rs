@@ -43,13 +43,13 @@ impl ModSection {
                         .padding(style::SECTION_PADDING)
                         .spacing(style::SECTION_SPACING)
                         .push(mod_target_list(
-                            "MW Target",
+                            "MD Target",
                             &mut self.mw_target_list,
                             SoundParameter::ModModwheelTarget,
                             params.get_value(SoundParameter::ModModwheelTarget),
                         ))
                         .push(slider_with_labels(
-                            "MW Amt",
+                            "MD Amt",
                             &mut self.mw_amount_slider,
                             SoundParameter::ModModwheelAmount,
                             params.get_value(SoundParameter::ModModwheelAmount),
@@ -61,13 +61,13 @@ impl ModSection {
                         .padding(style::SECTION_PADDING)
                         .spacing(style::SECTION_SPACING)
                         .push(mod_target_list(
-                            "Pitch Target",
+                            "PI Target",
                             &mut self.pitch_target_list,
                             SoundParameter::ModPitchTarget,
                             params.get_value(SoundParameter::ModPitchTarget),
                         ))
                         .push(slider_with_labels(
-                            "Pitch Amt",
+                            "PI Amt",
                             &mut self.pitch_amount_slider,
                             SoundParameter::ModPitchAmount,
                             params.get_value(SoundParameter::ModPitchAmount),
@@ -79,13 +79,13 @@ impl ModSection {
                         .padding(style::SECTION_PADDING)
                         .spacing(style::SECTION_SPACING)
                         .push(mod_target_list(
-                            "Vel Target",
+                            "VL Target",
                             &mut self.vel_target_list,
                             SoundParameter::ModVelocityTarget,
                             params.get_value(SoundParameter::ModVelocityTarget),
                         ))
                         .push(slider_with_labels(
-                            "Vel Amt",
+                            "VL Amt",
                             &mut self.vel_amount_slider,
                             SoundParameter::ModVelocityAmount,
                             params.get_value(SoundParameter::ModVelocityAmount),
@@ -97,13 +97,13 @@ impl ModSection {
                         .padding(style::SECTION_PADDING)
                         .spacing(style::SECTION_SPACING)
                         .push(mod_target_list(
-                            "AT Target",
+                            "AF Target",
                             &mut self.at_target_list,
                             SoundParameter::ModAftertouchTarget,
                             params.get_value(SoundParameter::ModAftertouchTarget),
                         ))
                         .push(slider_with_labels(
-                            "AT Amt",
+                            "AF Amt",
                             &mut self.at_amount_slider,
                             SoundParameter::ModAftertouchAmount,
                             params.get_value(SoundParameter::ModAftertouchAmount),
