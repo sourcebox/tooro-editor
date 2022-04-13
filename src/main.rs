@@ -66,6 +66,9 @@ struct EditorApp {
     /// Drop down list for the MIDI merge input
     merge_input_list: pick_list::State<String>,
 
+    /// Name of the merge input port
+    merge_input_name: String,
+
     /// MPSC channel for incoming messages from merge input
     merge_input_channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>),
 
@@ -123,6 +126,7 @@ impl Application for EditorApp {
                 status_communication: String::from("Initializing..."),
 
                 merge_input_list: pick_list::State::<String>::default(),
+                merge_input_name: String::new(),
                 merge_input_channel,
 
                 part_id: 0,
@@ -194,6 +198,7 @@ impl Application for EditorApp {
 
             Message::MergeInputChange(input_name) => {
                 log::debug!("Merge input changed to {:?}", input_name);
+                self.merge_input_name = input_name.clone();
                 self.midi.select_merge_input(input_name);
             }
 
@@ -394,7 +399,7 @@ impl Application for EditorApp {
                                                     inputs.insert(0, String::from(""));
                                                     inputs
                                                 },
-                                                Some(self.midi.get_merge_input_name()),
+                                                Some(self.merge_input_name.clone()),
                                                 Message::MergeInputChange,
                                             )
                                             .style(style::PickList)

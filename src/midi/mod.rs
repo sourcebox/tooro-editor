@@ -29,9 +29,6 @@ pub struct MidiConnector {
     /// Merge input connection
     merge_input: Option<MidiInputConnection<OnReceiveArgs>>,
 
-    /// Name of the merge input port
-    merge_input_name: String,
-
     /// MPSC sender to transfer incoming messages from merge input
     merge_input_sender: mpsc::Sender<Vec<u8>>,
 }
@@ -47,7 +44,6 @@ impl MidiConnector {
             scan_output: None,
             merge_inputs_list: Vec::new(),
             merge_input: None,
-            merge_input_name: String::new(),
             merge_input_sender,
         }
     }
@@ -177,16 +173,10 @@ impl MidiConnector {
         &self.merge_inputs_list
     }
 
-    /// Return the name of the selected merge input
-    pub fn get_merge_input_name(&self) -> String {
-        self.merge_input_name.clone()
-    }
-
     /// Select the input for merging messages
     pub fn select_merge_input(&mut self, input_name: String) {
         if self.merge_input.is_some() {
             self.merge_input = None;
-            self.merge_input_name = String::new();
         }
 
         if self.scan_input.is_none() {
@@ -217,7 +207,6 @@ impl MidiConnector {
                         .connect(port, "tooro merge input", on_receive, on_receive_args)
                         .unwrap(),
                 );
-                self.merge_input_name = port_name;
                 break;
             }
         }
