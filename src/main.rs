@@ -7,6 +7,7 @@ mod midi;
 mod params;
 mod ui;
 
+use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 use iced::{
@@ -65,6 +66,9 @@ struct EditorApp {
     /// Drop down list for the MIDI merge input
     merge_input_list: pick_list::State<String>,
 
+    /// MPSC channel for incoming messages from merge input
+    merge_input_channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>),
+
     /// Current part id 0-3 for part 1-4
     part_id: u8,
 
@@ -106,6 +110,9 @@ impl Application for EditorApp {
 
     /// Constructs a new application
     fn new(_flags: ()) -> (Self, Command<Message>) {
+        let merge_input_channel = mpsc::channel();
+        let merge_input_sender = merge_input_channel.0.clone();
+
         (
             Self {
                 sound_panel: SoundPanel::new(),
@@ -116,13 +123,14 @@ impl Application for EditorApp {
                 status_communication: String::from("Initializing..."),
 
                 merge_input_list: pick_list::State::<String>::default(),
+                merge_input_channel,
 
                 part_id: 0,
 
                 sound_params: SoundParameterValues::with_capacity(128),
                 multi_params: MultiParameterValues::with_capacity(32),
 
-                midi: MidiConnector::new(),
+                midi: MidiConnector::new(merge_input_sender),
                 device_connected: false,
 
                 request_sound_update: false,
@@ -304,7 +312,9 @@ impl Application for EditorApp {
             }
 
             Message::MidiUpdateTick => {
-                self.midi.update();
+                while let Some(message) = self.merge_input_channel.1.try_recv().ok() {
+                    self.midi.send(&message);
+                }
             }
 
             _ => {}

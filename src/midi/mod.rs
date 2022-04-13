@@ -32,13 +32,13 @@ pub struct MidiConnector {
     /// Name of the merge input port
     merge_input_name: String,
 
-    /// MPSC channel to transfer incoming messages from merge input callback to main thread
-    merge_input_mpsc_channel: MpscChannel,
+    /// MPSC sender to transfer incoming messages from merge input
+    merge_input_sender: mpsc::Sender<Vec<u8>>,
 }
 
 impl MidiConnector {
     /// Constructs a new instance
-    pub fn new() -> Self {
+    pub fn new(merge_input_sender: mpsc::Sender<Vec<u8>>) -> Self {
         Self {
             device_output: None,
             device_input: None,
@@ -48,13 +48,8 @@ impl MidiConnector {
             merge_inputs_list: Vec::new(),
             merge_input: None,
             merge_input_name: String::new(),
-            merge_input_mpsc_channel: mpsc::channel(),
+            merge_input_sender,
         }
-    }
-
-    /// Regular update function, must be called periodically
-    pub fn update(&mut self) {
-        self.process_merge();
     }
 
     /// Scans the ports and establishes a connection to the device if found
@@ -213,7 +208,7 @@ impl MidiConnector {
             if port_name == input_name {
                 log::info!("Merge MIDI input connected to port {}", port_name);
                 let on_receive_args = OnReceiveArgs {
-                    sender: Some(self.merge_input_mpsc_channel.0.clone()),
+                    sender: Some(self.merge_input_sender.clone()),
                 };
                 self.merge_input = Some(
                     self.scan_input
@@ -225,21 +220,6 @@ impl MidiConnector {
                 self.merge_input_name = port_name;
                 break;
             }
-        }
-    }
-
-    /// Receives a message from the merge input and echo it to the device
-    pub fn process_merge(&mut self) {
-        loop {
-            let receiver = &self.merge_input_mpsc_channel.1;
-            let result = receiver.try_recv();
-
-            if result.is_err() {
-                // No message in queue
-                return;
-            }
-
-            self.send(&result.unwrap());
         }
     }
 }
