@@ -317,7 +317,7 @@ impl Application for EditorApp {
             }
 
             Message::MidiUpdateTick => {
-                while let Some(message) = self.merge_input_channel.1.try_recv().ok() {
+                while let Ok(message) = self.merge_input_channel.1.try_recv() {
                     self.midi.send(&message);
                 }
             }
