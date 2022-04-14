@@ -69,8 +69,8 @@ struct EditorApp {
     /// Name of the merge input port
     merge_input_name: String,
 
-    /// MPSC channel for incoming messages from merge input
-    merge_input_channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>),
+    /// MPSC sender for incoming messages from merge input
+    merge_input_sender: Option<mpsc::Sender<Vec<u8>>>,
 
     /// Current part id 0-3 for part 1-4
     part_id: u8,
@@ -113,9 +113,6 @@ impl Application for EditorApp {
 
     /// Constructs a new application
     fn new(_flags: ()) -> (Self, Command<Message>) {
-        let merge_input_channel = mpsc::channel();
-        let merge_input_sender = merge_input_channel.0.clone();
-
         (
             Self {
                 sound_panel: SoundPanel::new(),
@@ -127,14 +124,14 @@ impl Application for EditorApp {
 
                 merge_input_list: pick_list::State::<String>::default(),
                 merge_input_name: String::new(),
-                merge_input_channel,
+                merge_input_sender: None,
 
                 part_id: 0,
 
                 sound_params: SoundParameterValues::with_capacity(128),
                 multi_params: MultiParameterValues::with_capacity(32),
 
-                midi: MidiConnector::new(merge_input_sender),
+                midi: MidiConnector::new(),
                 device_connected: false,
 
                 request_sound_update: false,
@@ -199,7 +196,9 @@ impl Application for EditorApp {
             Message::MergeInputChange(input_name) => {
                 log::debug!("Merge input changed to {:?}", input_name);
                 self.merge_input_name = input_name.clone();
-                self.midi.select_merge_input(input_name);
+                if let Some(sender) = &self.merge_input_sender {
+                    self.midi.select_merge_input(input_name, sender.clone());
+                }
             }
 
             Message::UpdateFromDevice if self.device_connected => {
@@ -316,10 +315,18 @@ impl Application for EditorApp {
                 }
             }
 
-            Message::MidiUpdateTick => {
-                while let Ok(message) = self.merge_input_channel.1.try_recv() {
-                    self.midi.send(&message);
-                }
+            Message::MidiMergeSubscriptionReady(mut sender) => {
+                let channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>) = mpsc::channel();
+                self.merge_input_sender = Some(channel.0);
+                std::thread::spawn(move || loop {
+                    while let Ok(message) = channel.1.recv() {
+                        sender.try_send(message).ok();
+                    }
+                });
+            }
+
+            Message::MidiMergeInputMessage(message) => {
+                self.midi.send(&message);
             }
 
             _ => {}
@@ -335,13 +342,11 @@ impl Application for EditorApp {
         let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
         let fast_tick_subscription =
             time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
-        let midi_update_tick_subscription =
-            time::every(Duration::from_millis(10)).map(|_| Message::MidiUpdateTick);
 
         let subscriptions = vec![
             tick_subscription,
             fast_tick_subscription,
-            midi_update_tick_subscription,
+            midi_merge_input_subscription(),
             event_subscription,
         ];
 
@@ -541,4 +546,34 @@ impl EditorApp {
 
         self.request_time = None;
     }
+}
+
+/// Return subscription for receiving messages on MIDI merge input
+pub fn midi_merge_input_subscription() -> Subscription<Message> {
+    use iced_native::futures::channel::mpsc;
+    use iced_native::futures::StreamExt;
+
+    enum State {
+        Starting,
+        Ready(mpsc::Receiver<Vec<u8>>),
+    }
+
+    iced_native::subscription::unfold("MIDI merge input", State::Starting, |state| async move {
+        match state {
+            State::Starting => {
+                let (sender, receiver) = mpsc::channel(64);
+                (
+                    Some(Message::MidiMergeSubscriptionReady(sender)),
+                    State::Ready(receiver),
+                )
+            }
+            State::Ready(mut receiver) => {
+                let message = receiver.select_next_some().await;
+                (
+                    Some(Message::MidiMergeInputMessage(message)),
+                    State::Ready(receiver),
+                )
+            }
+        }
+    })
 }

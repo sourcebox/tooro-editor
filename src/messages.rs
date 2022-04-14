@@ -34,6 +34,9 @@ pub enum Message {
     /// Fast regular ticks for processing more time critical tasks
     FastTick,
 
-    /// Tick for MIDI update processing
-    MidiUpdateTick,
+    /// MIDI merge subscription ready, sender is passed as argument
+    MidiMergeSubscriptionReady(iced_native::futures::channel::mpsc::Sender<Vec<u8>>),
+
+    /// MIDI message from merge input
+    MidiMergeInputMessage(Vec<u8>),
 }

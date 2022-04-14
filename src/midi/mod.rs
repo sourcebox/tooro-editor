@@ -28,14 +28,11 @@ pub struct MidiConnector {
 
     /// Merge input connection
     merge_input: Option<MidiInputConnection<OnReceiveArgs>>,
-
-    /// MPSC sender to transfer incoming messages from merge input
-    merge_input_sender: mpsc::Sender<Vec<u8>>,
 }
 
 impl MidiConnector {
     /// Constructs a new instance
-    pub fn new(merge_input_sender: mpsc::Sender<Vec<u8>>) -> Self {
+    pub fn new() -> Self {
         Self {
             device_output: None,
             device_input: None,
@@ -44,7 +41,6 @@ impl MidiConnector {
             scan_output: None,
             merge_inputs_list: Vec::new(),
             merge_input: None,
-            merge_input_sender,
         }
     }
 
@@ -174,7 +170,7 @@ impl MidiConnector {
     }
 
     /// Select the input for merging messages
-    pub fn select_merge_input(&mut self, input_name: String) {
+    pub fn select_merge_input(&mut self, input_name: String, sender: mpsc::Sender<Vec<u8>>) {
         if self.merge_input.is_some() {
             self.merge_input = None;
         }
@@ -198,7 +194,7 @@ impl MidiConnector {
             if port_name == input_name {
                 log::info!("Merge MIDI input connected to port {}", port_name);
                 let on_receive_args = OnReceiveArgs {
-                    sender: Some(self.merge_input_sender.clone()),
+                    sender: Some(sender),
                 };
                 self.merge_input = Some(
                     self.scan_input
