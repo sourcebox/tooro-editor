@@ -53,6 +53,7 @@ pub struct Slider<'a, T, Message> {
     range: RangeInclusive<T>,
     step: T,
     value: T,
+    default: T,
     on_change: Box<dyn Fn(T) -> Message>,
     on_release: Option<Message>,
     width: Length,
@@ -77,7 +78,13 @@ where
     ///   * a function that will be called when the [`Slider`] is dragged.
     ///   It receives the new value of the [`Slider`] and must produce a
     ///   `Message`.
-    pub fn new<F>(state: &'a mut State, range: RangeInclusive<T>, value: T, on_change: F) -> Self
+    pub fn new<F>(
+        state: &'a mut State,
+        range: RangeInclusive<T>,
+        value: T,
+        default: T,
+        on_change: F,
+    ) -> Self
     where
         F: 'static + Fn(T) -> Message,
     {
@@ -98,6 +105,7 @@ where
             value,
             range,
             step: T::from(1),
+            default,
             on_change: Box::new(on_change),
             on_release: None,
             width: Length::Fill,
@@ -154,6 +162,7 @@ pub fn update<Message, T>(
     value: &mut T,
     range: &RangeInclusive<T>,
     step: T,
+    default: T,
     on_change: &dyn Fn(T) -> Message,
     on_release: &Option<Message>,
 ) -> event::Status
@@ -196,8 +205,14 @@ where
         | Event::Touch(touch::Event::FingerPressed { .. }) => {
             let bounds = layout.bounds();
             if bounds.contains(cursor_position) {
-                change();
-                state.is_dragging = true;
+                if state.control_pressed {
+                    let new_value = default;
+                    shell.publish((on_change)(new_value));
+                    *value = new_value;
+                } else {
+                    change();
+                    state.is_dragging = true;
+                }
 
                 return event::Status::Captured;
             }
@@ -242,21 +257,33 @@ where
             key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
             ..
         }) => {
-            if layout.bounds().contains(cursor_position) {
-                state.is_fine_control = true;
+            state.shift_pressed = true;
 
-                return event::Status::Captured;
-            }
+            return event::Status::Captured;
         }
         Event::Keyboard(keyboard::Event::KeyReleased {
             key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
             ..
         }) => {
-            if layout.bounds().contains(cursor_position) {
-                state.is_fine_control = false;
+            state.shift_pressed = false;
 
-                return event::Status::Captured;
-            }
+            return event::Status::Captured;
+        }
+        Event::Keyboard(keyboard::Event::KeyPressed {
+            key_code: keyboard::KeyCode::LControl | keyboard::KeyCode::RControl,
+            ..
+        }) => {
+            state.control_pressed = true;
+
+            return event::Status::Captured;
+        }
+        Event::Keyboard(keyboard::Event::KeyReleased {
+            key_code: keyboard::KeyCode::LControl | keyboard::KeyCode::RControl,
+            ..
+        }) => {
+            state.control_pressed = false;
+
+            return event::Status::Captured;
         }
         _ => {}
     }
@@ -378,7 +405,8 @@ pub fn mouse_interaction(
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct State {
     is_dragging: bool,
-    is_fine_control: bool,
+    shift_pressed: bool,
+    control_pressed: bool,
 }
 
 impl State {
@@ -428,6 +456,7 @@ where
             &mut self.value,
             &self.range,
             self.step,
+            self.default,
             self.on_change.as_ref(),
             &self.on_release,
         )

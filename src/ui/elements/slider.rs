@@ -16,7 +16,7 @@ pub fn slider_with_labels<'a>(
     value: i32,
 ) -> Container<'a, Message> {
     let range = sound_param.get_range();
-    let slider = Slider::new(state, range, value, move |v| {
+    let slider = Slider::new(state, range, value, sound_param.get_default(), move |v| {
         Message::SoundParameterChange(sound_param, v)
     })
     .style(style::Slider);
@@ -54,7 +54,7 @@ pub fn multi_slider_with_labels<'a>(
     value: i32,
 ) -> Container<'a, Message> {
     let range = multi_param.get_range();
-    let slider = Slider::new(state, range, value, move |v| {
+    let slider = Slider::new(state, range, value, multi_param.get_default(), move |v| {
         Message::MultiParameterChange(multi_param, v)
     })
     .style(style::Slider);
