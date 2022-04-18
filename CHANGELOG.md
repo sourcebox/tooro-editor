@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Mouse wheel support for sliders.
 - Strip symbols from release builds for smaller binaries.
 - Disable buttons when device is not connected.
 

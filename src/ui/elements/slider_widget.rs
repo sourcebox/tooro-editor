@@ -3,10 +3,12 @@
 //! This is a modified version of the original slider widget from `iced_native`
 //! with the following changes:
 //!     - Use of pointer shape mouse cursor when hovering the slider.
+//!     - Mouse wheel support.
 //!     - Clippy related fixes.
 //!
 //! A [`Slider`] has some local [`State`].
 
+use iced::mouse::ScrollDelta;
 use iced_native::event::{self, Event};
 use iced_native::keyboard;
 use iced_native::layout;
@@ -17,7 +19,7 @@ use iced_native::{
     Background, Clipboard, Color, Element, Layout, Length, Point, Rectangle, Shell, Size, Widget,
 };
 
-use std::ops::RangeInclusive;
+use std::ops::{Add, RangeInclusive};
 
 pub use iced_style::slider::{Handle, HandleShape, Style, StyleSheet};
 
@@ -156,7 +158,7 @@ pub fn update<Message, T>(
     on_release: &Option<Message>,
 ) -> event::Status
 where
-    T: Copy + Into<f64> + Ord + num_traits::FromPrimitive,
+    T: Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
     Message: Clone,
 {
     let is_dragging = state.is_dragging;
@@ -220,17 +222,41 @@ where
                 return event::Status::Captured;
             }
         }
+        Event::Mouse(mouse::Event::WheelScrolled { delta }) => {
+            if layout.bounds().contains(cursor_position) {
+                let delta = match delta {
+                    ScrollDelta::Lines { x: _, y } => y,
+                    _ => 0.0,
+                };
+
+                let new_value = { *value + T::from_f32(delta).unwrap_or_default() }
+                    .clamp(*range.start(), *range.end());
+                shell.publish((on_change)(new_value));
+
+                *value = new_value;
+
+                return event::Status::Captured;
+            }
+        }
         Event::Keyboard(keyboard::Event::KeyPressed {
             key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
             ..
         }) => {
-            state.is_fine_control = true;
+            if layout.bounds().contains(cursor_position) {
+                state.is_fine_control = true;
+
+                return event::Status::Captured;
+            }
         }
         Event::Keyboard(keyboard::Event::KeyReleased {
             key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
             ..
         }) => {
-            state.is_fine_control = false;
+            if layout.bounds().contains(cursor_position) {
+                state.is_fine_control = false;
+
+                return event::Status::Captured;
+            }
         }
         _ => {}
     }
@@ -364,7 +390,7 @@ impl State {
 
 impl<'a, T, Message, Renderer> Widget<Message, Renderer> for Slider<'a, T, Message>
 where
-    T: Copy + Into<f64> + Ord + num_traits::FromPrimitive,
+    T: Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
     Message: Clone,
     Renderer: iced_native::Renderer,
 {
@@ -439,7 +465,7 @@ where
 
 impl<'a, T, Message, Renderer> From<Slider<'a, T, Message>> for Element<'a, Message, Renderer>
 where
-    T: 'a + Copy + Into<f64> + Ord + num_traits::FromPrimitive,
+    T: 'a + Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
     Message: 'a + Clone,
     Renderer: 'a + iced_native::Renderer,
 {
