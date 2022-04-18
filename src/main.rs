@@ -389,30 +389,27 @@ impl Application for EditorApp {
                                 .width(Length::FillPortion(1)),
                         )
                         .push(
-                            Column::new()
-                                .push(
-                                    Row::new()
-                                        .push(
-                                            Text::new("Merge Input:").size(style::STATUS_TEXT_SIZE),
+                            Column::new().push(
+                                Row::new()
+                                    .push(Text::new("Merge Input:").size(style::STATUS_TEXT_SIZE))
+                                    .push(
+                                        PickList::new(
+                                            &mut self.merge_input_list,
+                                            {
+                                                let mut inputs =
+                                                    self.midi.get_merge_inputs().clone();
+                                                inputs.insert(0, String::from(""));
+                                                inputs
+                                            },
+                                            Some(self.merge_input_name.clone()),
+                                            Message::MergeInputChange,
                                         )
-                                        .push(
-                                            PickList::new(
-                                                &mut self.merge_input_list,
-                                                {
-                                                    let mut inputs =
-                                                        self.midi.get_merge_inputs().clone();
-                                                    inputs.insert(0, String::from(""));
-                                                    inputs
-                                                },
-                                                Some(self.merge_input_name.clone()),
-                                                Message::MergeInputChange,
-                                            )
-                                            .style(style::PickList)
-                                            .text_size(style::LIST_ITEM_TEXT_SIZE),
-                                        )
-                                        .spacing(10),
-                                )
-                                .width(Length::FillPortion(1)),
+                                        .style(style::PickList)
+                                        .width(Length::Units(250))
+                                        .text_size(style::LIST_ITEM_TEXT_SIZE),
+                                    )
+                                    .spacing(10),
+                            ),
                         )
                         .push(
                             Column::new()
@@ -420,7 +417,7 @@ impl Application for EditorApp {
                                     Text::new(&self.status_communication)
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
-                                .width(Length::FillPortion(2))
+                                .width(Length::FillPortion(3))
                                 .align_items(Alignment::Center),
                         )
                         .push(
@@ -436,7 +433,7 @@ impl Application for EditorApp {
                                     Text::new(format!("v{}", env!("CARGO_PKG_VERSION")))
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
-                                .width(Length::FillPortion(1))
+                                .width(Length::Units(200))
                                 .align_items(Alignment::End),
                         )
                         .push(Column::new().width(Length::Units(10))),

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Parameter labels now match the panel printing more precise.
 - Lower latency with MIDI merge input.
+- Show shorter port names for merge input on Linux.
+- Don't show internal port in merge input menu.
+- Give merge input menu more space to make longer names fit.
 - Use 2021 edition of Rust.
 - Updated dependencies.
 

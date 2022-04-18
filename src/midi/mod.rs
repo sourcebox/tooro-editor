@@ -62,8 +62,8 @@ impl MidiConnector {
             let input = self.scan_input.as_ref().unwrap();
 
             for port in input.ports().iter() {
-                let port_name = input.port_name(port).unwrap();
-                if !port_name.starts_with("Tooro") {
+                let port_name = cleanup_port_name(input.port_name(port).unwrap());
+                if !port_name.starts_with("Tooro") && !port_name.starts_with("tooro") {
                     merge_inputs.push(port_name);
                 }
             }
@@ -74,7 +74,7 @@ impl MidiConnector {
             let input = self.scan_input.as_ref().unwrap();
 
             for port in input.ports().iter() {
-                let port_name = input.port_name(port).unwrap();
+                let port_name = cleanup_port_name(input.port_name(port).unwrap());
                 if port_name.starts_with("Tooro") {
                     if self.device_input.is_none() {
                         log::info!("MIDI input connected to port {}", port_name);
@@ -116,7 +116,7 @@ impl MidiConnector {
             let output = self.scan_output.as_ref().unwrap();
 
             for port in output.ports().iter() {
-                let port_name = output.port_name(port).unwrap();
+                let port_name = cleanup_port_name(output.port_name(port).unwrap());
                 if port_name.starts_with("Tooro") {
                     if self.device_output.is_none() {
                         log::info!("MIDI output connected to port {}", port_name);
@@ -190,7 +190,7 @@ impl MidiConnector {
         let input = self.scan_input.as_ref().unwrap();
 
         for port in input.ports().iter() {
-            let port_name = input.port_name(port).unwrap();
+            let port_name = cleanup_port_name(input.port_name(port).unwrap());
             if port_name == input_name {
                 log::info!("Merge MIDI input connected to port {}", port_name);
                 let on_receive_args = OnReceiveArgs {
@@ -220,4 +220,20 @@ fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
         let message = Vec::<u8>::from(message);
         args.sender.as_ref().unwrap().send(message).ok();
     }
+}
+
+/// Remove client name part from port name on Linux
+fn cleanup_port_name(port_name: String) -> String {
+    #[cfg(target_os = "linux")]
+    {
+        if let Some((client_name, remainder)) = port_name.split_once(':') {
+            if remainder.starts_with(client_name) {
+                return remainder.to_owned();
+            }
+        }
+        port_name
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    port_name
 }
