@@ -1,9 +1,10 @@
 //! Section containing the multi fx parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{pick_list, Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, MultiParameter, MultiParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     fx_mode_list::{fx_mode_list, FXMode},
     slider::multi_slider_with_labels,

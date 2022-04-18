@@ -1,9 +1,10 @@
 //! Section containing oscillator 1 parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{pick_list, Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     slider::slider_with_labels,
     wavetable_list::{wavetable_list, Wavetable},

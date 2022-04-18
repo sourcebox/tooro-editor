@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Show shorter port names for merge input on Linux.
 - Don't show internal port in merge input menu.
 - Give merge input menu more space to make longer names fit.
+- Show pointer shape mouse cursor when hovering a slider on all platforms.
 - Use 2021 edition of Rust.
 - Updated dependencies.
 

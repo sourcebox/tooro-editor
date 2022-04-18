@@ -1,9 +1,10 @@
 //! Section containing the filter envelope parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
+use iced::{pick_list, Column, Container, Element, Rule, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     env_trigger_list::{env_trigger_list, EnvTrigger},
     mod_target_list::{mod_target_list, ModTarget},

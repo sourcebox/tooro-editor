@@ -1,9 +1,10 @@
 //! Section containing the LFO 1 parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Rule, Text};
+use iced::{pick_list, Column, Container, Element, Rule, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     lfo_phase_list::{lfo_phase_list, LFOPhase},
     lfo_shape_list::{lfo_shape_list, LFOShape},

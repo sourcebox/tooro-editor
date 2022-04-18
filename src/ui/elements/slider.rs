@@ -1,6 +1,8 @@
 //! Slider control wrapped in a container with label and value display
 
-use iced::{alignment, slider, Column, Container, Length, Row, Slider, Text};
+use iced::{alignment, Column, Container, Length, Row, Text};
+
+use super::slider_widget::{self, Slider};
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
@@ -9,7 +11,7 @@ use crate::style;
 /// Returns a slider for a sound (preset) parameter
 pub fn slider_with_labels<'a>(
     label: &'a str,
-    state: &'a mut slider::State,
+    state: &'a mut slider_widget::State,
     sound_param: SoundParameter,
     value: i32,
 ) -> Container<'a, Message> {
@@ -47,7 +49,7 @@ pub fn slider_with_labels<'a>(
 /// Returns a slider for a multi parameter
 pub fn multi_slider_with_labels<'a>(
     label: &'a str,
-    state: &'a mut slider::State,
+    state: &'a mut slider_widget::State,
     multi_param: MultiParameter,
     value: i32,
 ) -> Container<'a, Message> {

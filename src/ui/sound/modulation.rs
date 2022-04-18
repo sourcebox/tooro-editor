@@ -1,9 +1,10 @@
 //! Section containing the modulation parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Length, Row};
+use iced::{pick_list, Column, Container, Element, Length, Row};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     mod_target_list::{mod_target_list, ModTarget},
     slider::slider_with_labels,

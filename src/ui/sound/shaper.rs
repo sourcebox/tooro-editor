@@ -1,9 +1,10 @@
 //! Section containing the shaper parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{pick_list, Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     shaper_mode_list::{shaper_mode_list, ShaperMode},
     slider::slider_with_labels,

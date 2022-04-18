@@ -1,9 +1,10 @@
 //! Section containing the arpeggiator parameters
 
-use iced::{pick_list, slider, Column, Container, Element, Text};
+use iced::{pick_list, Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{
     arp_grid_list::{arp_grid_list, ArpGrid},
     arp_mode_list::{arp_mode_list, ArpMode},

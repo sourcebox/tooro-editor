@@ -1,10 +1,11 @@
 //! Section containing the amplifier parameters
 
-use iced::{slider, Column, Container, Element, Text};
+use iced::{Column, Container, Element, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::slider::slider_with_labels;
+use crate::ui::elements::slider_widget as slider;
 use crate::ui::style;
 
 pub struct AmpSection {
