@@ -4,6 +4,8 @@
 //! with the following changes:
 //!     - Use of pointer shape mouse cursor when hovering the slider.
 //!     - Mouse wheel support.
+//!     - Control-click resets slider to a default value.
+//!     - Shift-drag enables fine control.
 //!     - Clippy related fixes.
 //!
 //! A [`Slider`] has some local [`State`].
@@ -172,34 +174,6 @@ where
 {
     let is_dragging = state.is_dragging;
 
-    let mut change = || {
-        let bounds = layout.bounds();
-
-        let new_value = {
-            let step = step.into();
-            let start = (*range.start()).into();
-            let end = (*range.end()).into();
-
-            let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
-
-            let steps = (percent * (end - start) / step).round();
-            let value = steps * step + start;
-
-            if let Some(value) = T::from_f64(value) {
-                value
-            } else {
-                return;
-            }
-        }
-        .clamp(*range.start(), *range.end());
-
-        if ((*value).into() - new_value.into()).abs() > f64::EPSILON {
-            shell.publish((on_change)(new_value));
-
-            *value = new_value;
-        }
-    };
-
     match event {
         Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left))
         | Event::Touch(touch::Event::FingerPressed { .. }) => {
@@ -210,8 +184,20 @@ where
                     shell.publish((on_change)(new_value));
                     *value = new_value;
                 } else {
-                    change();
+                    let step = step.into();
+                    let start = (*range.start()).into();
+                    let end = (*range.end()).into();
+                    let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
+                    let steps = (percent * (end - start) / step).round();
+                    let v = steps * step + start;
+                    let new_value = T::from_f64(v)
+                        .unwrap_or_default()
+                        .clamp(*range.start(), *range.end());
+                    shell.publish((on_change)(new_value));
+                    *value = new_value;
                     state.is_dragging = true;
+                    state.click_pos_x = cursor_position.x;
+                    state.click_value = v;
                 }
 
                 return event::Status::Captured;
@@ -232,7 +218,22 @@ where
         Event::Mouse(mouse::Event::CursorMoved { .. })
         | Event::Touch(touch::Event::FingerMoved { .. }) => {
             if is_dragging {
-                change();
+                let bounds = layout.bounds();
+                let step = step.into();
+                let start = (*range.start()).into();
+                let end = (*range.end()).into();
+                let mut percent =
+                    f64::from(cursor_position.x - state.click_pos_x) / f64::from(bounds.width);
+                if state.shift_pressed {
+                    percent /= 4.0;
+                }
+                let steps = (percent * (end - start) / step).round();
+                let v = state.click_value + steps;
+                let new_value = T::from_f64(v)
+                    .unwrap_or_default()
+                    .clamp(*range.start(), *range.end());
+                shell.publish((on_change)(new_value));
+                *value = new_value;
 
                 return event::Status::Captured;
             }
@@ -258,6 +259,10 @@ where
             ..
         }) => {
             state.shift_pressed = true;
+            if state.is_dragging {
+                state.click_pos_x = cursor_position.x;
+                state.click_value = (*value).into();
+            }
 
             return event::Status::Captured;
         }
@@ -266,6 +271,22 @@ where
             ..
         }) => {
             state.shift_pressed = false;
+            if state.is_dragging {
+                let bounds = layout.bounds();
+                let step = step.into();
+                let start = (*range.start()).into();
+                let end = (*range.end()).into();
+                let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
+                let steps = (percent * (end - start) / step).round();
+                let v = steps * step + start;
+                let new_value = T::from_f64(v)
+                    .unwrap_or_default()
+                    .clamp(*range.start(), *range.end());
+                shell.publish((on_change)(new_value));
+                *value = new_value;
+                state.click_pos_x = cursor_position.x;
+                state.click_value = (*value).into();
+            }
 
             return event::Status::Captured;
         }
@@ -407,6 +428,8 @@ pub struct State {
     is_dragging: bool,
     shift_pressed: bool,
     control_pressed: bool,
+    click_pos_x: f32,
+    click_value: f64,
 }
 
 impl State {
