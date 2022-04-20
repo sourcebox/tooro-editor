@@ -4,7 +4,7 @@
 //! with the following changes:
 //!     - Use of pointer shape mouse cursor when hovering the slider.
 //!     - Mouse wheel support.
-//!     - Control-click resets slider to a default value.
+//!     - Control-click/right-click resets slider to a default value.
 //!     - Shift-drag enables fine control.
 //!     - Clippy related fixes.
 //!
@@ -213,6 +213,13 @@ where
                 state.is_dragging = false;
 
                 return event::Status::Captured;
+            }
+        }
+        Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Right)) => {
+            if layout.bounds().contains(cursor_position) {
+                let new_value = default;
+                shell.publish((on_change)(new_value));
+                *value = new_value;
             }
         }
         Event::Mouse(mouse::Event::CursorMoved { .. })
