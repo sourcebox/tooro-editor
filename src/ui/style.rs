@@ -314,7 +314,7 @@ pub struct Checkbox;
 impl checkbox::StyleSheet for Checkbox {
     fn active(&self, is_checked: bool) -> checkbox::Style {
         checkbox::Style {
-            text_color: Some(Color::from_rgb8(0xFF, 0xFF, 0xFF)),
+            text_color: Some(SECTION_TEXT_COLOR),
             background: if is_checked { ACTIVE } else { SURFACE }.into(),
             checkmark_color: Color::WHITE,
             border_radius: 2.0,
