@@ -27,7 +27,7 @@ impl MiscSection {
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(
-                "Bend Range",
+                "Bend Amt",
                 &mut self.bend_slider,
                 SoundParameter::BendRange,
                 params.get_value(SoundParameter::BendRange),
