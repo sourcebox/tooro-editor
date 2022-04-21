@@ -80,8 +80,8 @@ impl SoundPanel {
         let sound_col3 = Column::new()
             .padding(5)
             .spacing(10)
-            .push(self.extra_section.view(params))
             .push(self.shaper_section.view(params))
+            .push(self.extra_section.view(params))
             .push(self.envf_section.view(params))
             .width(Length::FillPortion(4));
 

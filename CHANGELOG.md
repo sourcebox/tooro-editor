@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Swapped positions of *Shaper* and *Extra* sections in layout.
 - Parameter labels now match the panel printing more precise.
 - Lower latency with MIDI merge input.
 - Show shorter port names for merge input on Linux.
