@@ -16,7 +16,8 @@ pub fn checkbox_with_labels<'a>(
         Message::SoundParameterChange(sound_param, v as i32)
     })
     .style(style::Checkbox)
-    .text_size(style::LIST_ITEM_TEXT_SIZE);
+    .text_size(style::LIST_ITEM_TEXT_SIZE)
+    .spacing(7);
 
     Container::new(
         Row::new()
