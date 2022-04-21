@@ -1,6 +1,6 @@
 //! Section containing the filter parameters
 
-use iced::{Column, Container, Element, Text};
+use iced::{Column, Container, Element, Length, Text};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -34,6 +34,7 @@ impl FilterSection {
             .push(Text::new("Filter").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
+            .height(Length::Units(169))
             .push(slider_with_labels(
                 "Cutoff",
                 &mut self.cutoff_slider,
