@@ -248,7 +248,13 @@ where
         Event::Mouse(mouse::Event::WheelScrolled { delta }) => {
             if layout.bounds().contains(cursor_position) {
                 let delta = match delta {
-                    ScrollDelta::Lines { x: _, y } => y,
+                    ScrollDelta::Lines { x: _, y } => {
+                        if y.is_sign_positive() {
+                            y.ceil()
+                        } else {
+                            y.floor()
+                        }
+                    }
                     _ => 0.0,
                 };
 
