@@ -11,8 +11,8 @@ keywords = ["midi", "synthesizer"]
 
 [dependencies]
 iced = { version = "0.4", default-features = false, features = ["tokio", "glow"]}
-iced_native = { version = "0.5"}
-iced_style = { version = "0.4"}
+iced_native = "0.5"
+iced_style = "0.4"
 midir = "0.7"
 log = { version="0.4", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "2.1"
