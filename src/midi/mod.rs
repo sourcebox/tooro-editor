@@ -63,7 +63,7 @@ impl MidiConnector {
 
             for port in input.ports().iter() {
                 let port_name = cleanup_port_name(input.port_name(port).unwrap());
-                if !port_name.starts_with("Tooro") && !port_name.starts_with("tooro") {
+                if !port_name.contains("Tooro") && !port_name.contains("tooro") {
                     merge_inputs.push(port_name);
                 }
             }
@@ -75,7 +75,7 @@ impl MidiConnector {
 
             for port in input.ports().iter() {
                 let port_name = cleanup_port_name(input.port_name(port).unwrap());
-                if port_name.starts_with("Tooro") {
+                if port_name.contains("Tooro") {
                     if self.device_input.is_none() {
                         log::info!("MIDI input connected to port {}", port_name);
                         let on_receive_args = OnReceiveArgs {
@@ -117,7 +117,7 @@ impl MidiConnector {
 
             for port in output.ports().iter() {
                 let port_name = cleanup_port_name(output.port_name(port).unwrap());
-                if port_name.starts_with("Tooro") {
+                if port_name.contains("Tooro") {
                     if self.device_output.is_none() {
                         log::info!("MIDI output connected to port {}", port_name);
                         self.device_output = Some(
