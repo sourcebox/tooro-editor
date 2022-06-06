@@ -13,7 +13,7 @@ keywords = ["midi", "synthesizer"]
 iced = { version = "0.4", default-features = false, features = ["tokio", "glow"]}
 iced_native = "0.5"
 iced_style = "0.4"
-midir = "0.7"
+midir = "0.8"
 log = { version="0.4", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "2.1"
 num-traits = "0.2"
