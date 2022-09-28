@@ -8,12 +8,12 @@ The application is written in Rust and features the [Iced GUI library](https://g
 
 ## Features
 
-The state of the application can be seen as minimum viable product. Because of its open source nature, user contributions to the code are always welcome.
-
-It currently supports:
+The editor currently supports:
 
 - Editing of most preset and multi parameters
 - Loading and saving of presets as sysex files
+
+Being an open source project, user contributions to the code are always welcome.
 
 ## Usage
 
@@ -22,6 +22,9 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - The Töörö must be connected to the computer via USB. DIN MIDI will not work.
 - When using a DAW at the same time as the editor, make sure it does not loopback sysex messages to the Töörö.
 - You can select a MIDI input for playing the Töörö while editing via the **Merge Input** dropdown list on the bottom of the application window.
+- Silders can be fine-controlled by holding the *SHIFT* key while dragging.
+- To reset a slider value to it's default, use *CTRL*-click or right-click.
+- The mouse wheel can also be used to change a slider value.
 - The Töörö firmware must be V1.5 or higher. Otherwise, not all parameters can be edited.
 - The application tries to detect when you change a parameter on the device itself. Unfortunately, this will not work in all cases. Use the **Update from device** button to force a reload of all parameters.
 - A manual update must also be requested when you change a preset or change a parameter via MIDI CCs from another application or source.
@@ -33,6 +36,7 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - The connection state is not always detected correctly when the Töörö is connected or disconnected while the application is running.
 - Resizing the window height is possible but has no use.
 - Using more than one Töörö at a time is not supported.
+- On some Linux machines, the application crashes on startup. While the cause is not fully clear, it seems to be related to the configuration of the graphics subsystem.
 
 ## Runtime Requirements
 
@@ -80,6 +84,12 @@ To build an AppImage for Linux, additional dependencies must be installed:
 
 Run `./build-linux-appimage.sh` from the project directory. Make sure the script has executable permissions.
 The AppImage will be created in the `./target/release/appimage` directory.
+
+## License
+
+Published under the MIT license. All contributions to this project must be provided under the same license conditions.
+
+Author: Oliver Rockstedt <info@sourcebox.de>
 
 ## Donations
 
