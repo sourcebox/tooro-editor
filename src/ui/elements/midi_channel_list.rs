@@ -1,6 +1,7 @@
 //! Dropdown menu for the MIDI channels
 
-use iced::{pick_list, Column, Container, Length, PickList, Row, Text};
+use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::Length;
 
 use crate::messages::Message;
 use crate::params::MultiParameter;
@@ -8,7 +9,6 @@ use crate::style;
 
 pub fn midi_channel_list<'a>(
     label: &'a str,
-    state: &'a mut pick_list::State<MidiChannel>,
     multi_param: MultiParameter,
     value: i32,
 ) -> Container<'a, Message> {
@@ -32,10 +32,9 @@ pub fn midi_channel_list<'a>(
         16 => Some(MidiChannel::Channel16),
         _ => None,
     };
-    let pick_list = PickList::new(state, &MidiChannel::ALL[..], value, move |v| {
+    let pick_list = PickList::new(&MidiChannel::ALL[..], value, move |v| {
         Message::MultiParameterChange(multi_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

@@ -14,9 +14,9 @@ mod osc1;
 mod osc2;
 mod shaper;
 
-use iced::{Column, Container, Element, Length, Row};
+use iced::widget::{Column, Container, Row};
+use iced::{Element, Length};
 
-use super::style;
 use crate::messages::Message;
 use crate::params::SoundParameterValues;
 use {
@@ -60,7 +60,7 @@ impl SoundPanel {
         }
     }
 
-    pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
         let sound_col1 = Column::new()
             .padding(5)
             .spacing(10)
@@ -106,7 +106,7 @@ impl SoundPanel {
         )
         .padding(5)
         .height(Length::Fill)
-        .style(style::MainWindow)
+        // .style(style::MainWindow)
         .into()
     }
 }

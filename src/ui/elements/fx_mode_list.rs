@@ -1,6 +1,7 @@
 //! Dropdown menu for the multi fx modes
 
-use iced::{pick_list, Column, Container, Length, PickList, Row, Text};
+use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::Length;
 
 use crate::messages::Message;
 use crate::params::MultiParameter;
@@ -8,7 +9,6 @@ use crate::style;
 
 pub fn fx_mode_list<'a>(
     label: &'a str,
-    state: &'a mut pick_list::State<FXMode>,
     multi_param: MultiParameter,
     value: i32,
 ) -> Container<'a, Message> {
@@ -19,10 +19,9 @@ pub fn fx_mode_list<'a>(
         3 => Some(FXMode::StereoDelay),
         _ => None,
     };
-    let pick_list = PickList::new(state, &FXMode::ALL[..], value, move |v| {
+    let pick_list = PickList::new(&FXMode::ALL[..], value, move |v| {
         Message::MultiParameterChange(multi_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

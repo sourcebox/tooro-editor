@@ -1,6 +1,7 @@
 //! Dropdown menu for the LFO shapes
 
-use iced::{pick_list, Column, Container, Length, PickList, Row, Text};
+use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::Length;
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -8,7 +9,6 @@ use crate::style;
 
 pub fn lfo_shape_list<'a>(
     label: &'a str,
-    state: &'a mut pick_list::State<LFOShape>,
     sound_param: SoundParameter,
     value: i32,
 ) -> Container<'a, Message> {
@@ -23,10 +23,9 @@ pub fn lfo_shape_list<'a>(
         7 => Some(LFOShape::AM),
         _ => None,
     };
-    let pick_list = PickList::new(state, &LFOShape::ALL[..], value, move |v| {
+    let pick_list = PickList::new(&LFOShape::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

@@ -1,6 +1,7 @@
 //! Slider control wrapped in a container with label and value display
 
-use iced::{alignment, Column, Container, Length, Row, Text};
+use iced::widget::{Column, Container, Row, Text};
+use iced::{alignment, Length};
 
 use super::slider_widget::{self, Slider};
 
@@ -11,15 +12,13 @@ use crate::style;
 /// Returns a slider for a sound (preset) parameter
 pub fn slider_with_labels<'a>(
     label: &'a str,
-    state: &'a mut slider_widget::State,
     sound_param: SoundParameter,
     value: i32,
 ) -> Container<'a, Message> {
     let range = sound_param.get_range();
-    let slider = Slider::new(state, range, value, sound_param.get_default(), move |v| {
+    let slider = Slider::new(range, value, sound_param.get_default(), move |v| {
         Message::SoundParameterChange(sound_param, v)
-    })
-    .style(style::Slider);
+    });
 
     Container::new(
         Row::new()
@@ -49,15 +48,13 @@ pub fn slider_with_labels<'a>(
 /// Returns a slider for a multi parameter
 pub fn multi_slider_with_labels<'a>(
     label: &'a str,
-    state: &'a mut slider_widget::State,
     multi_param: MultiParameter,
     value: i32,
 ) -> Container<'a, Message> {
     let range = multi_param.get_range();
-    let slider = Slider::new(state, range, value, multi_param.get_default(), move |v| {
+    let slider = Slider::new(range, value, multi_param.get_default(), move |v| {
         Message::MultiParameterChange(multi_param, v)
-    })
-    .style(style::Slider);
+    });
 
     Container::new(
         Row::new()

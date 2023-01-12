@@ -17,13 +17,13 @@ use iced_native::layout;
 use iced_native::mouse;
 use iced_native::renderer;
 use iced_native::touch;
+use iced_native::widget::tree::{self, Tree};
 use iced_native::{
     Background, Clipboard, Color, Element, Layout, Length, Point, Rectangle, Shell, Size, Widget,
 };
+pub use iced_style::slider::{Handle, HandleShape, StyleSheet};
 
 use std::ops::{Add, RangeInclusive};
-
-pub use iced_style::slider::{Handle, HandleShape, Style, StyleSheet};
 
 /// An horizontal bar and a handle that selects a single value from a range of
 /// values.
@@ -35,38 +35,45 @@ pub use iced_style::slider::{Handle, HandleShape, Style, StyleSheet};
 ///
 /// # Example
 /// ```
-/// # use iced_native::widget::slider::{self, Slider};
+/// # use iced_native::widget::slider;
+/// # use iced_native::renderer::Null;
+/// #
+/// # type Slider<'a, T, Message> = slider::Slider<'a, T, Message, Null>;
 /// #
 /// #[derive(Clone)]
 /// pub enum Message {
 ///     SliderChanged(f32),
 /// }
 ///
-/// let state = &mut slider::State::new();
 /// let value = 50.0;
 ///
-/// Slider::new(state, 0.0..=100.0, value, Message::SliderChanged);
+/// Slider::new(0.0..=100.0, value, Message::SliderChanged);
 /// ```
 ///
 /// ![Slider drawn by Coffee's renderer](https://github.com/hecrj/coffee/blob/bda9818f823dfcb8a7ad0ff4940b4d4b387b5208/images/ui/slider.png?raw=true)
 #[allow(missing_debug_implementations)]
-pub struct Slider<'a, T, Message> {
-    state: &'a mut State,
+pub struct Slider<'a, T, Message, Renderer>
+where
+    Renderer: iced_native::Renderer,
+    Renderer::Theme: StyleSheet,
+{
     range: RangeInclusive<T>,
     step: T,
     value: T,
     default: T,
-    on_change: Box<dyn Fn(T) -> Message>,
+    on_change: Box<dyn Fn(T) -> Message + 'a>,
     on_release: Option<Message>,
     width: Length,
     height: u16,
-    style_sheet: Box<dyn StyleSheet + 'a>,
+    style: <Renderer::Theme as StyleSheet>::Style,
 }
 
-impl<'a, T, Message> Slider<'a, T, Message>
+impl<'a, T, Message, Renderer> Slider<'a, T, Message, Renderer>
 where
     T: Copy + From<u8> + std::cmp::PartialOrd,
     Message: Clone,
+    Renderer: iced_native::Renderer,
+    Renderer::Theme: StyleSheet,
 {
     /// The default height of a [`Slider`].
     pub const DEFAULT_HEIGHT: u16 = 22;
@@ -74,19 +81,12 @@ where
     /// Creates a new [`Slider`].
     ///
     /// It expects:
-    ///   * the local [`State`] of the [`Slider`]
     ///   * an inclusive range of possible values
     ///   * the current value of the [`Slider`]
     ///   * a function that will be called when the [`Slider`] is dragged.
     ///   It receives the new value of the [`Slider`] and must produce a
     ///   `Message`.
-    pub fn new<F>(
-        state: &'a mut State,
-        range: RangeInclusive<T>,
-        value: T,
-        default: T,
-        on_change: F,
-    ) -> Self
+    pub fn new<F>(range: RangeInclusive<T>, value: T, default: T, on_change: F) -> Self
     where
         F: 'static + Fn(T) -> Message,
     {
@@ -103,7 +103,6 @@ where
         };
 
         Slider {
-            state,
             value,
             range,
             step: T::from(1),
@@ -112,7 +111,7 @@ where
             on_release: None,
             width: Length::Fill,
             height: Self::DEFAULT_HEIGHT,
-            style_sheet: Default::default(),
+            style: Default::default(),
         }
     }
 
@@ -140,8 +139,8 @@ where
     }
 
     /// Sets the style of the [`Slider`].
-    pub fn style(mut self, style_sheet: impl Into<Box<dyn StyleSheet + 'a>>) -> Self {
-        self.style_sheet = style_sheet.into();
+    pub fn style(mut self, style: impl Into<<Renderer::Theme as StyleSheet>::Style>) -> Self {
+        self.style = style.into();
         self
     }
 
@@ -326,26 +325,29 @@ where
 }
 
 /// Draws a [`Slider`].
-pub fn draw<T>(
-    renderer: &mut impl iced_native::Renderer,
+pub fn draw<T, R>(
+    renderer: &mut R,
     layout: Layout<'_>,
     cursor_position: Point,
     state: &State,
     value: T,
     range: &RangeInclusive<T>,
-    style_sheet: &dyn StyleSheet,
+    style_sheet: &dyn StyleSheet<Style = <R::Theme as StyleSheet>::Style>,
+    style: &<R::Theme as StyleSheet>::Style,
 ) where
     T: Into<f64> + Copy,
+    R: iced_native::Renderer,
+    R::Theme: StyleSheet,
 {
     let bounds = layout.bounds();
     let is_mouse_over = bounds.contains(cursor_position);
 
     let style = if state.is_dragging {
-        style_sheet.dragging()
+        style_sheet.dragging(style)
     } else if is_mouse_over {
-        style_sheet.hovered()
+        style_sheet.hovered(style)
     } else {
-        style_sheet.active()
+        style_sheet.active(style)
     };
 
     let rail_y = bounds.y + (bounds.height / 2.0).round();
@@ -358,7 +360,7 @@ pub fn draw<T>(
                 width: bounds.width,
                 height: 2.0,
             },
-            border_radius: 0.0,
+            border_radius: 0.0.into(),
             border_width: 0.0,
             border_color: Color::TRANSPARENT,
         },
@@ -373,7 +375,7 @@ pub fn draw<T>(
                 width: bounds.width,
                 height: 2.0,
             },
-            border_radius: 0.0,
+            border_radius: 0.0.into(),
             border_width: 0.0,
             border_color: Color::TRANSPARENT,
         },
@@ -409,7 +411,7 @@ pub fn draw<T>(
                 width: handle_width,
                 height: handle_height,
             },
-            border_radius: handle_border_radius,
+            border_radius: handle_border_radius.into(),
             border_width: style.handle.border_width,
             border_color: style.handle.border_color,
         },
@@ -452,12 +454,21 @@ impl State {
     }
 }
 
-impl<'a, T, Message, Renderer> Widget<Message, Renderer> for Slider<'a, T, Message>
+impl<'a, T, Message, Renderer> Widget<Message, Renderer> for Slider<'a, T, Message, Renderer>
 where
     T: Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
     Message: Clone,
     Renderer: iced_native::Renderer,
+    Renderer::Theme: StyleSheet,
 {
+    fn tag(&self) -> tree::Tag {
+        tree::Tag::of::<State>()
+    }
+
+    fn state(&self) -> tree::State {
+        tree::State::new(State::new())
+    }
+
     fn width(&self) -> Length {
         self.width
     }
@@ -476,6 +487,7 @@ where
 
     fn on_event(
         &mut self,
+        tree: &mut Tree,
         event: Event,
         layout: Layout<'_>,
         cursor_position: Point,
@@ -488,7 +500,7 @@ where
             layout,
             cursor_position,
             shell,
-            self.state,
+            tree.state.downcast_mut::<State>(),
             &mut self.value,
             &self.range,
             self.step,
@@ -500,7 +512,9 @@ where
 
     fn draw(
         &self,
+        tree: &Tree,
         renderer: &mut Renderer,
+        theme: &Renderer::Theme,
         _style: &renderer::Style,
         layout: Layout<'_>,
         cursor_position: Point,
@@ -510,31 +524,35 @@ where
             renderer,
             layout,
             cursor_position,
-            self.state,
+            tree.state.downcast_ref::<State>(),
             self.value,
             &self.range,
-            self.style_sheet.as_ref(),
+            theme,
+            &self.style,
         )
     }
 
     fn mouse_interaction(
         &self,
+        tree: &Tree,
         layout: Layout<'_>,
         cursor_position: Point,
         _viewport: &Rectangle,
         _renderer: &Renderer,
     ) -> mouse::Interaction {
-        mouse_interaction(layout, cursor_position, self.state)
+        mouse_interaction(layout, cursor_position, tree.state.downcast_ref::<State>())
     }
 }
 
-impl<'a, T, Message, Renderer> From<Slider<'a, T, Message>> for Element<'a, Message, Renderer>
+impl<'a, T, Message, Renderer> From<Slider<'a, T, Message, Renderer>>
+    for Element<'a, Message, Renderer>
 where
     T: 'a + Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
     Message: 'a + Clone,
     Renderer: 'a + iced_native::Renderer,
+    Renderer::Theme: StyleSheet,
 {
-    fn from(slider: Slider<'a, T, Message>) -> Element<'a, Message, Renderer> {
+    fn from(slider: Slider<'a, T, Message, Renderer>) -> Element<'a, Message, Renderer> {
         Element::new(slider)
     }
 }

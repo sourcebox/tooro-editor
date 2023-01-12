@@ -1,40 +1,32 @@
 //! Section containing misc parameters
 
-use iced::{Column, Container, Element, Text};
+use iced::widget::{Column, Container, Text};
+use iced::Element;
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
-use crate::ui::elements::slider_widget as slider;
 use crate::ui::elements::{checkbox::checkbox_with_labels, slider::slider_with_labels};
 use crate::ui::style;
 
-pub struct MiscSection {
-    bend_slider: slider::State,
-    tune_slider: slider::State,
-}
+pub struct MiscSection {}
 
 impl MiscSection {
     pub fn new() -> Self {
-        Self {
-            bend_slider: slider::State::new(),
-            tune_slider: slider::State::new(),
-        }
+        Self {}
     }
 
-    pub fn view(&mut self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
         let content = Column::new()
             .push(Text::new("Misc").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(
                 "Bend Amt",
-                &mut self.bend_slider,
                 SoundParameter::BendRange,
                 params.get_value(SoundParameter::BendRange),
             ))
             .push(slider_with_labels(
                 "Tune",
-                &mut self.tune_slider,
                 SoundParameter::Tune,
                 params.get_value(SoundParameter::Tune),
             ))
@@ -44,6 +36,8 @@ impl MiscSection {
                 SoundParameter::PolyMode,
                 params.get_value(SoundParameter::PolyMode),
             ));
-        Container::new(content).style(style::MiscSection).into()
+        Container::new(content)
+            // .style(style::MiscSection)
+            .into()
     }
 }

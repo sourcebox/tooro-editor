@@ -10,9 +10,9 @@ mod ui;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
+use iced::widget::{Column, Container, PickList, Row, Text};
 use iced::{
-    executor, pick_list, time, Alignment, Application, Column, Command, Container, Element, Length,
-    PickList, Row, Settings, Subscription, Text,
+    executor, time, Alignment, Application, Command, Element, Length, Settings, Subscription,
 };
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
@@ -63,9 +63,6 @@ struct EditorApp {
     /// Status bar info on communication
     status_communication: String,
 
-    /// Drop down list for the MIDI merge input
-    merge_input_list: pick_list::State<String>,
-
     /// Name of the merge input port
     merge_input_name: String,
 
@@ -110,6 +107,7 @@ impl Application for EditorApp {
     type Executor = executor::Default;
     type Message = Message;
     type Flags = ();
+    type Theme = iced::Theme;
 
     /// Constructs a new application
     fn new(_flags: ()) -> (Self, Command<Message>) {
@@ -122,7 +120,6 @@ impl Application for EditorApp {
                 status_connection: String::from("Device disconnected"),
                 status_communication: String::from("Initializing..."),
 
-                merge_input_list: pick_list::State::<String>::default(),
                 merge_input_name: String::new(),
                 merge_input_sender: None,
 
@@ -359,7 +356,7 @@ impl Application for EditorApp {
     }
 
     /// Returns the widgets to display
-    fn view(&mut self) -> Element<Self::Message> {
+    fn view(&self) -> Element<Self::Message, iced::Renderer<iced::Theme>> {
         Container::new(
             Column::new()
                 .push(
@@ -394,7 +391,6 @@ impl Application for EditorApp {
                                     .push(Text::new("Merge Input:").size(style::STATUS_TEXT_SIZE))
                                     .push(
                                         PickList::new(
-                                            &mut self.merge_input_list,
                                             {
                                                 let mut inputs =
                                                     self.midi.get_merge_inputs().clone();
@@ -404,7 +400,6 @@ impl Application for EditorApp {
                                             Some(self.merge_input_name.clone()),
                                             Message::MergeInputChange,
                                         )
-                                        .style(style::PickList)
                                         .width(Length::Units(250))
                                         .text_size(style::LIST_ITEM_TEXT_SIZE),
                                     )
@@ -441,8 +436,11 @@ impl Application for EditorApp {
         )
         .padding(5)
         .height(Length::Fill)
-        .style(style::MainWindow)
         .into()
+    }
+
+    fn theme(&self) -> iced::Theme {
+        iced::Theme::Dark
     }
 }
 

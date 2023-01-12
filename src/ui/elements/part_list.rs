@@ -1,11 +1,11 @@
 //! Dropdown menu for part selection
 
-use iced::{pick_list, Container, PickList};
+use iced::widget::{Container, PickList};
 
 use crate::messages::Message;
 use crate::style;
 
-pub fn part_list(state: &mut pick_list::State<PartList>, value: u8) -> Container<Message> {
+pub fn part_list<'a>(value: u8) -> Container<'a, Message> {
     let value = match value {
         0 => Some(PartList::Part1),
         1 => Some(PartList::Part2),
@@ -13,10 +13,9 @@ pub fn part_list(state: &mut pick_list::State<PartList>, value: u8) -> Container
         3 => Some(PartList::Part4),
         _ => None,
     };
-    let pick_list = PickList::new(state, &PartList::ALL[..], value, move |v| {
+    let pick_list = PickList::new(&PartList::ALL[..], value, move |v| {
         Message::PartChange(v as u8)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(pick_list)
