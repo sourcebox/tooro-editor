@@ -26,6 +26,7 @@ pub fn arp_mode_list<'a>(
     let pick_list = PickList::new(&ArpMode::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
+    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

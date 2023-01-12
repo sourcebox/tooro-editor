@@ -17,6 +17,7 @@ mod shaper;
 use iced::widget::{Column, Container, Row};
 use iced::{Element, Length};
 
+use super::style;
 use crate::messages::Message;
 use crate::params::SoundParameterValues;
 use {
@@ -106,7 +107,7 @@ impl SoundPanel {
         )
         .padding(5)
         .height(Length::Fill)
-        // .style(style::MainWindow)
+        .style(style::MainWindow)
         .into()
     }
 }

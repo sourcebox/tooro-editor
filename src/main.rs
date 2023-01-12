@@ -401,6 +401,7 @@ impl Application for EditorApp {
                                             Message::MergeInputChange,
                                         )
                                         .width(Length::Units(250))
+                                        .style(style::PickList)
                                         .text_size(style::LIST_ITEM_TEXT_SIZE),
                                     )
                                     .spacing(10),
@@ -436,6 +437,7 @@ impl Application for EditorApp {
         )
         .padding(5)
         .height(Length::Fill)
+        .style(style::MainWindow)
         .into()
     }
 

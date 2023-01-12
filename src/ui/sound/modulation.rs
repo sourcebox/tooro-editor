@@ -83,8 +83,6 @@ impl ModSection {
                         .width(Length::FillPortion(4)),
                 ),
         );
-        Container::new(content)
-            // .style(style::ModSection)
-            .into()
+        Container::new(content).style(style::ModSection).into()
     }
 }

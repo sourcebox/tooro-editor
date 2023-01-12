@@ -25,6 +25,7 @@ pub fn lfo_phase_list<'a>(
     let pick_list = PickList::new(&LFOPhase::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
+    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

@@ -60,8 +60,6 @@ impl Osc2Section {
                 SoundParameter::Osc2Level,
                 params.get_value(SoundParameter::Osc2Level),
             ));
-        Container::new(content)
-            // .style(style::OscSection)
-            .into()
+        Container::new(content).style(style::OscSection).into()
     }
 }

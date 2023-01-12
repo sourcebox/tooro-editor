@@ -40,7 +40,7 @@ impl MultiPanel {
         Container::new(Column::new().push(Row::new().push(col)))
             .padding(5)
             .height(Length::Fill)
-            // .style(style::MainWindow)
+            .style(style::MainWindow)
             .into()
     }
 }

@@ -30,8 +30,6 @@ impl AmpSection {
                 SoundParameter::AmpPan,
                 params.get_value(SoundParameter::AmpPan),
             ));
-        Container::new(content)
-            // .style(style::AmpSection)
-            .into()
+        Container::new(content).style(style::AmpSection).into()
     }
 }

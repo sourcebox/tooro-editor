@@ -16,6 +16,7 @@ pub fn checkbox_with_labels<'a>(
     let checkbox = Checkbox::new(value != 0, text, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
+    .style(style::Checkbox)
     .text_size(style::LIST_ITEM_TEXT_SIZE)
     .spacing(7);
 

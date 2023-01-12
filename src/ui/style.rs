@@ -1,7 +1,10 @@
 //! Style definitions for the different elements
 
+use std::rc::Rc;
+
+use iced::overlay::menu;
 use iced::widget::{button, checkbox, container, pick_list, slider};
-use iced::{Background, Color, Vector};
+use iced::{Background, Color, Theme, Vector};
 
 /// Default window width
 pub const WINDOW_WIDTH: u32 = 1024;
@@ -60,17 +63,13 @@ const SURFACE: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
 );
 
-/// Default style.
-#[derive(Default, Clone)]
-pub struct DefaultStyle {}
-
 /// Styles for the oscillator sections
 pub struct OscSection;
 
 impl container::StyleSheet for OscSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xab, 0xa3, 0x39))),
@@ -81,13 +80,19 @@ impl container::StyleSheet for OscSection {
     }
 }
 
+impl Into<iced::theme::Container> for OscSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(OscSection))
+    }
+}
+
 /// Styles for the extra section
 pub struct ExtraSection;
 
 impl container::StyleSheet for ExtraSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xf9, 0xb0, 0x8b))),
@@ -98,13 +103,19 @@ impl container::StyleSheet for ExtraSection {
     }
 }
 
+impl Into<iced::theme::Container> for ExtraSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(ExtraSection))
+    }
+}
+
 /// Styles for the shaper section
 pub struct ShaperSection;
 
 impl container::StyleSheet for ShaperSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xd8, 0x00, 0x00))),
@@ -112,6 +123,12 @@ impl container::StyleSheet for ShaperSection {
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
         }
+    }
+}
+
+impl Into<iced::theme::Container> for ShaperSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(ShaperSection))
     }
 }
 
@@ -119,9 +136,9 @@ impl container::StyleSheet for ShaperSection {
 pub struct FilterSection;
 
 impl container::StyleSheet for FilterSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xd8, 0x00, 0x00))),
@@ -132,13 +149,19 @@ impl container::StyleSheet for FilterSection {
     }
 }
 
+impl Into<iced::theme::Container> for FilterSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(FilterSection))
+    }
+}
+
 /// Styles for the amplifier section
 pub struct AmpSection;
 
 impl container::StyleSheet for AmpSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0x65, 0xa4, 0x7e))),
@@ -149,13 +172,19 @@ impl container::StyleSheet for AmpSection {
     }
 }
 
+impl Into<iced::theme::Container> for AmpSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(AmpSection))
+    }
+}
+
 /// Styles for the LFO sections
 pub struct LFOSection;
 
 impl container::StyleSheet for LFOSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xd2, 0x6a, 0x25))),
@@ -166,13 +195,19 @@ impl container::StyleSheet for LFOSection {
     }
 }
 
+impl Into<iced::theme::Container> for LFOSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(LFOSection))
+    }
+}
+
 /// Styles for the envelope sections
 pub struct EnvSection;
 
 impl container::StyleSheet for EnvSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xff, 0xbd, 0x00))),
@@ -183,13 +218,19 @@ impl container::StyleSheet for EnvSection {
     }
 }
 
+impl Into<iced::theme::Container> for EnvSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(EnvSection))
+    }
+}
+
 /// Styles for the arpeggiator section
 pub struct ArpSection;
 
 impl container::StyleSheet for ArpSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xf9, 0xb0, 0x8b))),
@@ -200,13 +241,19 @@ impl container::StyleSheet for ArpSection {
     }
 }
 
+impl Into<iced::theme::Container> for ArpSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(ArpSection))
+    }
+}
+
 /// Styles for the misc section
 pub struct MiscSection;
 
 impl container::StyleSheet for MiscSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
@@ -217,13 +264,19 @@ impl container::StyleSheet for MiscSection {
     }
 }
 
+impl Into<iced::theme::Container> for MiscSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(MiscSection))
+    }
+}
+
 /// Styles for the modulation section
 pub struct ModSection;
 
 impl container::StyleSheet for ModSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xb4, 0xcb, 0xd9))),
@@ -234,13 +287,19 @@ impl container::StyleSheet for ModSection {
     }
 }
 
+impl Into<iced::theme::Container> for ModSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(ModSection))
+    }
+}
+
 /// Styles for the FX section
 pub struct FXSection;
 
 impl container::StyleSheet for FXSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0x65, 0xa4, 0x7e))),
@@ -251,13 +310,19 @@ impl container::StyleSheet for FXSection {
     }
 }
 
+impl Into<iced::theme::Container> for FXSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(FXSection))
+    }
+}
+
 /// Styles for the mixer section
 pub struct MixerSection;
 
 impl container::StyleSheet for MixerSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
@@ -265,6 +330,12 @@ impl container::StyleSheet for MixerSection {
             border_color: Color::from_rgb(0.7, 0.7, 0.7),
             border_radius: 5.0,
         }
+    }
+}
+
+impl Into<iced::theme::Container> for MixerSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(MixerSection))
     }
 }
 
@@ -272,9 +343,9 @@ impl container::StyleSheet for MixerSection {
 pub struct MidiSection;
 
 impl container::StyleSheet for MidiSection {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Some(Background::Color(Color::from_rgb8(0xC0, 0xC0, 0xC0))),
@@ -285,13 +356,19 @@ impl container::StyleSheet for MidiSection {
     }
 }
 
+impl Into<iced::theme::Container> for MidiSection {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(MidiSection))
+    }
+}
+
 /// Styles for the main window
 pub struct MainWindow;
 
 impl container::StyleSheet for MainWindow {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: Some(Color::from_rgb8(0xFF, 0xFF, 0xFF)),
             background: Some(Background::Color(Color::from_rgb8(0x20, 0x20, 0x20))),
@@ -300,13 +377,19 @@ impl container::StyleSheet for MainWindow {
     }
 }
 
+impl Into<iced::theme::Container> for MainWindow {
+    fn into(self) -> iced::theme::Container {
+        iced::theme::Container::Custom(Box::new(MainWindow))
+    }
+}
+
 /// Styles for all sliders
 pub struct Slider;
 
 impl slider::StyleSheet for Slider {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn active(&self, style: &Self::Style) -> slider::Appearance {
+    fn active(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
             rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
             handle: slider::Handle {
@@ -318,7 +401,7 @@ impl slider::StyleSheet for Slider {
         }
     }
 
-    fn hovered(&self, style: &Self::Style) -> slider::Appearance {
+    fn hovered(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
             rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
             handle: slider::Handle {
@@ -330,7 +413,7 @@ impl slider::StyleSheet for Slider {
         }
     }
 
-    fn dragging(&self, style: &Self::Style) -> slider::Appearance {
+    fn dragging(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
             rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
             handle: slider::Handle {
@@ -343,13 +426,19 @@ impl slider::StyleSheet for Slider {
     }
 }
 
+impl Into<iced::theme::Slider> for Slider {
+    fn into(self) -> iced::theme::Slider {
+        iced::theme::Slider::Custom(Box::new(Slider))
+    }
+}
+
 /// Styles for all checkboxes
 pub struct Checkbox;
 
 impl checkbox::StyleSheet for Checkbox {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn active(&self, style: &Self::Style, is_checked: bool) -> checkbox::Appearance {
+    fn active(&self, _style: &Self::Style, is_checked: bool) -> checkbox::Appearance {
         checkbox::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: if is_checked { ACTIVE } else { SURFACE }.into(),
@@ -360,7 +449,7 @@ impl checkbox::StyleSheet for Checkbox {
         }
     }
 
-    fn hovered(&self, style: &Self::Style, is_checked: bool) -> checkbox::Appearance {
+    fn hovered(&self, _style: &Self::Style, is_checked: bool) -> checkbox::Appearance {
         checkbox::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: Color {
@@ -376,13 +465,19 @@ impl checkbox::StyleSheet for Checkbox {
     }
 }
 
+impl Into<iced::theme::Checkbox> for Checkbox {
+    fn into(self) -> iced::theme::Checkbox {
+        iced::theme::Checkbox::Custom(Box::new(Checkbox))
+    }
+}
+
 /// Styles for all dropdown menus
 pub struct PickList;
 
 impl pick_list::StyleSheet for PickList {
-    type Style = DefaultStyle;
+    type Style = Theme;
 
-    fn active(&self, style: &Self::Style) -> pick_list::Appearance {
+    fn active(&self, _style: &Self::Style) -> pick_list::Appearance {
         pick_list::Appearance {
             text_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
             placeholder_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
@@ -394,7 +489,7 @@ impl pick_list::StyleSheet for PickList {
         }
     }
 
-    fn hovered(&self, style: &Self::Style) -> pick_list::Appearance {
+    fn hovered(&self, _style: &Self::Style) -> pick_list::Appearance {
         pick_list::Appearance {
             text_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
             placeholder_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
@@ -407,21 +502,39 @@ impl pick_list::StyleSheet for PickList {
     }
 }
 
-/// Different button variations
-pub enum Button {
-    Primary,
-    Secondary,
+pub struct Menu;
+
+impl menu::StyleSheet for Menu {
+    type Style = Theme;
+
+    fn appearance(&self, _style: &Self::Style) -> menu::Appearance {
+        menu::Appearance {
+            text_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
+            background: Background::Color(Color::from_rgb8(0x20, 0x20, 0x20)),
+            border_width: 1.0,
+            border_radius: 5.0,
+            border_color: Color::from_rgb8(0x80, 0x80, 0x80),
+            selected_text_color: Color::from_rgb8(0xFF, 0xFF, 0xFF),
+            selected_background: Background::Color(Color::from_rgb8(0x80, 0x80, 0x80)),
+        }
+    }
 }
 
-impl button::StyleSheet for Button {
-    type Style = DefaultStyle;
+impl Into<iced::theme::PickList> for PickList {
+    fn into(self) -> iced::theme::PickList {
+        iced::theme::PickList::Custom(Rc::new(PickList), Rc::new(Menu))
+    }
+}
 
-    fn active(&self, style: &Self::Style) -> button::Appearance {
+/// Different button variations
+pub struct Button;
+
+impl button::StyleSheet for Button {
+    type Style = Theme;
+
+    fn active(&self, _style: &Self::Style) -> button::Appearance {
         button::Appearance {
-            background: Some(Background::Color(match self {
-                Button::Primary => Color::from_rgb(0.11, 0.42, 0.87),
-                Button::Secondary => Color::from_rgb(0.5, 0.5, 0.5),
-            })),
+            background: Some(Background::Color(Color::from_rgb(0.11, 0.42, 0.87))),
             border_radius: 5.0,
             shadow_offset: Vector::new(1.0, 1.0),
             text_color: Color::from_rgb8(0xEE, 0xEE, 0xEE),
@@ -429,16 +542,19 @@ impl button::StyleSheet for Button {
         }
     }
 
-    fn hovered(&self, style: &Self::Style) -> button::Appearance {
+    fn hovered(&self, _style: &Self::Style) -> button::Appearance {
         button::Appearance {
-            background: Some(Background::Color(match self {
-                Button::Primary => Color::from_rgb(0.11, 0.42, 0.87),
-                Button::Secondary => Color::from_rgb(0.5, 0.5, 0.5),
-            })),
+            background: Some(Background::Color(Color::from_rgb(0.11, 0.42, 0.87))),
             border_radius: 5.0,
             shadow_offset: Vector::new(1.0, 2.0),
             text_color: Color::WHITE,
             ..button::Appearance::default()
         }
+    }
+}
+
+impl Into<iced::theme::Button> for Button {
+    fn into(self) -> iced::theme::Button {
+        iced::theme::Button::Custom(Box::new(Button))
     }
 }

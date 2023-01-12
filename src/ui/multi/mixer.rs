@@ -60,8 +60,6 @@ impl MixerSection {
                 MultiParameter::BalancePart4,
                 params.get_value(MultiParameter::BalancePart4),
             ));
-        Container::new(content)
-            // .style(style::MixerSection)
-            .into()
+        Container::new(content).style(style::MixerSection).into()
     }
 }

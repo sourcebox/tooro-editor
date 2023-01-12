@@ -50,8 +50,6 @@ impl ShaperSection {
                 SoundParameter::ShaperLFO2Amount,
                 params.get_value(SoundParameter::ShaperLFO2Amount),
             ));
-        Container::new(content)
-            // .style(style::ShaperSection)
-            .into()
+        Container::new(content).style(style::ShaperSection).into()
     }
 }

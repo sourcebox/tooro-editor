@@ -50,8 +50,6 @@ impl FXSection {
                 MultiParameter::FXDepth,
                 params.get_value(MultiParameter::FXDepth),
             ));
-        Container::new(content)
-            // .style(style::FXSection)
-            .into()
+        Container::new(content).style(style::FXSection).into()
     }
 }

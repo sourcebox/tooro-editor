@@ -54,8 +54,6 @@ impl LFO1Section {
                 SoundParameter::ModLFO1Amount,
                 params.get_value(SoundParameter::ModLFO1Amount),
             ));
-        Container::new(content)
-            // .style(style::LFOSection)
-            .into()
+        Container::new(content).style(style::LFOSection).into()
     }
 }

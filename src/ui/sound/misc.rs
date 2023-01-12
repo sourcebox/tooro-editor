@@ -36,8 +36,6 @@ impl MiscSection {
                 SoundParameter::PolyMode,
                 params.get_value(SoundParameter::PolyMode),
             ));
-        Container::new(content)
-            // .style(style::MiscSection)
-            .into()
+        Container::new(content).style(style::MiscSection).into()
     }
 }

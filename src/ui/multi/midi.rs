@@ -41,7 +41,7 @@ impl MidiSection {
                 params.get_value(MultiParameter::ChannelPart4),
             ));
         Container::new(content)
-            // .style(style::MidiSection)
+            .style(style::MidiSection)
             .width(Length::Fill)
             .into()
     }

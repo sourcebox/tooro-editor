@@ -3,7 +3,7 @@
 use iced::widget::{Column, Container, Row, Text};
 use iced::{alignment, Length};
 
-use super::slider_widget::{self, Slider};
+use super::slider_widget::Slider;
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
@@ -18,7 +18,8 @@ pub fn slider_with_labels<'a>(
     let range = sound_param.get_range();
     let slider = Slider::new(range, value, sound_param.get_default(), move |v| {
         Message::SoundParameterChange(sound_param, v)
-    });
+    })
+    .style(style::Slider);
 
     Container::new(
         Row::new()
@@ -54,7 +55,8 @@ pub fn multi_slider_with_labels<'a>(
     let range = multi_param.get_range();
     let slider = Slider::new(range, value, multi_param.get_default(), move |v| {
         Message::MultiParameterChange(multi_param, v)
-    });
+    })
+    .style(style::Slider);
 
     Container::new(
         Row::new()

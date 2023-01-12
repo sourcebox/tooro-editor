@@ -16,6 +16,7 @@ pub fn part_list<'a>(value: u8) -> Container<'a, Message> {
     let pick_list = PickList::new(&PartList::ALL[..], value, move |v| {
         Message::PartChange(v as u8)
     })
+    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(pick_list)

@@ -44,8 +44,6 @@ impl ArpSection {
                 SoundParameter::ArpHold,
                 params.get_value(SoundParameter::ArpHold),
             ));
-        Container::new(content)
-            // .style(style::ArpSection)
-            .into()
+        Container::new(content).style(style::ArpSection).into()
     }
 }

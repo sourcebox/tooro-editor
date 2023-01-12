@@ -35,6 +35,7 @@ pub fn midi_channel_list<'a>(
     let pick_list = PickList::new(&MidiChannel::ALL[..], value, move |v| {
         Message::MultiParameterChange(multi_param, v as i32)
     })
+    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

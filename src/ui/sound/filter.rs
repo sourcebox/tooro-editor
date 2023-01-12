@@ -51,8 +51,6 @@ impl FilterSection {
                 SoundParameter::FilterLFO1Amount,
                 params.get_value(SoundParameter::FilterLFO1Amount),
             ));
-        Container::new(content)
-            // .style(style::FilterSection)
-            .into()
+        Container::new(content).style(style::FilterSection).into()
     }
 }

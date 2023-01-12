@@ -74,8 +74,6 @@ impl EnvASection {
                 SoundParameter::ModEnvAAmount,
                 params.get_value(SoundParameter::ModEnvAAmount),
             ));
-        Container::new(content)
-            // .style(style::EnvSection)
-            .into()
+        Container::new(content).style(style::EnvSection).into()
     }
 }
