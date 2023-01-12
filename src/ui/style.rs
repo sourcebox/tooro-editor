@@ -80,9 +80,9 @@ impl container::StyleSheet for OscSection {
     }
 }
 
-impl Into<iced::theme::Container> for OscSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(OscSection))
+impl From<OscSection> for iced::theme::Container {
+    fn from(val: OscSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -103,9 +103,9 @@ impl container::StyleSheet for ExtraSection {
     }
 }
 
-impl Into<iced::theme::Container> for ExtraSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(ExtraSection))
+impl From<ExtraSection> for iced::theme::Container {
+    fn from(val: ExtraSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -126,9 +126,9 @@ impl container::StyleSheet for ShaperSection {
     }
 }
 
-impl Into<iced::theme::Container> for ShaperSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(ShaperSection))
+impl From<ShaperSection> for iced::theme::Container {
+    fn from(val: ShaperSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -149,9 +149,9 @@ impl container::StyleSheet for FilterSection {
     }
 }
 
-impl Into<iced::theme::Container> for FilterSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(FilterSection))
+impl From<FilterSection> for iced::theme::Container {
+    fn from(val: FilterSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -172,9 +172,9 @@ impl container::StyleSheet for AmpSection {
     }
 }
 
-impl Into<iced::theme::Container> for AmpSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(AmpSection))
+impl From<AmpSection> for iced::theme::Container {
+    fn from(val: AmpSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -195,9 +195,9 @@ impl container::StyleSheet for LFOSection {
     }
 }
 
-impl Into<iced::theme::Container> for LFOSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(LFOSection))
+impl From<LFOSection> for iced::theme::Container {
+    fn from(val: LFOSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -218,9 +218,9 @@ impl container::StyleSheet for EnvSection {
     }
 }
 
-impl Into<iced::theme::Container> for EnvSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(EnvSection))
+impl From<EnvSection> for iced::theme::Container {
+    fn from(val: EnvSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -241,9 +241,9 @@ impl container::StyleSheet for ArpSection {
     }
 }
 
-impl Into<iced::theme::Container> for ArpSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(ArpSection))
+impl From<ArpSection> for iced::theme::Container {
+    fn from(val: ArpSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -264,9 +264,9 @@ impl container::StyleSheet for MiscSection {
     }
 }
 
-impl Into<iced::theme::Container> for MiscSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(MiscSection))
+impl From<MiscSection> for iced::theme::Container {
+    fn from(val: MiscSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -287,9 +287,9 @@ impl container::StyleSheet for ModSection {
     }
 }
 
-impl Into<iced::theme::Container> for ModSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(ModSection))
+impl From<ModSection> for iced::theme::Container {
+    fn from(val: ModSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -310,9 +310,9 @@ impl container::StyleSheet for FXSection {
     }
 }
 
-impl Into<iced::theme::Container> for FXSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(FXSection))
+impl From<FXSection> for iced::theme::Container {
+    fn from(val: FXSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -333,9 +333,9 @@ impl container::StyleSheet for MixerSection {
     }
 }
 
-impl Into<iced::theme::Container> for MixerSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(MixerSection))
+impl From<MixerSection> for iced::theme::Container {
+    fn from(val: MixerSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -356,9 +356,9 @@ impl container::StyleSheet for MidiSection {
     }
 }
 
-impl Into<iced::theme::Container> for MidiSection {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(MidiSection))
+impl From<MidiSection> for iced::theme::Container {
+    fn from(val: MidiSection) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -377,9 +377,9 @@ impl container::StyleSheet for MainWindow {
     }
 }
 
-impl Into<iced::theme::Container> for MainWindow {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(MainWindow))
+impl From<MainWindow> for iced::theme::Container {
+    fn from(val: MainWindow) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -426,9 +426,9 @@ impl slider::StyleSheet for Slider {
     }
 }
 
-impl Into<iced::theme::Slider> for Slider {
-    fn into(self) -> iced::theme::Slider {
-        iced::theme::Slider::Custom(Box::new(Slider))
+impl From<Slider> for iced::theme::Slider {
+    fn from(val: Slider) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -465,9 +465,9 @@ impl checkbox::StyleSheet for Checkbox {
     }
 }
 
-impl Into<iced::theme::Checkbox> for Checkbox {
-    fn into(self) -> iced::theme::Checkbox {
-        iced::theme::Checkbox::Custom(Box::new(Checkbox))
+impl From<Checkbox> for iced::theme::Checkbox {
+    fn from(val: Checkbox) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
 
@@ -520,9 +520,9 @@ impl menu::StyleSheet for Menu {
     }
 }
 
-impl Into<iced::theme::PickList> for PickList {
-    fn into(self) -> iced::theme::PickList {
-        iced::theme::PickList::Custom(Rc::new(PickList), Rc::new(Menu))
+impl From<PickList> for iced::theme::PickList {
+    fn from(val: PickList) -> Self {
+        Self::Custom(Rc::new(val), Rc::new(Menu))
     }
 }
 
@@ -553,8 +553,8 @@ impl button::StyleSheet for Button {
     }
 }
 
-impl Into<iced::theme::Button> for Button {
-    fn into(self) -> iced::theme::Button {
-        iced::theme::Button::Custom(Box::new(Button))
+impl From<Button> for iced::theme::Button {
+    fn from(val: Button) -> Self {
+        Self::Custom(Box::new(val))
     }
 }
