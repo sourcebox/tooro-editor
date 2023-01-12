@@ -15,7 +15,7 @@ iced_native = "0.7"
 iced_style = "0.5"
 midir = "0.8"
 log = { version="0.4", features = ["max_level_debug", "release_max_level_warn"] }
-simple_logger = "2.1"
+simple_logger = "4.0"
 num-traits = "0.2"
 tinyfiledialogs = "3.9"
 
