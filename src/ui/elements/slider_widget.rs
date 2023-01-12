@@ -325,6 +325,7 @@ where
 }
 
 /// Draws a [`Slider`].
+#[allow(clippy::too_many_arguments)]
 pub fn draw<T, R>(
     renderer: &mut R,
     layout: Layout<'_>,

@@ -7,11 +7,11 @@ use crate::messages::Message;
 use crate::params::SoundParameter;
 use crate::style;
 
-pub fn env_trigger_list<'a>(
-    label: &'a str,
+pub fn env_trigger_list(
+    label: &str,
     sound_param: SoundParameter,
     value: i32,
-) -> Container<'a, Message> {
+) -> Container<Message> {
     let value = match value {
         0 => Some(EnvTrigger::Always),
         1 => Some(EnvTrigger::Never),

@@ -7,11 +7,11 @@ use crate::messages::Message;
 use crate::params::SoundParameter;
 use crate::style;
 
-pub fn shaper_mode_list<'a>(
-    label: &'a str,
+pub fn shaper_mode_list(
+    label: &str,
     sound_param: SoundParameter,
     value: i32,
-) -> Container<'a, Message> {
+) -> Container<Message> {
     let value = match value {
         0 => Some(ShaperMode::Lowpass),
         1 => Some(ShaperMode::Bandpass),

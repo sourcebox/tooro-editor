@@ -7,11 +7,11 @@ use crate::messages::Message;
 use crate::params::MultiParameter;
 use crate::style;
 
-pub fn midi_channel_list<'a>(
-    label: &'a str,
+pub fn midi_channel_list(
+    label: &str,
     multi_param: MultiParameter,
     value: i32,
-) -> Container<'a, Message> {
+) -> Container<Message> {
     let value = match value {
         0 => Some(MidiChannel::Omni),
         1 => Some(MidiChannel::Channel1),

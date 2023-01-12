@@ -7,11 +7,7 @@ use crate::messages::Message;
 use crate::params::SoundParameter;
 use crate::style;
 
-pub fn mod_target_list<'a>(
-    label: &'a str,
-    sound_param: SoundParameter,
-    value: i32,
-) -> Container<'a, Message> {
+pub fn mod_target_list(label: &str, sound_param: SoundParameter, value: i32) -> Container<Message> {
     let value = match value {
         0 => Some(ModTarget::Osc1Wave),
         1 => Some(ModTarget::Osc2Wave),

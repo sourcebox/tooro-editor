@@ -7,11 +7,7 @@ use crate::messages::Message;
 use crate::params::MultiParameter;
 use crate::style;
 
-pub fn fx_mode_list<'a>(
-    label: &'a str,
-    multi_param: MultiParameter,
-    value: i32,
-) -> Container<'a, Message> {
+pub fn fx_mode_list(label: &str, multi_param: MultiParameter, value: i32) -> Container<Message> {
     let value = match value {
         0 => Some(FXMode::Off),
         1 => Some(FXMode::MonoDelay),
