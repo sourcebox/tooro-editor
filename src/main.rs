@@ -14,6 +14,7 @@ use iced::widget::{Column, Container, PickList, Row, Text};
 use iced::{
     executor, time, Alignment, Application, Command, Element, Length, Settings, Subscription,
 };
+use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
@@ -24,6 +25,9 @@ use ui::manager::ManagerPanel;
 use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
 use ui::style;
+
+/// Application name used for file path of persistent storage.
+const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
 
 /// The main entry point
 fn main() -> iced::Result {
@@ -40,14 +44,25 @@ fn main() -> iced::Result {
             resizable: true,
             ..iced::window::Settings::default()
         },
+        exit_on_close_request: false,
         ..Settings::default()
     };
 
     EditorApp::run(settings)
 }
 
+/// Persistent state saved between launches.
+#[derive(Debug, Serialize, Deserialize, Default)]
+struct AppState {
+    /// Name of the merge input port.
+    merge_input_name: String,
+}
+
 /// Holds the application data and state
 struct EditorApp {
+    /// Persistent state data.
+    app_state: AppState,
+
     /// UI section containing the sound (preset) parameters
     sound_panel: SoundPanel,
 
@@ -62,9 +77,6 @@ struct EditorApp {
 
     /// Status bar info on communication
     status_communication: String,
-
-    /// Name of the merge input port
-    merge_input_name: String,
 
     /// MPSC sender for incoming messages from merge input
     merge_input_sender: Option<mpsc::Sender<Vec<u8>>>,
@@ -111,37 +123,49 @@ impl Application for EditorApp {
 
     /// Constructs a new application
     fn new(_flags: ()) -> (Self, Command<Message>) {
-        (
-            Self {
-                sound_panel: SoundPanel::new(),
-                multi_panel: MultiPanel::new(),
-                manager_panel: ManagerPanel::new(),
+        let mut app = Self {
+            app_state: AppState::default(),
 
-                status_connection: String::from("Device disconnected"),
-                status_communication: String::from("Initializing..."),
+            sound_panel: SoundPanel::new(),
+            multi_panel: MultiPanel::new(),
+            manager_panel: ManagerPanel::new(),
 
-                merge_input_name: String::new(),
-                merge_input_sender: None,
+            status_connection: String::from("Device disconnected"),
+            status_communication: String::from("Initializing..."),
 
-                part_id: 0,
+            merge_input_sender: None,
 
-                sound_params: SoundParameterValues::with_capacity(128),
-                multi_params: MultiParameterValues::with_capacity(32),
+            part_id: 0,
 
-                midi: MidiConnector::new(),
-                device_connected: false,
+            sound_params: SoundParameterValues::with_capacity(128),
+            multi_params: MultiParameterValues::with_capacity(32),
 
-                request_sound_update: false,
-                request_multi_update: false,
-                request_time: None,
+            midi: MidiConnector::new(),
+            device_connected: false,
 
-                preset_capture_file: None,
+            request_sound_update: false,
+            request_multi_update: false,
+            request_time: None,
 
-                init_complete: false,
-                should_exit: false,
-            },
-            Command::none(),
-        )
+            preset_capture_file: None,
+
+            init_complete: false,
+            should_exit: false,
+        };
+
+        app.load_app_state();
+
+        // If the merge input is not present at startup, clear the stored setting.
+        app.midi.scan_ports();
+        if !app
+            .midi
+            .get_merge_inputs()
+            .contains(&app.app_state.merge_input_name)
+        {
+            app.app_state.merge_input_name = String::new();
+        }
+
+        (app, Command::none())
     }
 
     /// Returns the name of the application shown in the title bar
@@ -154,6 +178,7 @@ impl Application for EditorApp {
         match message {
             Message::EventOccurred(event) => {
                 if event == iced_native::Event::Window(iced_native::window::Event::CloseRequested) {
+                    self.save_app_state();
                     self.should_exit = true;
                 }
             }
@@ -192,7 +217,7 @@ impl Application for EditorApp {
 
             Message::MergeInputChange(input_name) => {
                 log::debug!("Merge input changed to {:?}", input_name);
-                self.merge_input_name = input_name.clone();
+                self.app_state.merge_input_name = input_name.clone();
                 if let Some(sender) = &self.merge_input_sender {
                     self.midi.select_merge_input(input_name, sender.clone());
                 }
@@ -315,6 +340,10 @@ impl Application for EditorApp {
             Message::MidiMergeSubscriptionReady(mut sender) => {
                 let channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>) = mpsc::channel();
                 self.merge_input_sender = Some(channel.0);
+                self.midi.select_merge_input(
+                    self.app_state.merge_input_name.clone(),
+                    self.merge_input_sender.as_ref().unwrap().clone(),
+                );
                 std::thread::spawn(move || loop {
                     while let Ok(message) = channel.1.recv() {
                         sender.try_send(message).ok();
@@ -397,7 +426,7 @@ impl Application for EditorApp {
                                                 inputs.insert(0, String::from(""));
                                                 inputs
                                             },
-                                            Some(self.merge_input_name.clone()),
+                                            Some(self.app_state.merge_input_name.clone()),
                                             Message::MergeInputChange,
                                         )
                                         .width(Length::Units(250))
@@ -447,6 +476,37 @@ impl Application for EditorApp {
 }
 
 impl EditorApp {
+    /// Load persistent state data from file.
+    fn load_app_state(&mut self) {
+        if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
+            let config_dir = proj_dirs.config_dir().to_path_buf();
+            let config_file_path = config_dir.join("config.ron");
+            log::info!(
+                "Loading persistent data from {}",
+                config_file_path.display()
+            );
+            if let Ok(s) = std::fs::read_to_string(config_file_path) {
+                if let Ok(app_state) = ron::from_str(s.as_str()) {
+                    self.app_state = app_state;
+                }
+            }
+        }
+    }
+
+    /// Save persistent state data to file.
+    fn save_app_state(&self) {
+        if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
+            let config_dir = proj_dirs.config_dir().to_path_buf();
+            if let Ok(()) = std::fs::create_dir_all(&config_dir) {
+                let config_file_path = config_dir.join("config.ron");
+                log::info!("Saving persistent data to {}", config_file_path.display());
+                if let Ok(config_file) = std::fs::File::create(config_file_path) {
+                    ron::ser::to_writer(config_file, &self.app_state).ok();
+                }
+            }
+        }
+    }
+
     /// Called when device is connected
     fn on_device_connected(&mut self) {
         log::debug!("Device connected");
