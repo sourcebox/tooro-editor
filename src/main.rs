@@ -27,7 +27,7 @@ use ui::sound::SoundPanel;
 use ui::style;
 
 /// Application name used for file path of persistent storage.
-const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
+const APP_NAME: &str = env!("CARGO_PKG_NAME");
 
 /// The main entry point
 fn main() -> iced::Result {
@@ -110,9 +110,6 @@ struct EditorApp {
 
     /// Flag for app initialisation complete
     init_complete: bool,
-
-    /// Application exit flag
-    should_exit: bool,
 }
 
 impl Application for EditorApp {
@@ -150,7 +147,6 @@ impl Application for EditorApp {
             preset_capture_file: None,
 
             init_complete: false,
-            should_exit: false,
         };
 
         app.load_app_state();
@@ -179,7 +175,7 @@ impl Application for EditorApp {
             Message::EventOccurred(event) => {
                 if event == iced_native::Event::Window(iced_native::window::Event::CloseRequested) {
                     self.save_app_state();
-                    self.should_exit = true;
+                    return iced::window::close();
                 }
             }
 
@@ -377,11 +373,6 @@ impl Application for EditorApp {
         ];
 
         Subscription::batch(subscriptions.into_iter())
-    }
-
-    /// Return whether the application should exit
-    fn should_exit(&self) -> bool {
-        self.should_exit
     }
 
     /// Returns the widgets to display

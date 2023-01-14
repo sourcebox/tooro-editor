@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Migrated `iced` dependency to `0.6`.
+- Migrated `iced` dependency to `0.7`.
 
 ## [1.1.0] - 2022-09-28
 

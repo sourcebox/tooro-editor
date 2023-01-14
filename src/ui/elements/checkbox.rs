@@ -13,7 +13,7 @@ pub fn checkbox_with_labels<'a>(
     sound_param: SoundParameter,
     value: i32,
 ) -> Container<'a, Message> {
-    let checkbox = Checkbox::new(value != 0, text, move |v| {
+    let checkbox = Checkbox::new(text, value != 0, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
     .style(style::Checkbox)

@@ -485,7 +485,7 @@ impl pick_list::StyleSheet for PickList {
             border_radius: 5.0,
             border_width: 1.0,
             border_color: Color::from_rgb8(0x80, 0x80, 0x80),
-            icon_size: 0.5,
+            handle_color: Color::from_rgb8(0x80, 0x80, 0x80),
         }
     }
 
@@ -497,7 +497,7 @@ impl pick_list::StyleSheet for PickList {
             border_radius: 5.0,
             border_width: 1.0,
             border_color: Color::from_rgb8(0x80, 0x80, 0x80),
-            icon_size: 0.5,
+            handle_color: Color::from_rgb8(0x80, 0x80, 0x80),
         }
     }
 }
