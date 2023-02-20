@@ -442,7 +442,7 @@ impl checkbox::StyleSheet for Checkbox {
         checkbox::Appearance {
             text_color: Some(SECTION_TEXT_COLOR),
             background: if is_checked { ACTIVE } else { SURFACE }.into(),
-            checkmark_color: Color::WHITE,
+            icon_color: Color::WHITE,
             border_radius: 2.0,
             border_width: 1.0,
             border_color: ACTIVE,
@@ -457,7 +457,7 @@ impl checkbox::StyleSheet for Checkbox {
                 ..if is_checked { ACTIVE } else { HOVERED }
             }
             .into(),
-            checkmark_color: Color::WHITE,
+            icon_color: Color::WHITE,
             border_radius: 2.0,
             border_width: 1.0,
             border_color: ACTIVE,

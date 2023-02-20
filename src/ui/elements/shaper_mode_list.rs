@@ -1,7 +1,6 @@
 //! Dropdown menu for the shaper modes
 
 use iced::widget::{Column, Container, PickList, Row, Text};
-use iced::Length;
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -31,7 +30,7 @@ pub fn shaper_mode_list(
                     .push(
                         Text::new(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding([4, 0, 0, 0]),
             )

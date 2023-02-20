@@ -1,7 +1,6 @@
 //! Dropdown menu for the modulation targets
 
 use iced::widget::{Column, Container, PickList, Row, Text};
-use iced::Length;
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -46,7 +45,7 @@ pub fn mod_target_list(label: &str, sound_param: SoundParameter, value: i32) -> 
                     .push(
                         Text::new(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding([4, 0, 0, 0]),
             )

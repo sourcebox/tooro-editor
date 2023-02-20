@@ -1,7 +1,7 @@
 //! Section containing the filter parameters
 
 use iced::widget::{Column, Container, Text};
-use iced::{Element, Length};
+use iced::Element;
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -20,7 +20,7 @@ impl FilterSection {
             .push(Text::new("Filter").size(style::SECTION_LABEL_TEXT_SIZE))
             .padding(style::SECTION_PADDING)
             .spacing(style::SECTION_SPACING)
-            .height(Length::Units(169))
+            .height(169)
             .push(slider_with_labels(
                 "Cutoff",
                 SoundParameter::FilterCutoff,

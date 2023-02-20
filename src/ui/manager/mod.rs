@@ -74,7 +74,7 @@ impl ManagerPanel {
 
         Container::new(Column::new().push(row1).push(row2))
             .padding(5)
-            .height(Length::Units(80))
+            .height(80)
             .style(style::MainWindow)
             .into()
     }

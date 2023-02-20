@@ -1,7 +1,6 @@
 //! Checkbox control wrapped in a container with label
 
 use iced::widget::{Checkbox, Container, Row, Text};
-use iced::Length;
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -25,7 +24,7 @@ pub fn checkbox_with_labels<'a>(
             .push(
                 Text::new(label)
                     .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                    .width(style::PARAM_LABEL_WIDTH),
             )
             .push(checkbox),
     )

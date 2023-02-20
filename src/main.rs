@@ -392,11 +392,11 @@ impl Application for EditorApp {
                                 .push(self.multi_panel.view(&self.multi_params))
                                 .width(Length::FillPortion(1)),
                         )
-                        .height(Length::Units(625)),
+                        .height(625),
                 )
                 .push(
                     Row::new()
-                        .push(Column::new().width(Length::Units(10)))
+                        .push(Column::new().width(10))
                         .push(
                             Column::new()
                                 .push(
@@ -420,7 +420,7 @@ impl Application for EditorApp {
                                             Some(self.app_state.merge_input_name.clone()),
                                             Message::MergeInputChange,
                                         )
-                                        .width(Length::Units(250))
+                                        .width(250)
                                         .style(style::PickList)
                                         .text_size(style::LIST_ITEM_TEXT_SIZE),
                                     )
@@ -449,10 +449,10 @@ impl Application for EditorApp {
                                     Text::new(format!("v{}", env!("CARGO_PKG_VERSION")))
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
-                                .width(Length::Units(200))
+                                .width(200)
                                 .align_items(Alignment::End),
                         )
-                        .push(Column::new().width(Length::Units(10))),
+                        .push(Column::new().width(10)),
                 ),
         )
         .padding(5)

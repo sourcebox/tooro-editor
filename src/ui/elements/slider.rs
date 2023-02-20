@@ -1,7 +1,7 @@
 //! Slider control wrapped in a container with label and value display
 
+use iced::alignment;
 use iced::widget::{Column, Container, Row, Text};
-use iced::{alignment, Length};
 
 use super::slider_widget::Slider;
 
@@ -28,7 +28,7 @@ pub fn slider_with_labels(
                     .push(
                         Text::new(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding([3, 0, 0, 0]),
             )
@@ -39,7 +39,7 @@ pub fn slider_with_labels(
                         Text::new(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .horizontal_alignment(alignment::Horizontal::Right)
-                            .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                            .width(style::PARAM_VALUE_WIDTH),
                     )
                     .padding([3, 0, 0, 5]),
             ),
@@ -65,7 +65,7 @@ pub fn multi_slider_with_labels(
                     .push(
                         Text::new(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(Length::Units(style::PARAM_LABEL_WIDTH)),
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding([3, 0, 0, 0]),
             )
@@ -76,7 +76,7 @@ pub fn multi_slider_with_labels(
                         Text::new(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .horizontal_alignment(alignment::Horizontal::Right)
-                            .width(Length::Units(style::PARAM_VALUE_WIDTH)),
+                            .width(style::PARAM_VALUE_WIDTH),
                     )
                     .padding([3, 0, 0, 5]),
             ),
