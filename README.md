@@ -36,7 +36,6 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - The connection state is not always detected correctly when the Töörö is connected or disconnected while the application is running.
 - Resizing the window height is possible but has no use.
 - Using more than one Töörö at a time is not supported.
-- On some Linux machines, the application crashes on startup. While the cause is not fully clear, it seems to be related to the configuration of the graphics subsystem.
 
 ## Runtime Requirements
 
@@ -46,8 +45,7 @@ The following platforms were tested during development:
 - OS X 10.11 (El Capitan)
 - macOS 10.13 (High Sierra)
 - macOS 11 (Big Sur)
-
-An **OpenGL ES3** compatible graphics adapter is required on Linux. This can be an issue, especially on older notebooks.
+- Linux Mint 20.3
 
 ## Building from Source
 
