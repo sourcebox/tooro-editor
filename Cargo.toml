@@ -10,9 +10,9 @@ license = "MIT"
 keywords = ["midi", "synthesizer"]
 
 [dependencies]
-iced = { version = "0.8.0", default-features = false, features = ["tokio", "glow"]}
-iced_native = "0.9"
-iced_style = "0.7"
+iced = { version = "0.9", default-features = false, features = ["tokio", "glow"]}
+iced_native = "0.10"
+iced_style = "0.8"
 midir = "0.9"
 log = { version="0.4", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "4.0"

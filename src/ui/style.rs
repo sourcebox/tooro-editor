@@ -391,7 +391,10 @@ impl slider::StyleSheet for Slider {
 
     fn active(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
-            rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+            rail: slider::Rail {
+                colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+                width: 0.0,
+            },
             handle: slider::Handle {
                 shape: slider::HandleShape::Circle { radius: 6.0 },
                 color: ACTIVE,
@@ -403,7 +406,10 @@ impl slider::StyleSheet for Slider {
 
     fn hovered(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
-            rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+            rail: slider::Rail {
+                colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+                width: 0.0,
+            },
             handle: slider::Handle {
                 shape: slider::HandleShape::Circle { radius: 6.0 },
                 color: HOVERED,
@@ -415,7 +421,10 @@ impl slider::StyleSheet for Slider {
 
     fn dragging(&self, _style: &Self::Style) -> slider::Appearance {
         slider::Appearance {
-            rail_colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+            rail: slider::Rail {
+                colors: (ACTIVE, Color { a: 0.1, ..ACTIVE }),
+                width: 0.0,
+            },
             handle: slider::Handle {
                 shape: slider::HandleShape::Circle { radius: 6.0 },
                 color: Color::from_rgb8(0x50, 0x50, 0x50),

@@ -365,7 +365,7 @@ pub fn draw<T, R>(
             border_width: 0.0,
             border_color: Color::TRANSPARENT,
         },
-        style.rail_colors.0,
+        style.rail.colors.0,
     );
 
     renderer.fill_quad(
@@ -380,7 +380,7 @@ pub fn draw<T, R>(
             border_width: 0.0,
             border_color: Color::TRANSPARENT,
         },
-        Background::Color(style.rail_colors.1),
+        Background::Color(style.rail.colors.1),
     );
 
     let (handle_width, handle_height, handle_border_radius) = match style.handle.shape {

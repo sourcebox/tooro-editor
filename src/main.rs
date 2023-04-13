@@ -612,14 +612,14 @@ pub fn midi_merge_input_subscription() -> Subscription<Message> {
             State::Starting => {
                 let (sender, receiver) = mpsc::channel(64);
                 (
-                    Some(Message::MidiMergeSubscriptionReady(sender)),
+                    Message::MidiMergeSubscriptionReady(sender),
                     State::Ready(receiver),
                 )
             }
             State::Ready(mut receiver) => {
                 let message = receiver.select_next_some().await;
                 (
-                    Some(Message::MidiMergeInputMessage(message)),
+                    Message::MidiMergeInputMessage(message),
                     State::Ready(receiver),
                 )
             }
