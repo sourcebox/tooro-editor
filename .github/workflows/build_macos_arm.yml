@@ -9,7 +9,7 @@ env:
 jobs:
   build:
 
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
 
     env:
       PROJECT_NAME: ${{ github.event.repository.name }}
@@ -26,5 +26,5 @@ jobs:
     - name: Archive DMG
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ env.PROJECT_NAME }}-x86_64.dmg
+        name: ${{ env.PROJECT_NAME }}-aarch64.dmg
         path: target/release/bundle/osx/*.dmg
