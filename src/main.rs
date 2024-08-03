@@ -373,7 +373,7 @@ impl Application for EditorApp {
             event_subscription,
         ];
 
-        Subscription::batch(subscriptions.into_iter())
+        Subscription::batch(subscriptions)
     }
 
     /// Returns the widgets to display
@@ -519,7 +519,7 @@ impl EditorApp {
     /// Process an incoming MIDI message from the device
     fn process_midi(&mut self, message: &[u8]) {
         match message[0] {
-            0xB0..=0xBF | 0xC0..=0xCF => {
+            0xB0..=0xCF => {
                 // Whenever the device sends a CC or program change message,
                 // a full parameter update will be requested to keep editor in sync
                 self.request_sound_update = true;

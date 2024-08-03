@@ -38,5 +38,6 @@ pub enum Message {
     MidiMergeSubscriptionReady(iced_native::futures::channel::mpsc::Sender<Vec<u8>>),
 
     /// MIDI message from merge input
+    #[allow(clippy::enum_variant_names)]
     MidiMergeInputMessage(Vec<u8>),
 }
