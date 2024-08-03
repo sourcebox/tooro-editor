@@ -21,7 +21,7 @@ use iced_native::widget::tree::{self, Tree};
 use iced_native::{
     Background, Clipboard, Color, Element, Layout, Length, Point, Rectangle, Shell, Size, Widget,
 };
-pub use iced_style::slider::{Handle, HandleShape, StyleSheet};
+pub use iced_style::slider::{HandleShape, StyleSheet};
 
 use std::ops::{Add, RangeInclusive};
 
