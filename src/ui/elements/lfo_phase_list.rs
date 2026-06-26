@@ -1,12 +1,19 @@
 //! Dropdown menu for the LFO phase values
 
-use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::{
+    widget::{Column, Container, PickList, Row, Text},
+    Padding,
+};
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
 use crate::style;
 
-pub fn lfo_phase_list(label: &str, sound_param: SoundParameter, value: i32) -> Container<Message> {
+pub fn lfo_phase_list(
+    label: &str,
+    sound_param: SoundParameter,
+    value: i32,
+) -> Container<'_, Message> {
     let value = match value {
         0 => Some(LFOPhase::Free),
         1 => Some(LFOPhase::Random),
@@ -20,7 +27,6 @@ pub fn lfo_phase_list(label: &str, sound_param: SoundParameter, value: i32) -> C
     let pick_list = PickList::new(&LFOPhase::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(
@@ -32,7 +38,12 @@ pub fn lfo_phase_list(label: &str, sound_param: SoundParameter, value: i32) -> C
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([4, 0, 0, 0]),
+                    .padding(Padding {
+                        top: 4.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 0.0,
+                    }),
             )
             .push(pick_list),
     )

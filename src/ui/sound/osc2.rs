@@ -1,7 +1,9 @@
 //! Section containing oscillator 2 parameters
 
-use iced::widget::{Column, Container, Text};
-use iced::Element;
+use iced::{
+    widget::{Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -15,10 +17,10 @@ impl Osc2Section {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(wavetable_list(
                 "Table",
@@ -60,6 +62,6 @@ impl Osc2Section {
                 SoundParameter::Osc2Level,
                 params.get_value(SoundParameter::Osc2Level),
             ));
-        Container::new(content).style(style::OscSection).into()
+        Container::new(content).into()
     }
 }

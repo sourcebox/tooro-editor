@@ -1,9 +1,12 @@
 //! Slider control wrapped in a container with label and value display
 
-use iced::alignment;
-use iced::widget::{Column, Container, Row, Text};
+use iced::{
+    alignment,
+    widget::{text, Column, Container, Row, Slider},
+    Padding,
+};
 
-use super::slider_widget::Slider;
+// use super::slider_widget::Slider;
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
@@ -14,34 +17,44 @@ pub fn slider_with_labels(
     label: &str,
     sound_param: SoundParameter,
     value: i32,
-) -> Container<Message> {
+) -> Container<'_, Message> {
     let range = sound_param.get_range();
-    let slider = Slider::new(range, value, sound_param.get_default(), move |v| {
+    let slider = Slider::new(range, value, move |v| {
         Message::SoundParameterChange(sound_param, v)
     })
-    .style(style::Slider);
+    .default(sound_param.get_default());
 
     Container::new(
         Row::new()
             .push(
                 Column::new()
                     .push(
-                        Text::new(label)
+                        text(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([3, 0, 0, 0]),
+                    .padding(Padding {
+                        top: 3.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 0.0,
+                    }),
             )
             .push(slider)
             .push(
                 Column::new()
                     .push(
-                        Text::new(format!("{}", value))
+                        text(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .horizontal_alignment(alignment::Horizontal::Right)
-                            .width(style::PARAM_VALUE_WIDTH),
+                            .align_x(alignment::Horizontal::Right)
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([3, 0, 0, 5]),
+                    .padding(Padding {
+                        top: 3.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 5.0,
+                    }),
             ),
     )
 }
@@ -51,34 +64,44 @@ pub fn multi_slider_with_labels(
     label: &str,
     multi_param: MultiParameter,
     value: i32,
-) -> Container<Message> {
+) -> Container<'_, Message> {
     let range = multi_param.get_range();
-    let slider = Slider::new(range, value, multi_param.get_default(), move |v| {
+    let slider = Slider::new(range, value, move |v| {
         Message::MultiParameterChange(multi_param, v)
     })
-    .style(style::Slider);
+    .default(multi_param.get_default());
 
     Container::new(
         Row::new()
             .push(
                 Column::new()
                     .push(
-                        Text::new(label)
+                        text(label)
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([3, 0, 0, 0]),
+                    .padding(Padding {
+                        top: 3.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 5.0,
+                    }),
             )
             .push(slider)
             .push(
                 Column::new()
                     .push(
-                        Text::new(format!("{}", value))
+                        text(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .horizontal_alignment(alignment::Horizontal::Right)
-                            .width(style::PARAM_VALUE_WIDTH),
+                            .align_x(alignment::Horizontal::Right)
+                            .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([3, 0, 0, 5]),
+                    .padding(Padding {
+                        top: 3.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 5.0,
+                    }),
             ),
     )
 }

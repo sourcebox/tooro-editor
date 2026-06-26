@@ -13,7 +13,8 @@ use std::time::{Duration, Instant};
 
 use iced::widget::{Column, Container, PickList, Row, Text};
 use iced::{
-    executor, time, Alignment, Application, Command, Element, Length, Settings, Subscription,
+    event, time, window, Alignment, Application, Element, Event, Length, Program, Subscription,
+    Task, Theme,
 };
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
@@ -30,26 +31,33 @@ use ui::style;
 /// Application name used for file path of persistent storage.
 const APP_NAME: &str = env!("CARGO_PKG_NAME");
 
-/// The main entry point
+/// The main entry point.
 fn main() -> iced::Result {
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
         .init()
         .unwrap();
 
-    let settings = Settings {
-        window: iced::window::Settings {
-            size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
-            min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT)),
-            max_size: Some((style::WINDOW_WIDTH * 2, style::WINDOW_HEIGHT)),
-            resizable: true,
-            ..iced::window::Settings::default()
-        },
-        exit_on_close_request: false,
-        ..Settings::default()
-    };
+    application().run()
 
-    EditorApp::run(settings)
+    // let settings = Settings {
+    //     window: iced::window::Settings {
+    //         size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
+    //         min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT)),
+    //         max_size: Some((style::WINDOW_WIDTH * 2, style::WINDOW_HEIGHT)),
+    //         resizable: true,
+    //         ..iced::window::Settings::default()
+    //     },
+    //     exit_on_close_request: false,
+    //     ..Settings::default()
+    // };
+}
+
+fn application() -> Application<impl Program<Message = Message, Theme = Theme>> {
+    iced::application(App::new, App::update, App::view)
+        .subscription(App::subscription)
+        .title(App::title)
+        .window_size((style::WINDOW_WIDTH, style::WINDOW_HEIGHT))
 }
 
 /// Persistent state saved between launches.
@@ -59,8 +67,8 @@ struct AppState {
     merge_input_name: String,
 }
 
-/// Holds the application data and state
-struct EditorApp {
+/// Holds the application data and state.
+struct App {
     /// Persistent state data.
     app_state: AppState,
 
@@ -113,14 +121,9 @@ struct EditorApp {
     init_complete: bool,
 }
 
-impl Application for EditorApp {
-    type Executor = executor::Default;
-    type Message = Message;
-    type Flags = ();
-    type Theme = iced::Theme;
-
-    /// Constructs a new application
-    fn new(_flags: ()) -> (Self, Command<Message>) {
+impl App {
+    /// Returns a new application.
+    fn new() -> (Self, Task<Message>) {
         let mut app = Self {
             app_state: AppState::default(),
 
@@ -162,21 +165,20 @@ impl Application for EditorApp {
             app.app_state.merge_input_name = String::new();
         }
 
-        (app, Command::none())
+        (app, Task::none())
     }
 
-    /// Returns the name of the application shown in the title bar
+    /// Returns the name of the application shown in the title bar.
     fn title(&self) -> String {
         String::from("Töörö Editor")
     }
 
-    /// Process a message and update the state accordingly
-    fn update(&mut self, message: Self::Message) -> Command<Message> {
+    /// Process a message and update the state accordingly.
+    fn update(&mut self, message: Message) -> Task<Message> {
         match message {
             Message::EventOccurred(event) => {
-                if event == iced_native::Event::Window(iced_native::window::Event::CloseRequested) {
+                if event == Event::Window(window::Event::CloseRequested) {
                     self.save_app_state();
-                    return iced::window::close();
                 }
             }
 
@@ -355,29 +357,11 @@ impl Application for EditorApp {
             _ => {}
         }
 
-        Command::none()
-    }
-
-    /// Return a subscripton event
-    fn subscription(&self) -> Subscription<Self::Message> {
-        let event_subscription = iced_native::subscription::events().map(Message::EventOccurred);
-
-        let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
-        let fast_tick_subscription =
-            time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
-
-        let subscriptions = vec![
-            tick_subscription,
-            fast_tick_subscription,
-            midi_merge_input_subscription(),
-            event_subscription,
-        ];
-
-        Subscription::batch(subscriptions)
+        Task::none()
     }
 
     /// Returns the widgets to display
-    fn view(&self) -> Element<Self::Message, iced::Renderer<iced::Theme>> {
+    fn view(&self) -> Element<'_, Message> {
         Container::new(
             Column::new()
                 .push(
@@ -422,7 +406,6 @@ impl Application for EditorApp {
                                             Message::MergeInputChange,
                                         )
                                         .width(250)
-                                        .style(style::PickList)
                                         .text_size(style::LIST_ITEM_TEXT_SIZE),
                                     )
                                     .spacing(10),
@@ -435,7 +418,7 @@ impl Application for EditorApp {
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
                                 .width(Length::FillPortion(3))
-                                .align_items(Alignment::Center),
+                                .align_x(Alignment::Center),
                         )
                         .push(
                             Column::new()
@@ -451,23 +434,34 @@ impl Application for EditorApp {
                                         .size(style::STATUS_TEXT_SIZE),
                                 )
                                 .width(200)
-                                .align_items(Alignment::End),
+                                .align_x(Alignment::End),
                         )
                         .push(Column::new().width(10)),
                 ),
         )
         .padding(5)
         .height(Length::Fill)
-        .style(style::MainWindow)
         .into()
     }
 
-    fn theme(&self) -> iced::Theme {
-        iced::Theme::Dark
-    }
-}
+    /// Returns a subscripton event.
+    fn subscription(&self) -> Subscription<Message> {
+        let event_subscription = event::listen().map(Message::EventOccurred);
 
-impl EditorApp {
+        let tick_subscription = time::every(Duration::from_millis(1000)).map(|_| Message::Tick);
+        let fast_tick_subscription =
+            time::every(Duration::from_millis(100)).map(|_| Message::FastTick);
+
+        let subscriptions = vec![
+            tick_subscription,
+            fast_tick_subscription,
+            // midi_merge_input_subscription(),
+            event_subscription,
+        ];
+
+        Subscription::batch(subscriptions)
+    }
+
     /// Load persistent state data from file.
     fn load_app_state(&mut self) {
         if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
@@ -597,32 +591,32 @@ impl EditorApp {
     }
 }
 
-/// Return subscription for receiving messages on MIDI merge input
-pub fn midi_merge_input_subscription() -> Subscription<Message> {
-    use iced_native::futures::channel::mpsc;
-    use iced_native::futures::StreamExt;
+// /// Return subscription for receiving messages on MIDI merge input.
+// pub fn midi_merge_input_subscription() -> Subscription<Message> {
+//     use iced::futures::channel::mpsc;
+//     use iced::futures::StreamExt;
 
-    enum State {
-        Starting,
-        Ready(mpsc::Receiver<Vec<u8>>),
-    }
+//     enum State {
+//         Starting,
+//         Ready(mpsc::Receiver<Vec<u8>>),
+//     }
 
-    iced_native::subscription::unfold("MIDI merge input", State::Starting, |state| async move {
-        match state {
-            State::Starting => {
-                let (sender, receiver) = mpsc::channel(64);
-                (
-                    Message::MidiMergeSubscriptionReady(sender),
-                    State::Ready(receiver),
-                )
-            }
-            State::Ready(mut receiver) => {
-                let message = receiver.select_next_some().await;
-                (
-                    Message::MidiMergeInputMessage(message),
-                    State::Ready(receiver),
-                )
-            }
-        }
-    })
-}
+//     iced::subscription::unfold("MIDI merge input", State::Starting, |state| async move {
+//         match state {
+//             State::Starting => {
+//                 let (sender, receiver) = mpsc::channel(64);
+//                 (
+//                     Message::MidiMergeSubscriptionReady(sender),
+//                     State::Ready(receiver),
+//                 )
+//             }
+//             State::Ready(mut receiver) => {
+//                 let message = receiver.select_next_some().await;
+//                 (
+//                     Message::MidiMergeInputMessage(message),
+//                     State::Ready(receiver),
+//                 )
+//             }
+//         }
+//     })
+// }

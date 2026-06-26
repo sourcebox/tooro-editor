@@ -1,7 +1,9 @@
 //! Section containing the amp envelope parameters
 
-use iced::widget::{Column, Container, Rule, Text};
-use iced::Element;
+use iced::{
+    widget::{rule, Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -18,10 +20,10 @@ impl EnvASection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("Env A").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(slider_with_labels(
                 "Attack",
@@ -63,7 +65,7 @@ impl EnvASection {
                 SoundParameter::EnvATrigger,
                 params.get_value(SoundParameter::EnvATrigger),
             ))
-            .push(Rule::horizontal(10))
+            .push(rule::horizontal(10))
             .push(mod_target_list(
                 "Mod Target",
                 SoundParameter::ModEnvATarget,
@@ -74,6 +76,6 @@ impl EnvASection {
                 SoundParameter::ModEnvAAmount,
                 params.get_value(SoundParameter::ModEnvAAmount),
             ));
-        Container::new(content).style(style::EnvSection).into()
+        Container::new(content).into()
     }
 }

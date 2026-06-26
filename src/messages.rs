@@ -5,7 +5,7 @@ use crate::params::{MultiParameter, SoundParameter};
 #[derive(Debug, Clone)]
 pub enum Message {
     /// Native event from the framework
-    EventOccurred(iced_native::Event),
+    EventOccurred(iced::Event),
 
     /// Modification of a sound (preset) parameter
     SoundParameterChange(SoundParameter, i32),
@@ -35,9 +35,8 @@ pub enum Message {
     FastTick,
 
     /// MIDI merge subscription ready, sender is passed as argument
-    MidiMergeSubscriptionReady(iced_native::futures::channel::mpsc::Sender<Vec<u8>>),
+    MidiMergeSubscriptionReady(iced::futures::channel::mpsc::Sender<Vec<u8>>),
 
     /// MIDI message from merge input
-    #[allow(clippy::enum_variant_names)]
     MidiMergeInputMessage(Vec<u8>),
 }

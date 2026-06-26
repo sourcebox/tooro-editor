@@ -1,7 +1,9 @@
 //! Section containing the multi fx parameters
 
-use iced::widget::{Column, Container, Text};
-use iced::Element;
+use iced::{
+    widget::{Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, MultiParameter, MultiParameterValues};
@@ -15,10 +17,10 @@ impl FXSection {
         Self {}
     }
 
-    pub fn view(&self, params: &MultiParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("FX").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(fx_mode_list(
                 "Mode",
@@ -50,6 +52,6 @@ impl FXSection {
                 MultiParameter::FXDepth,
                 params.get_value(MultiParameter::FXDepth),
             ));
-        Container::new(content).style(style::FXSection).into()
+        Container::new(content).into()
     }
 }

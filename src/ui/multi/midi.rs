@@ -1,7 +1,9 @@
 //! Section containing the MIDI settings
 
-use iced::widget::{Column, Container, Text};
-use iced::{Element, Length};
+use iced::{
+    widget::{Column, Container, Text},
+    Element, Length, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, MultiParameter, MultiParameterValues};
@@ -15,10 +17,10 @@ impl MidiSection {
         Self {}
     }
 
-    pub fn view(&self, params: &MultiParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("MIDI").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(midi_channel_list(
                 "Part 1 Ch",
@@ -40,9 +42,6 @@ impl MidiSection {
                 MultiParameter::ChannelPart4,
                 params.get_value(MultiParameter::ChannelPart4),
             ));
-        Container::new(content)
-            .style(style::MidiSection)
-            .width(Length::Fill)
-            .into()
+        Container::new(content).width(Length::Fill).into()
     }
 }

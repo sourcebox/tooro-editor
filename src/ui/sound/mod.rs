@@ -17,7 +17,6 @@ mod shaper;
 use iced::widget::{Column, Container, Row};
 use iced::{Element, Length};
 
-use super::style;
 use crate::messages::Message;
 use crate::params::SoundParameterValues;
 use {
@@ -61,7 +60,7 @@ impl SoundPanel {
         }
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let sound_col1 = Column::new()
             .padding(5)
             .spacing(10)
@@ -107,7 +106,6 @@ impl SoundPanel {
         )
         .padding(5)
         .height(Length::Fill)
-        .style(style::MainWindow)
         .into()
     }
 }

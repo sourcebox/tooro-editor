@@ -1,7 +1,9 @@
 //! Section containing the filter parameters
 
-use iced::widget::{Column, Container, Text};
-use iced::Element;
+use iced::{
+    widget::{Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -15,10 +17,10 @@ impl FilterSection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("Filter").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .height(169)
             .push(slider_with_labels(
@@ -51,6 +53,6 @@ impl FilterSection {
                 SoundParameter::FilterLFO1Amount,
                 params.get_value(SoundParameter::FilterLFO1Amount),
             ));
-        Container::new(content).style(style::FilterSection).into()
+        Container::new(content).into()
     }
 }

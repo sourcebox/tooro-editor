@@ -1,12 +1,19 @@
 //! Dropdown menu for the multi fx modes
 
-use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::{
+    widget::{Column, Container, PickList, Row, Text},
+    Padding,
+};
 
 use crate::messages::Message;
 use crate::params::MultiParameter;
 use crate::style;
 
-pub fn fx_mode_list(label: &str, multi_param: MultiParameter, value: i32) -> Container<Message> {
+pub fn fx_mode_list(
+    label: &str,
+    multi_param: MultiParameter,
+    value: i32,
+) -> Container<'_, Message> {
     let value = match value {
         0 => Some(FXMode::Off),
         1 => Some(FXMode::MonoDelay),
@@ -17,7 +24,6 @@ pub fn fx_mode_list(label: &str, multi_param: MultiParameter, value: i32) -> Con
     let pick_list = PickList::new(&FXMode::ALL[..], value, move |v| {
         Message::MultiParameterChange(multi_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(
@@ -29,7 +35,12 @@ pub fn fx_mode_list(label: &str, multi_param: MultiParameter, value: i32) -> Con
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([4, 0, 0, 0]),
+                    .padding(Padding {
+                        top: 4.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 0.0,
+                    }),
             )
             .push(pick_list),
     )

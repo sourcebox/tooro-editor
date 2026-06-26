@@ -1,7 +1,9 @@
 //! Section containing the modulation parameters
 
-use iced::widget::{Column, Container, Row};
-use iced::{Element, Length};
+use iced::{
+    widget::{Column, Container, Row},
+    Element, Length, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -15,12 +17,12 @@ impl ModSection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new().push(
             Row::new()
                 .push(
                     Column::new()
-                        .padding(style::SECTION_PADDING)
+                        .padding(Padding::from(style::SECTION_PADDING))
                         .spacing(style::SECTION_SPACING)
                         .push(mod_target_list(
                             "MD Target",
@@ -83,6 +85,6 @@ impl ModSection {
                         .width(Length::FillPortion(4)),
                 ),
         );
-        Container::new(content).style(style::ModSection).into()
+        Container::new(content).into()
     }
 }

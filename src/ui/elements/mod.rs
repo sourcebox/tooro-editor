@@ -12,5 +12,5 @@ pub mod mod_target_list;
 pub mod part_list;
 pub mod shaper_mode_list;
 pub mod slider;
-pub mod slider_widget;
+// pub mod slider_widget;
 pub mod wavetable_list;

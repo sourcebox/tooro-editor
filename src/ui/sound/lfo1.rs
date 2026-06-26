@@ -1,7 +1,9 @@
 //! Section containing the LFO 1 parameters
 
-use iced::widget::{Column, Container, Rule, Text};
-use iced::Element;
+use iced::{
+    widget::{rule, Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -18,10 +20,10 @@ impl LFO1Section {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(lfo_shape_list(
                 "Shape",
@@ -43,7 +45,7 @@ impl LFO1Section {
                 SoundParameter::LFO1Phase,
                 params.get_value(SoundParameter::LFO1Phase),
             ))
-            .push(Rule::horizontal(10))
+            .push(rule::horizontal(10))
             .push(mod_target_list(
                 "Mod Target",
                 SoundParameter::ModLFO1Target,
@@ -54,6 +56,6 @@ impl LFO1Section {
                 SoundParameter::ModLFO1Amount,
                 params.get_value(SoundParameter::ModLFO1Amount),
             ));
-        Container::new(content).style(style::LFOSection).into()
+        Container::new(content).into()
     }
 }

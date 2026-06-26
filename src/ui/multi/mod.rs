@@ -7,7 +7,6 @@ mod mixer;
 use iced::widget::{Column, Container, Row};
 use iced::{Element, Length};
 
-use super::style;
 use crate::messages::Message;
 use crate::params::MultiParameterValues;
 use fx::FXSection;
@@ -29,7 +28,7 @@ impl MultiPanel {
         }
     }
 
-    pub fn view(&self, params: &MultiParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
         let col = Column::new()
             .padding(5)
             .spacing(10)
@@ -40,7 +39,6 @@ impl MultiPanel {
         Container::new(Column::new().push(Row::new().push(col)))
             .padding(5)
             .height(Length::Fill)
-            .style(style::MainWindow)
             .into()
     }
 }

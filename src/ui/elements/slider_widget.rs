@@ -10,18 +10,18 @@
 //!
 //! A [`Slider`] has some local [`State`].
 
-use iced::mouse::ScrollDelta;
-use iced_native::event::{self, Event};
-use iced_native::keyboard;
-use iced_native::layout;
-use iced_native::mouse;
-use iced_native::renderer;
-use iced_native::touch;
-use iced_native::widget::tree::{self, Tree};
-use iced_native::{
-    Background, Clipboard, Color, Element, Layout, Length, Point, Rectangle, Shell, Size, Widget,
+use iced::advanced::{
+    layout, renderer,
+    widget::tree::{self, Tree},
+    Layout, Shell, Widget,
 };
-pub use iced_style::slider::{HandleShape, StyleSheet};
+use iced::keyboard;
+use iced::mouse;
+use iced::mouse::ScrollDelta;
+use iced::touch;
+use iced::{
+    self, Background, Color, Element, Event, Length, Pixels, Point, Rectangle, Size, Theme,
+};
 
 use std::ops::{Add, RangeInclusive};
 
@@ -33,50 +33,63 @@ use std::ops::{Add, RangeInclusive};
 /// The [`Slider`] range of numeric values is generic and its step size defaults
 /// to 1 unit.
 ///
+/// Note: Under the hood values are converted to/from f64 so only values representable exactly as an f64
+/// are possible to select via the slider. However it is likely that the precision of the slider at these
+/// scales is already less than the precision lost from the f64 representation.
+///
 /// # Example
-/// ```
-/// # use iced_native::widget::slider;
-/// # use iced_native::renderer::Null;
+/// ```no_run
+/// # mod iced { pub mod widget { pub use iced_widget::*; } pub use iced_widget::Renderer; pub use iced_widget::core::*; }
+/// # pub type Element<'a, Message> = iced_widget::core::Element<'a, Message, iced_widget::Theme, iced_widget::Renderer>;
 /// #
-/// # type Slider<'a, T, Message> = slider::Slider<'a, T, Message, Null>;
-/// #
-/// #[derive(Clone)]
-/// pub enum Message {
-///     SliderChanged(f32),
+/// use iced::widget::slider;
+///
+/// struct State {
+///    value: f32,
 /// }
 ///
-/// let value = 50.0;
+/// #[derive(Debug, Clone)]
+/// enum Message {
+///     ValueChanged(f32),
+/// }
 ///
-/// Slider::new(0.0..=100.0, value, Message::SliderChanged);
+/// fn view(state: &State) -> Element<'_, Message> {
+///     slider(0.0..=100.0, state.value, Message::ValueChanged).into()
+/// }
+///
+/// fn update(state: &mut State, message: Message) {
+///     match message {
+///         Message::ValueChanged(value) => {
+///             state.value = value;
+///         }
+///     }
+/// }
 /// ```
-///
-/// ![Slider drawn by Coffee's renderer](https://github.com/hecrj/coffee/blob/bda9818f823dfcb8a7ad0ff4940b4d4b387b5208/images/ui/slider.png?raw=true)
-#[allow(missing_debug_implementations)]
-pub struct Slider<'a, T, Message, Renderer>
+pub struct Slider<'a, T, Message, Theme = iced::Theme>
 where
-    Renderer: iced_native::Renderer,
-    Renderer::Theme: StyleSheet,
+    Theme: Catalog,
 {
     range: RangeInclusive<T>,
-    step: T,
+    step: f64,
+    shift_step: Option<f64>,
     value: T,
-    default: T,
+    default: Option<T>,
     on_change: Box<dyn Fn(T) -> Message + 'a>,
     on_release: Option<Message>,
     width: Length,
-    height: u16,
-    style: <Renderer::Theme as StyleSheet>::Style,
+    height: f32,
+    class: Theme::Class<'a>,
+    status: Option<Status>,
 }
 
-impl<'a, T, Message, Renderer> Slider<'a, T, Message, Renderer>
+impl<'a, T, Message, Theme> Slider<'a, T, Message, Theme>
 where
-    T: Copy + From<u8> + std::cmp::PartialOrd,
+    T: Copy + PartialOrd,
     Message: Clone,
-    Renderer: iced_native::Renderer,
-    Renderer::Theme: StyleSheet,
+    Theme: Catalog,
 {
     /// The default height of a [`Slider`].
-    pub const DEFAULT_HEIGHT: u16 = 22;
+    pub const DEFAULT_HEIGHT: f32 = 16.0;
 
     /// Creates a new [`Slider`].
     ///
@@ -555,5 +568,139 @@ where
 {
     fn from(slider: Slider<'a, T, Message, Renderer>) -> Element<'a, Message, Renderer> {
         Element::new(slider)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct State {
+    is_dragging: bool,
+    keyboard_modifiers: keyboard::Modifiers,
+}
+
+/// The possible status of a [`Slider`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Status {
+    /// The [`Slider`] can be interacted with.
+    Active,
+    /// The [`Slider`] is being hovered.
+    Hovered,
+    /// The [`Slider`] is being dragged.
+    Dragged,
+}
+
+/// The appearance of a slider.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Style {
+    /// The colors of the rail of the slider.
+    pub rail: Rail,
+    /// The appearance of the [`Handle`] of the slider.
+    pub handle: Handle,
+}
+
+impl Style {
+    /// Changes the [`HandleShape`] of the [`Style`] to a circle
+    /// with the given radius.
+    pub fn with_circular_handle(mut self, radius: impl Into<Pixels>) -> Self {
+        self.handle.shape = HandleShape::Circle {
+            radius: radius.into().0,
+        };
+        self
+    }
+}
+
+/// The appearance of a slider rail
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Rail {
+    /// The backgrounds of the rail of the slider.
+    pub backgrounds: (Background, Background),
+    /// The width of the stroke of a slider rail.
+    pub width: f32,
+    /// The border of the rail.
+    pub border: Border,
+}
+
+/// The appearance of the handle of a slider.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Handle {
+    /// The shape of the handle.
+    pub shape: HandleShape,
+    /// The [`Background`] of the handle.
+    pub background: Background,
+    /// The border width of the handle.
+    pub border_width: f32,
+    /// The border [`Color`] of the handle.
+    pub border_color: Color,
+}
+
+/// The shape of the handle of a slider.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum HandleShape {
+    /// A circular handle.
+    Circle {
+        /// The radius of the circle.
+        radius: f32,
+    },
+    /// A rectangular shape.
+    Rectangle {
+        /// The width of the rectangle.
+        width: u16,
+        /// The border radius of the corners of the rectangle.
+        border_radius: border::Radius,
+    },
+}
+
+/// The theme catalog of a [`Slider`].
+pub trait Catalog: Sized {
+    /// The item class of the [`Catalog`].
+    type Class<'a>;
+
+    /// The default class produced by the [`Catalog`].
+    fn default<'a>() -> Self::Class<'a>;
+
+    /// The [`Style`] of a class with the given status.
+    fn style(&self, class: &Self::Class<'_>, status: Status) -> Style;
+}
+
+/// A styling function for a [`Slider`].
+pub type StyleFn<'a, Theme> = Box<dyn Fn(&Theme, Status) -> Style + 'a>;
+
+impl Catalog for Theme {
+    type Class<'a> = StyleFn<'a, Self>;
+
+    fn default<'a>() -> Self::Class<'a> {
+        Box::new(default)
+    }
+
+    fn style(&self, class: &Self::Class<'_>, status: Status) -> Style {
+        class(self, status)
+    }
+}
+
+/// The default style of a [`Slider`].
+pub fn default(theme: &Theme, status: Status) -> Style {
+    let palette = theme.palette();
+
+    let color = match status {
+        Status::Active => palette.primary.base.color,
+        Status::Hovered => palette.primary.strong.color,
+        Status::Dragged => palette.primary.weak.color,
+    };
+
+    Style {
+        rail: Rail {
+            backgrounds: (color.into(), palette.background.strong.color.into()),
+            width: 4.0,
+            border: Border {
+                radius: 2.0.into(),
+                width: 0.0,
+                color: Color::TRANSPARENT,
+            },
+        },
+        handle: Handle {
+            shape: HandleShape::Circle { radius: 7.0 },
+            background: color.into(),
+            border_color: Color::TRANSPARENT,
+            border_width: 0.0,
+        },
     }
 }

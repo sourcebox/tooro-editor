@@ -1,6 +1,9 @@
 //! Dropdown menu for the shaper modes
 
-use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::{
+    widget::{Column, Container, PickList, Row, Text},
+    Padding,
+};
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -10,7 +13,7 @@ pub fn shaper_mode_list(
     label: &str,
     sound_param: SoundParameter,
     value: i32,
-) -> Container<Message> {
+) -> Container<'_, Message> {
     let value = match value {
         0 => Some(ShaperMode::Lowpass),
         1 => Some(ShaperMode::Bandpass),
@@ -20,7 +23,6 @@ pub fn shaper_mode_list(
     let pick_list = PickList::new(&ShaperMode::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
-    .style(style::PickList)
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(
@@ -32,7 +34,12 @@ pub fn shaper_mode_list(
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .width(style::PARAM_LABEL_WIDTH),
                     )
-                    .padding([4, 0, 0, 0]),
+                    .padding(Padding {
+                        top: 4.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        left: 0.0,
+                    }),
             )
             .push(pick_list),
     )

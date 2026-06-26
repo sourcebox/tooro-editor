@@ -1,7 +1,9 @@
 //! Panel containing global controls
 
-use iced::widget::{Button, Column, Container, Row, Text};
-use iced::{theme, Alignment, Element, Length};
+use iced::{
+    widget::{Button, Column, Container, Row, Text},
+    Alignment, Element, Length,
+};
 
 use super::style;
 use crate::messages::Message;
@@ -14,7 +16,7 @@ impl ManagerPanel {
         Self {}
     }
 
-    pub fn view(&self, part_id: u8, device_connected: bool) -> Element<Message> {
+    pub fn view(&self, part_id: u8, device_connected: bool) -> Element<'_, Message> {
         let row1 = Row::new()
             .padding(5)
             .spacing(10)
@@ -28,15 +30,14 @@ impl ManagerPanel {
                     .push({
                         let mut button = Button::new(
                             Text::new("Update from device").size(style::BUTTON_TEXT_SIZE),
-                        )
-                        .style(theme::Button::Primary);
+                        );
                         if device_connected {
                             button = button.on_press(Message::UpdateFromDevice);
                         }
                         button
                     })
                     .width(Length::FillPortion(4))
-                    .align_items(Alignment::End),
+                    .align_x(Alignment::End),
             );
 
         let row2 = Row::new()
@@ -47,8 +48,7 @@ impl ManagerPanel {
                     .push({
                         let mut button = Button::new(
                             Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
-                        )
-                        .style(theme::Button::Primary);
+                        );
                         if device_connected {
                             button = button.on_press(Message::LoadSysexFile);
                         }
@@ -61,21 +61,19 @@ impl ManagerPanel {
                     .push({
                         let mut button = Button::new(
                             Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
-                        )
-                        .style(theme::Button::Primary);
+                        );
                         if device_connected {
                             button = button.on_press(Message::SavePresetSysexFile);
                         }
                         button
                     })
                     .width(Length::FillPortion(2))
-                    .align_items(Alignment::End),
+                    .align_x(Alignment::End),
             );
 
         Container::new(Column::new().push(row1).push(row2))
             .padding(5)
             .height(80)
-            .style(style::MainWindow)
             .into()
     }
 }

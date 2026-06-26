@@ -1,7 +1,9 @@
 //! Section containing the arpeggiator parameters
 
-use iced::widget::{Column, Container, Text};
-use iced::Element;
+use iced::{
+    widget::{Column, Container, Text},
+    Element, Padding,
+};
 
 use crate::messages::Message;
 use crate::params::{GetValue, SoundParameter, SoundParameterValues};
@@ -18,10 +20,10 @@ impl ArpSection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<Message> {
+    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
         let content = Column::new()
             .push(Text::new("Arp").size(style::SECTION_LABEL_TEXT_SIZE))
-            .padding(style::SECTION_PADDING)
+            .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
             .push(arp_mode_list(
                 "Mode",
@@ -44,6 +46,6 @@ impl ArpSection {
                 SoundParameter::ArpHold,
                 params.get_value(SoundParameter::ArpHold),
             ));
-        Container::new(content).style(style::ArpSection).into()
+        Container::new(content).into()
     }
 }
