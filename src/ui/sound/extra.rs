@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::slider::slider_with_labels;
 use crate::ui::style;
 
-pub struct ExtraSection {}
+pub struct ExtraSection;
 
 impl ExtraSection {
     pub fn new() -> Self {
@@ -32,6 +32,8 @@ impl ExtraSection {
                 SoundParameter::ExtraRingMod,
                 params.get_value(SoundParameter::ExtraRingMod),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
+            .into()
     }
 }

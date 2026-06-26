@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Row},
-    Element, Length, Padding,
+    Color, Element, Length, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{mod_target_list::mod_target_list, slider::slider_with_labels};
 use crate::ui::style;
 
-pub struct ModSection {}
+pub struct ModSection;
 
 impl ModSection {
     pub fn new() -> Self {
@@ -85,6 +85,8 @@ impl ModSection {
                         .width(Length::FillPortion(4)),
                 ),
         );
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xB4, 0xCB, 0xD9)))
+            .into()
     }
 }

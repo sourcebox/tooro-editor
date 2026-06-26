@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, MultiParameter, MultiParameterValues};
 use crate::ui::elements::{fx_mode_list::fx_mode_list, slider::multi_slider_with_labels};
 use crate::ui::style;
 
-pub struct FXSection {}
+pub struct FXSection;
 
 impl FXSection {
     pub fn new() -> Self {
@@ -52,6 +52,8 @@ impl FXSection {
                 MultiParameter::FXDepth,
                 params.get_value(MultiParameter::FXDepth),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0x65, 0xA4, 0x7E)))
+            .into()
     }
 }

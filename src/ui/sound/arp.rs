@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -13,7 +13,7 @@ use crate::ui::elements::{
 };
 use crate::ui::style;
 
-pub struct ArpSection {}
+pub struct ArpSection;
 
 impl ArpSection {
     pub fn new() -> Self {
@@ -46,6 +46,8 @@ impl ArpSection {
                 SoundParameter::ArpHold,
                 params.get_value(SoundParameter::ArpHold),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
+            .into()
     }
 }

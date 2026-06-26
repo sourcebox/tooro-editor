@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -52,6 +52,8 @@ impl ShaperSection {
                 SoundParameter::ShaperLFO2Amount,
                 params.get_value(SoundParameter::ShaperLFO2Amount),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xD8, 0x00, 0x00)))
+            .into()
     }
 }

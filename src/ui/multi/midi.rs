@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Length, Padding,
+    Color, Element, Length, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, MultiParameter, MultiParameterValues};
 use crate::ui::elements::midi_channel_list::midi_channel_list;
 use crate::ui::style;
 
-pub struct MidiSection {}
+pub struct MidiSection;
 
 impl MidiSection {
     pub fn new() -> Self {
@@ -42,6 +42,9 @@ impl MidiSection {
                 MultiParameter::ChannelPart4,
                 params.get_value(MultiParameter::ChannelPart4),
             ));
-        Container::new(content).width(Length::Fill).into()
+        Container::new(content)
+            .width(Length::Fill)
+            .style(|_| style::section(Color::from_rgb8(0xC0, 0xC0, 0xC0)))
+            .into()
     }
 }

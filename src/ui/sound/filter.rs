@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::slider::slider_with_labels;
 use crate::ui::style;
 
-pub struct FilterSection {}
+pub struct FilterSection;
 
 impl FilterSection {
     pub fn new() -> Self {
@@ -53,6 +53,8 @@ impl FilterSection {
                 SoundParameter::FilterLFO1Amount,
                 params.get_value(SoundParameter::FilterLFO1Amount),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xD8, 0x00, 0x00)))
+            .into()
     }
 }

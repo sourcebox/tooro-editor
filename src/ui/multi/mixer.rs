@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, MultiParameter, MultiParameterValues};
 use crate::ui::elements::slider::multi_slider_with_labels;
 use crate::ui::style;
 
-pub struct MixerSection {}
+pub struct MixerSection;
 
 impl MixerSection {
     pub fn new() -> Self {
@@ -62,6 +62,8 @@ impl MixerSection {
                 MultiParameter::BalancePart4,
                 params.get_value(MultiParameter::BalancePart4),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xC0, 0xC0, 0xC0)))
+            .into()
     }
 }

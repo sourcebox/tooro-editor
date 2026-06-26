@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{checkbox::checkbox_with_labels, slider::slider_with_labels};
 use crate::ui::style;
 
-pub struct MiscSection {}
+pub struct MiscSection;
 
 impl MiscSection {
     pub fn new() -> Self {
@@ -38,6 +38,8 @@ impl MiscSection {
                 SoundParameter::PolyMode,
                 params.get_value(SoundParameter::PolyMode),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xC0, 0xC0, 0xC0)))
+            .into()
     }
 }

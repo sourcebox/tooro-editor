@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -10,7 +10,7 @@ use crate::params::{GetValue, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{slider::slider_with_labels, wavetable_list::wavetable_list};
 use crate::ui::style;
 
-pub struct Osc1Section {}
+pub struct Osc1Section;
 
 impl Osc1Section {
     pub fn new() -> Self {
@@ -62,6 +62,8 @@ impl Osc1Section {
                 SoundParameter::Osc1Level,
                 params.get_value(SoundParameter::Osc1Level),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xAB, 0xA3, 0x39)))
+            .into()
     }
 }

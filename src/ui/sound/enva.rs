@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{rule, Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -13,7 +13,7 @@ use crate::ui::elements::{
 };
 use crate::ui::style;
 
-pub struct EnvASection {}
+pub struct EnvASection;
 
 impl EnvASection {
     pub fn new() -> Self {
@@ -76,6 +76,8 @@ impl EnvASection {
                 SoundParameter::ModEnvAAmount,
                 params.get_value(SoundParameter::ModEnvAAmount),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xFF, 0xBD, 0x00)))
+            .into()
     }
 }

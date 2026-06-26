@@ -2,7 +2,7 @@
 
 use iced::{
     widget::{rule, Column, Container, Text},
-    Element, Padding,
+    Color, Element, Padding,
 };
 
 use crate::messages::Message;
@@ -13,7 +13,7 @@ use crate::ui::elements::{
 };
 use crate::ui::style;
 
-pub struct LFO1Section {}
+pub struct LFO1Section;
 
 impl LFO1Section {
     pub fn new() -> Self {
@@ -56,6 +56,8 @@ impl LFO1Section {
                 SoundParameter::ModLFO1Amount,
                 params.get_value(SoundParameter::ModLFO1Amount),
             ));
-        Container::new(content).into()
+        Container::new(content)
+            .style(|_| style::section(Color::from_rgb8(0xD2, 0x6A, 0x25)))
+            .into()
     }
 }

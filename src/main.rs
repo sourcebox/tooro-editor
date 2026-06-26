@@ -11,10 +11,10 @@ mod ui;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
-use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::widget::{self, container, Column, Container, PickList, Row, Text};
 use iced::{
-    event, time, window, Alignment, Application, Element, Event, Length, Program, Subscription,
-    Task, Theme,
+    event, time, window, Alignment, Application, Color, Element, Event, Length, Program,
+    Subscription, Task, Theme,
 };
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
@@ -441,6 +441,11 @@ impl App {
         )
         .padding(5)
         .height(Length::Fill)
+        .style(|_| {
+            container::Style::default()
+                .color(Color::from_rgb8(0xFF, 0xFF, 0xFF))
+                .background(Color::from_rgb8(0x20, 0x20, 0x20))
+        })
         .into()
     }
 
