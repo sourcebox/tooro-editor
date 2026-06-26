@@ -1,29 +1,27 @@
-//! Display an interactive selector of a single value from a range of values.
+//! Custom slider widget
 //!
 //! This is a modified version of the original slider widget from `iced_native`
 //! with the following changes:
-//!     - Use of pointer shape mouse cursor when hovering the slider.
-//!     - Mouse wheel support.
-//!     - Control-click/right-click resets slider to a default value.
-//!     - Shift-drag enables fine control.
-//!     - Clippy related fixes.
-//!
-//! A [`Slider`] has some local [`State`].
+//!     - Mouse wheel support without holding the control key.
+//!     - Allow f64 values for `shift_step`.
 
-use iced::advanced::{
-    layout, renderer,
-    widget::tree::{self, Tree},
-    Layout, Shell, Widget,
-};
-use iced::keyboard;
-use iced::mouse;
-use iced::mouse::ScrollDelta;
-use iced::touch;
 use iced::{
-    self, Background, Color, Element, Event, Length, Pixels, Point, Rectangle, Size, Theme,
+    self,
+    advanced::{
+        layout, renderer,
+        widget::tree::{self, Tree},
+        Clipboard, Layout, Shell, Widget,
+    },
+    border::{self, Border},
+    keyboard::{
+        self,
+        key::{self, Key},
+    },
+    mouse, touch, window, Background, Color, Element, Event, Length, Pixels, Point, Rectangle,
+    Size, Theme,
 };
 
-use std::ops::{Add, RangeInclusive};
+use std::ops::RangeInclusive;
 
 /// An horizontal bar and a handle that selects a single value from a range of
 /// values.
@@ -94,14 +92,14 @@ where
     /// Creates a new [`Slider`].
     ///
     /// It expects:
-    /// * an inclusive range of possible values
-    /// * the current value of the [`Slider`]
-    /// * a function that will be called when the [`Slider`] is dragged.
-    ///
-    /// It receives the new value of the [`Slider`] and must produce a `Message`.
-    pub fn new<F>(range: RangeInclusive<T>, value: T, default: T, on_change: F) -> Self
+    ///   * an inclusive range of possible values
+    ///   * the current value of the [`Slider`]
+    ///   * a function that will be called when the [`Slider`] is dragged.
+    ///     It receives the new value of the [`Slider`] and must produce a
+    ///     `Message`.
+    pub fn new<F>(range: RangeInclusive<T>, value: T, on_change: F) -> Self
     where
-        F: 'static + Fn(T) -> Message,
+        F: 'a + Fn(T) -> Message,
     {
         let value = if value >= *range.start() {
             value
@@ -117,15 +115,25 @@ where
 
         Slider {
             value,
+            default: None,
             range,
-            step: T::from(1),
-            default,
+            step: 1.0,
+            shift_step: None,
             on_change: Box::new(on_change),
             on_release: None,
             width: Length::Fill,
             height: Self::DEFAULT_HEIGHT,
-            style: Default::default(),
+            class: Theme::default(),
+            status: None,
         }
+    }
+
+    /// Sets the optional default value for the [`Slider`].
+    ///
+    /// If set, the [`Slider`] will reset to this value when ctrl-clicked or command-clicked.
+    pub fn default(mut self, default: impl Into<T>) -> Self {
+        self.default = Some(default.into());
+        self
     }
 
     /// Sets the release message of the [`Slider`].
@@ -140,433 +148,375 @@ where
     }
 
     /// Sets the width of the [`Slider`].
-    pub fn width(mut self, width: Length) -> Self {
-        self.width = width;
+    pub fn width(mut self, width: impl Into<Length>) -> Self {
+        self.width = width.into();
         self
     }
 
     /// Sets the height of the [`Slider`].
-    pub fn height(mut self, height: u16) -> Self {
-        self.height = height;
-        self
-    }
-
-    /// Sets the style of the [`Slider`].
-    pub fn style(mut self, style: impl Into<<Renderer::Theme as StyleSheet>::Style>) -> Self {
-        self.style = style.into();
+    pub fn height(mut self, height: impl Into<Pixels>) -> Self {
+        self.height = height.into().0;
         self
     }
 
     /// Sets the step size of the [`Slider`].
-    pub fn step(mut self, step: T) -> Self {
-        self.step = step;
+    pub fn step(mut self, step: impl num_traits::AsPrimitive<f64>) -> Self {
+        self.step = step.as_();
+        self
+    }
+
+    /// Sets the optional "shift" step for the [`Slider`].
+    ///
+    /// If set, this value is used as the step while the shift key is pressed.
+    pub fn shift_step(mut self, shift_step: impl num_traits::AsPrimitive<f64>) -> Self {
+        self.shift_step = Some(shift_step.as_());
+        self
+    }
+
+    /// Sets the style of the [`Slider`].
+    #[must_use]
+    pub fn style(mut self, style: impl Fn(&Theme, Status) -> Style + 'a) -> Self
+    where
+        Theme::Class<'a>: From<StyleFn<'a, Theme>>,
+    {
+        self.class = (Box::new(style) as StyleFn<'a, Theme>).into();
+        self
+    }
+
+    /// Sets the style class of the [`Slider`].
+    #[must_use]
+    pub fn class(mut self, class: impl Into<Theme::Class<'a>>) -> Self {
+        self.class = class.into();
         self
     }
 }
 
-/// Processes an [`Event`] and updates the [`State`] of a [`Slider`]
-/// accordingly.
-#[allow(clippy::too_many_arguments)]
-pub fn update<Message, T>(
-    event: Event,
-    layout: Layout<'_>,
-    cursor_position: Point,
-    shell: &mut Shell<'_, Message>,
-    state: &mut State,
-    value: &mut T,
-    range: &RangeInclusive<T>,
-    step: T,
-    default: T,
-    on_change: &dyn Fn(T) -> Message,
-    on_release: &Option<Message>,
-) -> event::Status
+impl<T, Message, Theme, Renderer> Widget<Message, Theme, Renderer> for Slider<'_, T, Message, Theme>
 where
-    T: Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
+    T: Copy + num_traits::AsPrimitive<f64> + num_traits::FromPrimitive,
     Message: Clone,
-{
-    let is_dragging = state.is_dragging;
-
-    match event {
-        Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left))
-        | Event::Touch(touch::Event::FingerPressed { .. }) => {
-            let bounds = layout.bounds();
-            if bounds.contains(cursor_position) {
-                if state.control_pressed {
-                    let new_value = default;
-                    shell.publish((on_change)(new_value));
-                    *value = new_value;
-                } else {
-                    let step = step.into();
-                    let start = (*range.start()).into();
-                    let end = (*range.end()).into();
-                    let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
-                    let steps = (percent * (end - start) / step).round();
-                    let v = steps * step + start;
-                    let new_value = T::from_f64(v)
-                        .unwrap_or_default()
-                        .clamp(*range.start(), *range.end());
-                    shell.publish((on_change)(new_value));
-                    *value = new_value;
-                    state.is_dragging = true;
-                    state.click_pos_x = cursor_position.x;
-                    state.click_value = v;
-                }
-
-                return event::Status::Captured;
-            }
-        }
-        Event::Mouse(mouse::Event::ButtonReleased(mouse::Button::Left))
-        | Event::Touch(touch::Event::FingerLifted { .. })
-        | Event::Touch(touch::Event::FingerLost { .. }) => {
-            if is_dragging {
-                if let Some(on_release) = on_release.clone() {
-                    shell.publish(on_release);
-                }
-                state.is_dragging = false;
-
-                return event::Status::Captured;
-            }
-        }
-        Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Right)) => {
-            if layout.bounds().contains(cursor_position) {
-                let new_value = default;
-                shell.publish((on_change)(new_value));
-                *value = new_value;
-            }
-        }
-        Event::Mouse(mouse::Event::CursorMoved { .. })
-        | Event::Touch(touch::Event::FingerMoved { .. }) => {
-            if is_dragging {
-                let bounds = layout.bounds();
-                let step = step.into();
-                let start = (*range.start()).into();
-                let end = (*range.end()).into();
-                let mut percent =
-                    f64::from(cursor_position.x - state.click_pos_x) / f64::from(bounds.width);
-                if state.shift_pressed {
-                    percent /= 4.0;
-                }
-                let steps = (percent * (end - start) / step).round();
-                let v = state.click_value + steps;
-                let new_value = T::from_f64(v)
-                    .unwrap_or_default()
-                    .clamp(*range.start(), *range.end());
-                shell.publish((on_change)(new_value));
-                *value = new_value;
-
-                return event::Status::Captured;
-            }
-        }
-        Event::Mouse(mouse::Event::WheelScrolled { delta }) => {
-            if layout.bounds().contains(cursor_position) {
-                let delta = match delta {
-                    ScrollDelta::Lines { x: _, y } => {
-                        if y.is_sign_positive() {
-                            y.ceil()
-                        } else {
-                            y.floor()
-                        }
-                    }
-                    _ => 0.0,
-                };
-
-                let new_value = { *value + T::from_f32(delta).unwrap_or_default() }
-                    .clamp(*range.start(), *range.end());
-                shell.publish((on_change)(new_value));
-
-                *value = new_value;
-
-                return event::Status::Captured;
-            }
-        }
-        Event::Keyboard(keyboard::Event::KeyPressed {
-            key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
-            ..
-        }) => {
-            state.shift_pressed = true;
-            if state.is_dragging {
-                state.click_pos_x = cursor_position.x;
-                state.click_value = (*value).into();
-            }
-
-            return event::Status::Captured;
-        }
-        Event::Keyboard(keyboard::Event::KeyReleased {
-            key_code: keyboard::KeyCode::LShift | keyboard::KeyCode::RShift,
-            ..
-        }) => {
-            state.shift_pressed = false;
-            if state.is_dragging {
-                let bounds = layout.bounds();
-                let step = step.into();
-                let start = (*range.start()).into();
-                let end = (*range.end()).into();
-                let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
-                let steps = (percent * (end - start) / step).round();
-                let v = steps * step + start;
-                let new_value = T::from_f64(v)
-                    .unwrap_or_default()
-                    .clamp(*range.start(), *range.end());
-                shell.publish((on_change)(new_value));
-                *value = new_value;
-                state.click_pos_x = cursor_position.x;
-                state.click_value = (*value).into();
-            }
-
-            return event::Status::Captured;
-        }
-        Event::Keyboard(keyboard::Event::KeyPressed {
-            key_code: keyboard::KeyCode::LControl | keyboard::KeyCode::RControl,
-            ..
-        }) => {
-            state.control_pressed = true;
-
-            return event::Status::Captured;
-        }
-        Event::Keyboard(keyboard::Event::KeyReleased {
-            key_code: keyboard::KeyCode::LControl | keyboard::KeyCode::RControl,
-            ..
-        }) => {
-            state.control_pressed = false;
-
-            return event::Status::Captured;
-        }
-        _ => {}
-    }
-
-    event::Status::Ignored
-}
-
-/// Draws a [`Slider`].
-#[allow(clippy::too_many_arguments)]
-pub fn draw<T, R>(
-    renderer: &mut R,
-    layout: Layout<'_>,
-    cursor_position: Point,
-    state: &State,
-    value: T,
-    range: &RangeInclusive<T>,
-    style_sheet: &dyn StyleSheet<Style = <R::Theme as StyleSheet>::Style>,
-    style: &<R::Theme as StyleSheet>::Style,
-) where
-    T: Into<f64> + Copy,
-    R: iced_native::Renderer,
-    R::Theme: StyleSheet,
-{
-    let bounds = layout.bounds();
-    let is_mouse_over = bounds.contains(cursor_position);
-
-    let style = if state.is_dragging {
-        style_sheet.dragging(style)
-    } else if is_mouse_over {
-        style_sheet.hovered(style)
-    } else {
-        style_sheet.active(style)
-    };
-
-    let rail_y = bounds.y + (bounds.height / 2.0).round();
-
-    renderer.fill_quad(
-        renderer::Quad {
-            bounds: Rectangle {
-                x: bounds.x,
-                y: rail_y - 1.0,
-                width: bounds.width,
-                height: 2.0,
-            },
-            border_radius: 0.0.into(),
-            border_width: 0.0,
-            border_color: Color::TRANSPARENT,
-        },
-        style.rail.colors.0,
-    );
-
-    renderer.fill_quad(
-        renderer::Quad {
-            bounds: Rectangle {
-                x: bounds.x,
-                y: rail_y + 1.0,
-                width: bounds.width,
-                height: 2.0,
-            },
-            border_radius: 0.0.into(),
-            border_width: 0.0,
-            border_color: Color::TRANSPARENT,
-        },
-        Background::Color(style.rail.colors.1),
-    );
-
-    let (handle_width, handle_height, handle_border_radius) = match style.handle.shape {
-        HandleShape::Circle { radius } => (radius * 2.0, radius * 2.0, radius),
-        HandleShape::Rectangle {
-            width,
-            border_radius,
-        } => (f32::from(width), bounds.height, border_radius),
-    };
-
-    let value = value.into() as f32;
-    let (range_start, range_end) = {
-        let (start, end) = range.clone().into_inner();
-
-        (start.into() as f32, end.into() as f32)
-    };
-
-    let handle_offset = if range_start >= range_end {
-        0.0
-    } else {
-        bounds.width * (value - range_start) / (range_end - range_start) - handle_width / 2.0
-    };
-
-    renderer.fill_quad(
-        renderer::Quad {
-            bounds: Rectangle {
-                x: bounds.x + handle_offset.round(),
-                y: rail_y - handle_height / 2.0,
-                width: handle_width,
-                height: handle_height,
-            },
-            border_radius: handle_border_radius.into(),
-            border_width: style.handle.border_width,
-            border_color: style.handle.border_color,
-        },
-        style.handle.color,
-    );
-}
-
-/// Computes the current [`mouse::Interaction`] of a [`Slider`].
-pub fn mouse_interaction(
-    layout: Layout<'_>,
-    cursor_position: Point,
-    state: &State,
-) -> mouse::Interaction {
-    let bounds = layout.bounds();
-    let is_mouse_over = bounds.contains(cursor_position);
-
-    if state.is_dragging {
-        mouse::Interaction::Grabbing
-    } else if is_mouse_over {
-        mouse::Interaction::Pointer
-    } else {
-        mouse::Interaction::default()
-    }
-}
-
-/// The local state of a [`Slider`].
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct State {
-    is_dragging: bool,
-    shift_pressed: bool,
-    control_pressed: bool,
-    click_pos_x: f32,
-    click_value: f64,
-}
-
-impl State {
-    /// Creates a new [`State`].
-    pub fn new() -> State {
-        State::default()
-    }
-}
-
-impl<'a, T, Message, Renderer> Widget<Message, Renderer> for Slider<'a, T, Message, Renderer>
-where
-    T: Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
-    Message: Clone,
-    Renderer: iced_native::Renderer,
-    Renderer::Theme: StyleSheet,
+    Theme: Catalog,
+    Renderer: iced::advanced::Renderer,
 {
     fn tag(&self) -> tree::Tag {
         tree::Tag::of::<State>()
     }
 
     fn state(&self) -> tree::State {
-        tree::State::new(State::new())
+        tree::State::new(State::default())
     }
 
-    fn width(&self) -> Length {
-        self.width
+    fn size(&self) -> Size<Length> {
+        Size {
+            width: self.width,
+            height: Length::Shrink,
+        }
     }
 
-    fn height(&self) -> Length {
-        Length::Shrink
+    fn layout(
+        &mut self,
+        _tree: &mut Tree,
+        _renderer: &Renderer,
+        limits: &layout::Limits,
+    ) -> layout::Node {
+        layout::atomic(limits, self.width, self.height)
     }
 
-    fn layout(&self, _renderer: &Renderer, limits: &layout::Limits) -> layout::Node {
-        let limits = limits.width(self.width).height(self.height);
-
-        let size = limits.resolve(Size::ZERO);
-
-        layout::Node::new(size)
-    }
-
-    fn on_event(
+    fn update(
         &mut self,
         tree: &mut Tree,
-        event: Event,
+        event: &Event,
         layout: Layout<'_>,
-        cursor_position: Point,
+        cursor: mouse::Cursor,
         _renderer: &Renderer,
         _clipboard: &mut dyn Clipboard,
         shell: &mut Shell<'_, Message>,
-    ) -> event::Status {
-        update(
-            event,
-            layout,
-            cursor_position,
-            shell,
-            tree.state.downcast_mut::<State>(),
-            &mut self.value,
-            &self.range,
-            self.step,
-            self.default,
-            self.on_change.as_ref(),
-            &self.on_release,
-        )
+        _viewport: &Rectangle,
+    ) {
+        let state = tree.state.downcast_mut::<State>();
+
+        let mut update = || {
+            let current_value = self.value;
+
+            let locate = |cursor_position: Point| -> Option<T> {
+                let bounds = layout.bounds();
+
+                if cursor_position.x <= bounds.x {
+                    Some(*self.range.start())
+                } else if cursor_position.x >= bounds.x + bounds.width {
+                    Some(*self.range.end())
+                } else {
+                    let step = if state.keyboard_modifiers.shift() {
+                        self.shift_step.unwrap_or(self.step)
+                    } else {
+                        self.step
+                    };
+
+                    let start = (*self.range.start()).as_();
+                    let end = (*self.range.end()).as_();
+
+                    let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
+
+                    let steps = (percent * (end - start) / step).round();
+                    let value = steps * step + start;
+
+                    T::from_f64(value.min(end))
+                }
+            };
+
+            let increment = |value: T| -> Option<T> {
+                let step = if state.keyboard_modifiers.shift() {
+                    self.shift_step.unwrap_or(self.step)
+                } else {
+                    self.step
+                };
+
+                let steps = (value.as_() / step).round();
+                let new_value = step * (steps + 1.0);
+
+                if new_value > (*self.range.end()).as_() {
+                    return Some(*self.range.end());
+                }
+
+                T::from_f64(new_value)
+            };
+
+            let decrement = |value: T| -> Option<T> {
+                let step = if state.keyboard_modifiers.shift() {
+                    self.shift_step.unwrap_or(self.step)
+                } else {
+                    self.step
+                };
+
+                let steps = (value.as_() / step).round();
+                let new_value = step * (steps - 1.0);
+
+                if new_value < (*self.range.start()).as_() {
+                    return Some(*self.range.start());
+                }
+
+                T::from_f64(new_value)
+            };
+
+            let change = |new_value: T| {
+                if (self.value.as_() - new_value.as_()).abs() > f64::EPSILON {
+                    shell.publish((self.on_change)(new_value));
+
+                    self.value = new_value;
+                }
+            };
+
+            match event {
+                Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left))
+                | Event::Touch(touch::Event::FingerPressed { .. }) => {
+                    if let Some(cursor_position) = cursor.position_over(layout.bounds()) {
+                        if state.keyboard_modifiers.command() {
+                            let _ = self.default.map(change);
+                            state.is_dragging = false;
+                        } else {
+                            let _ = locate(cursor_position).map(change);
+                            state.is_dragging = true;
+                        }
+
+                        shell.capture_event();
+                    }
+                }
+                Event::Mouse(mouse::Event::ButtonReleased(mouse::Button::Left))
+                | Event::Touch(touch::Event::FingerLifted { .. })
+                | Event::Touch(touch::Event::FingerLost { .. })
+                    if state.is_dragging =>
+                {
+                    if let Some(on_release) = self.on_release.clone() {
+                        shell.publish(on_release);
+                    }
+                    state.is_dragging = false;
+                }
+                Event::Mouse(mouse::Event::CursorMoved { .. })
+                | Event::Touch(touch::Event::FingerMoved { .. })
+                    if state.is_dragging =>
+                {
+                    let _ = cursor.land().position().and_then(locate).map(change);
+
+                    shell.capture_event();
+                }
+                Event::Mouse(mouse::Event::WheelScrolled { delta })
+                    if cursor.is_over(layout.bounds()) =>
+                {
+                    let delta = match delta {
+                        mouse::ScrollDelta::Lines { x: _, y } => y,
+                        mouse::ScrollDelta::Pixels { x: _, y } => y,
+                    };
+
+                    if *delta < 0.0 {
+                        let _ = decrement(current_value).map(change);
+                    } else {
+                        let _ = increment(current_value).map(change);
+                    }
+
+                    shell.capture_event();
+                }
+                Event::Keyboard(keyboard::Event::KeyPressed { key, .. })
+                    if cursor.is_over(layout.bounds()) =>
+                {
+                    match key {
+                        Key::Named(key::Named::ArrowUp) => {
+                            let _ = increment(current_value).map(change);
+                            shell.capture_event();
+                        }
+                        Key::Named(key::Named::ArrowDown) => {
+                            let _ = decrement(current_value).map(change);
+                            shell.capture_event();
+                        }
+                        _ => (),
+                    }
+                }
+                Event::Keyboard(keyboard::Event::ModifiersChanged(modifiers)) => {
+                    state.keyboard_modifiers = *modifiers;
+                }
+                _ => {}
+            }
+        };
+
+        update();
+
+        let current_status = if state.is_dragging {
+            Status::Dragged
+        } else if cursor.is_over(layout.bounds()) {
+            Status::Hovered
+        } else {
+            Status::Active
+        };
+
+        if let Event::Window(window::Event::RedrawRequested(_now)) = event {
+            self.status = Some(current_status);
+        } else if self.status.is_some_and(|status| status != current_status) {
+            shell.request_redraw();
+        }
     }
 
     fn draw(
         &self,
-        tree: &Tree,
+        _tree: &Tree,
         renderer: &mut Renderer,
-        theme: &Renderer::Theme,
+        theme: &Theme,
         _style: &renderer::Style,
         layout: Layout<'_>,
-        cursor_position: Point,
+        _cursor: mouse::Cursor,
         _viewport: &Rectangle,
     ) {
-        draw(
-            renderer,
-            layout,
-            cursor_position,
-            tree.state.downcast_ref::<State>(),
-            self.value,
-            &self.range,
-            theme,
-            &self.style,
-        )
+        let bounds = layout.bounds();
+
+        let style = theme.style(&self.class, self.status.unwrap_or(Status::Active));
+
+        let (handle_width, handle_height, handle_border_radius) = match style.handle.shape {
+            HandleShape::Circle { radius } => (radius * 2.0, radius * 2.0, radius.into()),
+            HandleShape::Rectangle {
+                width,
+                border_radius,
+            } => (f32::from(width), bounds.height, border_radius),
+        };
+
+        let value = self.value.as_() as f32;
+        let (range_start, range_end) = {
+            let (start, end) = self.range.clone().into_inner();
+
+            (start.as_() as f32, end.as_() as f32)
+        };
+
+        let offset = if range_start >= range_end {
+            0.0
+        } else {
+            (bounds.width - handle_width) * (value - range_start) / (range_end - range_start)
+        };
+
+        let rail_y = bounds.y + bounds.height / 2.0;
+
+        renderer.fill_quad(
+            renderer::Quad {
+                bounds: Rectangle {
+                    x: bounds.x,
+                    y: rail_y - style.rail.width / 2.0,
+                    width: offset + handle_width / 2.0,
+                    height: style.rail.width,
+                },
+                border: style.rail.border,
+                ..renderer::Quad::default()
+            },
+            style.rail.backgrounds.0,
+        );
+
+        renderer.fill_quad(
+            renderer::Quad {
+                bounds: Rectangle {
+                    x: bounds.x + offset + handle_width / 2.0,
+                    y: rail_y - style.rail.width / 2.0,
+                    width: bounds.width - offset - handle_width / 2.0,
+                    height: style.rail.width,
+                },
+                border: style.rail.border,
+                ..renderer::Quad::default()
+            },
+            style.rail.backgrounds.1,
+        );
+
+        renderer.fill_quad(
+            renderer::Quad {
+                bounds: Rectangle {
+                    x: bounds.x + offset,
+                    y: rail_y - handle_height / 2.0,
+                    width: handle_width,
+                    height: handle_height,
+                },
+                border: Border {
+                    radius: handle_border_radius,
+                    width: style.handle.border_width,
+                    color: style.handle.border_color,
+                },
+                ..renderer::Quad::default()
+            },
+            style.handle.background,
+        );
     }
 
     fn mouse_interaction(
         &self,
         tree: &Tree,
         layout: Layout<'_>,
-        cursor_position: Point,
+        cursor: mouse::Cursor,
         _viewport: &Rectangle,
         _renderer: &Renderer,
     ) -> mouse::Interaction {
-        mouse_interaction(layout, cursor_position, tree.state.downcast_ref::<State>())
+        let state = tree.state.downcast_ref::<State>();
+
+        if state.is_dragging {
+            // FIXME: Fall back to `Pointer` on Windows
+            // See https://github.com/rust-windowing/winit/issues/1043
+            if cfg!(target_os = "windows") {
+                mouse::Interaction::Pointer
+            } else {
+                mouse::Interaction::Grabbing
+            }
+        } else if cursor.is_over(layout.bounds()) {
+            if cfg!(target_os = "windows") {
+                mouse::Interaction::Pointer
+            } else {
+                mouse::Interaction::Grab
+            }
+        } else {
+            mouse::Interaction::default()
+        }
     }
 }
 
-impl<'a, T, Message, Renderer> From<Slider<'a, T, Message, Renderer>>
-    for Element<'a, Message, Renderer>
+impl<'a, T, Message, Theme, Renderer> From<Slider<'a, T, Message, Theme>>
+    for Element<'a, Message, Theme, Renderer>
 where
-    T: 'a + Default + Copy + Into<f64> + Add<Output = T> + Ord + num_traits::FromPrimitive,
-    Message: 'a + Clone,
-    Renderer: 'a + iced_native::Renderer,
-    Renderer::Theme: StyleSheet,
+    T: Copy + num_traits::AsPrimitive<f64> + num_traits::FromPrimitive + 'a,
+    Message: Clone + 'a,
+    Theme: Catalog + 'a,
+    Renderer: iced::advanced::Renderer + 'a,
 {
-    fn from(slider: Slider<'a, T, Message, Renderer>) -> Element<'a, Message, Renderer> {
+    fn from(slider: Slider<'a, T, Message, Theme>) -> Element<'a, Message, Theme, Renderer> {
         Element::new(slider)
     }
 }
@@ -678,7 +628,7 @@ impl Catalog for Theme {
 
 /// The default style of a [`Slider`].
 pub fn default(theme: &Theme, status: Status) -> Style {
-    let palette = theme.palette();
+    let palette = theme.extended_palette();
 
     let color = match status {
         Status::Active => palette.primary.base.color,
