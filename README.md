@@ -23,8 +23,9 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - When using a DAW at the same time as the editor, make sure it does not loopback sysex messages to the Töörö.
 - You can select a MIDI input for playing the Töörö while editing via the **Merge Input** dropdown list on the bottom of the application window.
 - Silders can be fine-controlled by holding the *SHIFT* key while dragging.
-- To reset a slider value to it's default, use *CTRL*-click or right-click.
+- To reset a slider value to it's default, use *CTRL*-click.
 - The mouse wheel can also be used to change a slider value.
+- The arrow up/down keys can be used to change the hovered slider's value.
 - The Töörö firmware must be V1.5 or higher. Otherwise, not all parameters can be edited.
 - The application tries to detect when you change a parameter on the device itself. Unfortunately, this will not work in all cases. Use the **Update from device** button to force a reload of all parameters.
 - A manual update must also be requested when you change a preset or change a parameter via MIDI CCs from another application or source.
@@ -42,10 +43,8 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 The following platforms were tested during development:
 
 - Windows 10
-- OS X 10.11 (El Capitan)
-- macOS 10.13 (High Sierra)
-- macOS 11 (Big Sur)
-- Linux Mint 20.3
+- macOS 14.8
+- Linux Mint 22.3
 
 ## Building from Source
 
