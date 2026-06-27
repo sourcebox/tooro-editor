@@ -12,11 +12,12 @@ use std::io::Write;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
+use iced::futures::SinkExt;
 use iced::keyboard::{Event::KeyPressed, Key};
 use iced::widget::{Column, Container, PickList, Row, Text};
 use iced::{
     Alignment, Application, Element, Event, Length, Program, Subscription, Task, Theme, event,
-    time, window,
+    stream, time, window,
 };
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
@@ -499,7 +500,7 @@ impl App {
         let subscriptions = vec![
             tick_subscription,
             fast_tick_subscription,
-            // midi_merge_input_subscription(),
+            midi_merge_input_subscription(),
             event_subscription,
         ];
 
@@ -638,32 +639,23 @@ impl App {
     }
 }
 
-// /// Return subscription for receiving messages on MIDI merge input.
-// pub fn midi_merge_input_subscription() -> Subscription<Message> {
-//     use iced::futures::channel::mpsc;
-//     use iced::futures::StreamExt;
+/// Return subscription for receiving messages on MIDI merge input.
+pub fn midi_merge_input_subscription() -> Subscription<Message> {
+    use iced::futures::StreamExt;
+    use iced::futures::channel::mpsc;
 
-//     enum State {
-//         Starting,
-//         Ready(mpsc::Receiver<Vec<u8>>),
-//     }
+    Subscription::run(|| {
+        stream::channel(100, async |mut output| {
+            let (sender, mut receiver) = mpsc::channel(64);
 
-//     iced::subscription::unfold("MIDI merge input", State::Starting, |state| async move {
-//         match state {
-//             State::Starting => {
-//                 let (sender, receiver) = mpsc::channel(64);
-//                 (
-//                     Message::MidiMergeSubscriptionReady(sender),
-//                     State::Ready(receiver),
-//                 )
-//             }
-//             State::Ready(mut receiver) => {
-//                 let message = receiver.select_next_some().await;
-//                 (
-//                     Message::MidiMergeInputMessage(message),
-//                     State::Ready(receiver),
-//                 )
-//             }
-//         }
-//     })
-// }
+            let _ = output
+                .send(Message::MidiMergeSubscriptionReady(sender))
+                .await;
+
+            loop {
+                let message = receiver.select_next_some().await;
+                let _ = output.send(Message::MidiMergeInputMessage(message)).await;
+            }
+        })
+    })
+}
