@@ -48,12 +48,13 @@ fn application() -> Application<impl Program<Message = Message, Theme = Theme>> 
         .title(App::title)
         .theme(App::theme)
         .window_size((style::WINDOW_WIDTH, style::WINDOW_HEIGHT))
-        .scale_factor(|app| app.app_state.scale_factor)
+        .scale_factor(|app| app.settings.scale_factor)
+        .exit_on_close_request(false)
 }
 
-/// Persistent state saved between launches.
+/// Persistent settings saved between launches.
 #[derive(Debug, Serialize, Deserialize)]
-struct AppState {
+struct AppSettings {
     /// Name of the merge input port.
     merge_input_name: String,
 
@@ -61,7 +62,7 @@ struct AppState {
     scale_factor: f32,
 }
 
-impl Default for AppState {
+impl Default for AppSettings {
     fn default() -> Self {
         Self {
             merge_input_name: String::default(),
@@ -72,8 +73,8 @@ impl Default for AppState {
 
 /// Holds the application data and state.
 struct App {
-    /// Persistent state data.
-    app_state: AppState,
+    /// Persistent settings data.
+    settings: AppSettings,
 
     /// UI section containing the sound (preset) parameters
     sound_panel: SoundPanel,
@@ -128,7 +129,7 @@ impl App {
     /// Returns a new application.
     fn new() -> (Self, Task<Message>) {
         let mut app = Self {
-            app_state: AppState::default(),
+            settings: AppSettings::default(),
 
             sound_panel: SoundPanel::new(),
             multi_panel: MultiPanel::new(),
@@ -156,16 +157,16 @@ impl App {
             init_complete: false,
         };
 
-        app.load_app_state();
+        app.load_settings();
 
         // If the merge input is not present at startup, clear the stored setting.
         app.midi.scan_ports();
         if !app
             .midi
             .get_merge_inputs()
-            .contains(&app.app_state.merge_input_name)
+            .contains(&app.settings.merge_input_name)
         {
-            app.app_state.merge_input_name = String::new();
+            app.settings.merge_input_name = String::new();
         }
 
         (app, Task::none())
@@ -186,19 +187,20 @@ impl App {
         match message {
             Message::EventOccurred(event) => {
                 if event == Event::Window(window::Event::CloseRequested) {
-                    self.save_app_state();
+                    self.save_settings();
+                    return window::latest().and_then(window::close);
                 } else if let Event::Keyboard(event) = event {
                     match event {
                         KeyPressed { key, modifiers, .. } if modifiers.control() => {
                             match key.as_ref() {
-                                Key::Character("0") => self.app_state.scale_factor = 1.0,
+                                Key::Character("0") => self.settings.scale_factor = 1.0,
                                 Key::Character("+") => {
-                                    self.app_state.scale_factor =
-                                        (self.app_state.scale_factor * 1.1).min(4.0);
+                                    self.settings.scale_factor =
+                                        (self.settings.scale_factor * 1.1).min(4.0);
                                 }
                                 Key::Character("-") => {
-                                    self.app_state.scale_factor =
-                                        (self.app_state.scale_factor * 0.9).max(0.5);
+                                    self.settings.scale_factor =
+                                        (self.settings.scale_factor * 0.9).max(0.5);
                                 }
                                 _ => {}
                             }
@@ -242,7 +244,7 @@ impl App {
 
             Message::MergeInputChange(input_name) => {
                 log::debug!("Merge input changed to {:?}", input_name);
-                self.app_state.merge_input_name = input_name.clone();
+                self.settings.merge_input_name = input_name.clone();
                 if let Some(sender) = &self.merge_input_sender {
                     self.midi.select_merge_input(input_name, sender.clone());
                 }
@@ -366,7 +368,7 @@ impl App {
                 let channel: (mpsc::Sender<Vec<u8>>, mpsc::Receiver<Vec<u8>>) = mpsc::channel();
                 self.merge_input_sender = Some(channel.0);
                 self.midi.select_merge_input(
-                    self.app_state.merge_input_name.clone(),
+                    self.settings.merge_input_name.clone(),
                     self.merge_input_sender.as_ref().unwrap().clone(),
                 );
                 std::thread::spawn(move || loop {
@@ -428,7 +430,7 @@ impl App {
                                                 inputs.insert(0, String::from(""));
                                                 inputs
                                             },
-                                            Some(self.app_state.merge_input_name.clone()),
+                                            Some(self.settings.merge_input_name.clone()),
                                             Message::MergeInputChange,
                                         )
                                         .width(250)
@@ -489,8 +491,8 @@ impl App {
         Subscription::batch(subscriptions)
     }
 
-    /// Load persistent state data from file.
-    fn load_app_state(&mut self) {
+    /// Load persistent settings data from file.
+    fn load_settings(&mut self) {
         if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
             let config_dir = proj_dirs.config_dir().to_path_buf();
             let config_file_path = config_dir.join("config.ron");
@@ -499,22 +501,22 @@ impl App {
                 config_file_path.display()
             );
             if let Ok(s) = std::fs::read_to_string(config_file_path) {
-                if let Ok(app_state) = ron::from_str(s.as_str()) {
-                    self.app_state = app_state;
+                if let Ok(settings) = ron::from_str(s.as_str()) {
+                    self.settings = settings;
                 }
             }
         }
     }
 
-    /// Save persistent state data to file.
-    fn save_app_state(&self) {
+    /// Save persistent settings data to file.
+    fn save_settings(&self) {
         if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
             let config_dir = proj_dirs.config_dir().to_path_buf();
             if let Ok(()) = std::fs::create_dir_all(&config_dir) {
                 let config_file_path = config_dir.join("config.ron");
                 log::info!("Saving persistent data to {}", config_file_path.display());
                 if let Ok(config_file) = std::fs::File::create(config_file_path) {
-                    ron::ser::to_writer(config_file, &self.app_state).ok();
+                    ron::ser::to_writer(config_file, &self.settings).ok();
                 }
             }
         }
