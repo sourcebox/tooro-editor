@@ -22,7 +22,7 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - The Töörö must be connected to the computer via USB. DIN MIDI will not work.
 - When using a DAW at the same time as the editor, make sure it does not loopback sysex messages to the Töörö.
 - You can select a MIDI input for playing the Töörö while editing via the **Merge Input** dropdown list on the bottom of the application window.
-- Silders can be fine-controlled by holding the *SHIFT* key while dragging.
+- Sliders can be fine-controlled by holding the *SHIFT* key while dragging.
 - To reset a slider value to it's default, use *CTRL*-click.
 - The mouse wheel can also be used to change a slider value.
 - The arrow up/down keys can be used to change the hovered slider's value.
