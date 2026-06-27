@@ -65,7 +65,7 @@ impl EnvFSection {
                 SoundParameter::EnvFTrigger,
                 params.get_value(SoundParameter::EnvFTrigger),
             ))
-            .push(rule::horizontal(10))
+            .push(rule::horizontal(1).style(|_| style::rule()))
             .push(mod_target_list(
                 "Mod Target",
                 SoundParameter::ModEnvFTarget,

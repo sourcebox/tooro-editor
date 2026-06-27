@@ -65,7 +65,7 @@ impl EnvASection {
                 SoundParameter::EnvATrigger,
                 params.get_value(SoundParameter::EnvATrigger),
             ))
-            .push(rule::horizontal(10))
+            .push(rule::horizontal(1).style(|_| style::rule()))
             .push(mod_target_list(
                 "Mod Target",
                 SoundParameter::ModEnvATarget,

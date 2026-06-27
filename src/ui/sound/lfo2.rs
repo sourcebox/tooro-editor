@@ -45,7 +45,7 @@ impl LFO2Section {
                 SoundParameter::LFO2Phase,
                 params.get_value(SoundParameter::LFO2Phase),
             ))
-            .push(rule::horizontal(10))
+            .push(rule::horizontal(1).style(|_| style::rule()))
             .push(mod_target_list(
                 "Mod Target",
                 SoundParameter::ModLFO2Target,

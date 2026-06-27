@@ -23,6 +23,7 @@ pub fn env_trigger_list(
     let pick_list = PickList::new(&EnvTrigger::ALL[..], value, move |v| {
         Message::SoundParameterChange(sound_param, v as i32)
     })
+    .style(|_, status| style::pick_list(status))
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
     Container::new(

@@ -39,24 +39,13 @@ fn main() -> iced::Result {
         .unwrap();
 
     application().run()
-
-    // let settings = Settings {
-    //     window: iced::window::Settings {
-    //         size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT),
-    //         min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT)),
-    //         max_size: Some((style::WINDOW_WIDTH * 2, style::WINDOW_HEIGHT)),
-    //         resizable: true,
-    //         ..iced::window::Settings::default()
-    //     },
-    //     exit_on_close_request: false,
-    //     ..Settings::default()
-    // };
 }
 
 fn application() -> Application<impl Program<Message = Message, Theme = Theme>> {
     iced::application(App::new, App::update, App::view)
         .subscription(App::subscription)
         .title(App::title)
+        .theme(App::theme)
         .window_size((style::WINDOW_WIDTH, style::WINDOW_HEIGHT))
 }
 
@@ -171,6 +160,11 @@ impl App {
     /// Returns the name of the application shown in the title bar.
     fn title(&self) -> String {
         String::from("Töörö Editor")
+    }
+
+    /// Returns the used theme.
+    fn theme(&self) -> Option<Theme> {
+        Some(Theme::Dark)
     }
 
     /// Process a message and update the state accordingly.
@@ -377,7 +371,7 @@ impl App {
                                 .push(self.multi_panel.view(&self.multi_params))
                                 .width(Length::FillPortion(1)),
                         )
-                        .height(625),
+                        .height(Length::Fill),
                 )
                 .push(
                     Row::new()

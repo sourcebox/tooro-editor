@@ -20,23 +20,20 @@ impl ManagerPanel {
         let row1 = Row::new()
             .padding(5)
             .spacing(10)
-            .push(
-                Column::new()
-                    .push(part_list(part_id))
-                    .width(Length::FillPortion(2)),
-            )
+            .push(Column::new().push(part_list(part_id)).width(Length::Fill))
             .push(
                 Column::new()
                     .push({
                         let mut button = Button::new(
                             Text::new("Update from device").size(style::BUTTON_TEXT_SIZE),
-                        );
+                        )
+                        .style(|_, status| style::button(status));
                         if device_connected {
                             button = button.on_press(Message::UpdateFromDevice);
                         }
                         button
                     })
-                    .width(Length::FillPortion(4))
+                    .width(Length::Shrink)
                     .align_x(Alignment::End),
             );
 
@@ -48,26 +45,32 @@ impl ManagerPanel {
                     .push({
                         let mut button = Button::new(
                             Text::new("Load syx file...").size(style::BUTTON_TEXT_SIZE),
-                        );
+                        )
+                        .style(|_, status| style::button(status))
+                        .width(Length::Fill)
+                        .padding(5);
                         if device_connected {
                             button = button.on_press(Message::LoadSysexFile);
                         }
                         button
                     })
-                    .width(Length::FillPortion(2)),
+                    .width(Length::Fill),
             )
             .push(
                 Column::new()
                     .push({
                         let mut button = Button::new(
                             Text::new("Save syx file...").size(style::BUTTON_TEXT_SIZE),
-                        );
+                        )
+                        .style(|_, status| style::button(status))
+                        .width(Length::Fill)
+                        .padding(5);
                         if device_connected {
                             button = button.on_press(Message::SavePresetSysexFile);
                         }
                         button
                     })
-                    .width(Length::FillPortion(2))
+                    .width(Length::Fill)
                     .align_x(Alignment::End),
             );
 

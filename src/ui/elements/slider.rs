@@ -12,7 +12,7 @@ use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
 use crate::style;
 
-/// Returns a slider for a sound (preset) parameter
+/// Returns a slider for a sound (preset) parameter.
 pub fn slider_with_labels(
     label: &str,
     sound_param: SoundParameter,
@@ -23,6 +23,7 @@ pub fn slider_with_labels(
         Message::SoundParameterChange(sound_param, v)
     })
     .default(sound_param.get_default())
+    .style(|_, status| style::slider(status))
     .shift_step(0.25);
 
     Container::new(
@@ -35,9 +36,9 @@ pub fn slider_with_labels(
                             .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding(Padding {
-                        top: 3.0,
+                        top: 0.0,
                         right: 0.0,
-                        bottom: 0.0,
+                        bottom: 3.0,
                         left: 0.0,
                     }),
             )
@@ -48,19 +49,19 @@ pub fn slider_with_labels(
                         text(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .align_x(alignment::Horizontal::Right)
-                            .width(style::PARAM_LABEL_WIDTH),
+                            .width(style::PARAM_VALUE_WIDTH),
                     )
                     .padding(Padding {
-                        top: 3.0,
+                        top: 0.0,
                         right: 0.0,
-                        bottom: 0.0,
+                        bottom: 3.0,
                         left: 5.0,
                     }),
             ),
     )
 }
 
-/// Returns a slider for a multi parameter
+/// Returns a slider for a multi parameter.
 pub fn multi_slider_with_labels(
     label: &str,
     multi_param: MultiParameter,
@@ -71,6 +72,7 @@ pub fn multi_slider_with_labels(
         Message::MultiParameterChange(multi_param, v)
     })
     .default(multi_param.get_default())
+    .style(|_, status| style::slider(status))
     .shift_step(0.25);
 
     Container::new(
@@ -83,10 +85,10 @@ pub fn multi_slider_with_labels(
                             .width(style::PARAM_LABEL_WIDTH),
                     )
                     .padding(Padding {
-                        top: 3.0,
+                        top: 0.0,
                         right: 0.0,
-                        bottom: 0.0,
-                        left: 5.0,
+                        bottom: 3.0,
+                        left: 0.0,
                     }),
             )
             .push(slider)
@@ -96,12 +98,12 @@ pub fn multi_slider_with_labels(
                         text(format!("{}", value))
                             .size(style::PARAM_LABEL_TEXT_SIZE)
                             .align_x(alignment::Horizontal::Right)
-                            .width(style::PARAM_LABEL_WIDTH),
+                            .width(style::PARAM_VALUE_WIDTH),
                     )
                     .padding(Padding {
-                        top: 3.0,
+                        top: 0.0,
                         right: 0.0,
-                        bottom: 0.0,
+                        bottom: 3.0,
                         left: 5.0,
                     }),
             ),
