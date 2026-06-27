@@ -1,9 +1,8 @@
 //! Slider control wrapped in a container with label and value display
 
 use iced::{
-    alignment,
-    widget::{text, Column, Container, Row},
-    Padding,
+    Padding, alignment,
+    widget::{Column, Container, Row, text},
 };
 
 use super::slider_widget::Slider;
@@ -38,7 +37,7 @@ pub fn slider_with_labels(
                     .padding(Padding {
                         top: 0.0,
                         right: 0.0,
-                        bottom: 3.0,
+                        bottom: 5.7,
                         left: 0.0,
                     }),
             )
@@ -54,7 +53,7 @@ pub fn slider_with_labels(
                     .padding(Padding {
                         top: 0.0,
                         right: 0.0,
-                        bottom: 3.0,
+                        bottom: 5.7,
                         left: 5.0,
                     }),
             ),
@@ -87,7 +86,7 @@ pub fn multi_slider_with_labels(
                     .padding(Padding {
                         top: 0.0,
                         right: 0.0,
-                        bottom: 3.0,
+                        bottom: 5.7,
                         left: 0.0,
                     }),
             )
@@ -103,7 +102,7 @@ pub fn multi_slider_with_labels(
                     .padding(Padding {
                         top: 0.0,
                         right: 0.0,
-                        bottom: 3.0,
+                        bottom: 5.7,
                         left: 5.0,
                     }),
             ),

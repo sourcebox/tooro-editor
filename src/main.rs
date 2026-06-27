@@ -480,8 +480,7 @@ impl App {
                                 .width(200)
                                 .align_x(Alignment::End),
                         )
-                        .push(Column::new().width(10))
-                        .padding(5),
+                        .push(Column::new().width(10)),
                 ),
         )
         .padding(5)

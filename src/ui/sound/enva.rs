@@ -1,8 +1,8 @@
 //! Section containing the amp envelope parameters
 
 use iced::{
-    widget::{rule, Column, Container, Text},
     Color, Element, Padding,
+    widget::{Column, Container, Text, rule},
 };
 
 use crate::messages::Message;
@@ -67,7 +67,7 @@ impl EnvASection {
             ))
             .push(rule::horizontal(1).style(|_| style::rule()))
             .push(mod_target_list(
-                "Mod Target",
+                "Target",
                 SoundParameter::ModEnvATarget,
                 params.get_value(SoundParameter::ModEnvATarget),
             ))
