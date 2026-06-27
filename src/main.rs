@@ -8,6 +8,7 @@ mod midi;
 mod params;
 mod ui;
 
+use std::io::Write;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
@@ -515,8 +516,9 @@ impl App {
             if let Ok(()) = std::fs::create_dir_all(&config_dir) {
                 let config_file_path = config_dir.join("config.ron");
                 log::info!("Saving persistent data to {}", config_file_path.display());
-                if let Ok(config_file) = std::fs::File::create(config_file_path) {
-                    ron::ser::to_writer(config_file, &self.settings).ok();
+                if let Ok(mut config_file) = std::fs::File::create(config_file_path) {
+                    let s = ron::ser::to_string(&self.settings).unwrap_or_default();
+                    config_file.write(s.as_bytes()).ok();
                 }
             }
         }
