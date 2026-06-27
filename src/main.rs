@@ -48,9 +48,13 @@ fn application() -> Application<impl Program<Message = Message, Theme = Theme>> 
         .subscription(App::subscription)
         .title(App::title)
         .theme(App::theme)
-        .window_size((style::WINDOW_WIDTH, style::WINDOW_HEIGHT))
         .scale_factor(|app| app.settings.scale_factor)
-        .exit_on_close_request(false)
+        .window(window::Settings {
+            size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT).into(),
+            min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT).into()),
+            exit_on_close_request: false,
+            ..Default::default()
+        })
 }
 
 /// Persistent settings saved between launches.
