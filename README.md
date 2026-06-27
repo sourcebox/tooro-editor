@@ -31,6 +31,11 @@ Using the editor is mostly self-explanatory, but there are a few things to be no
 - A manual update must also be requested when you change a preset or change a parameter via MIDI CCs from another application or source.
 - All sysex files must use **.syx** as file extension.
 - On larger screens, the window width can be increased to improve the resolution of the sliders.
+- The application window can be zoomed via key commands:
+  - *Ctrl +* increases the scale factor
+  - *Ctrl -* decreases the scale factor
+  - *Ctrl 0* resets the scale factor to 1.0.
+
 
 ## Known Issues
 

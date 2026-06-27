@@ -10,10 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Merge input is remembered between launches.
+- Change scale factor via `Ctrl +`, `Ctrl -` and `Ctrl 0`.
 
 ### Changed
 
-- Migrated `iced` dependency to `0.9`.
+- Migrated `iced` dependency to `0.14`.
 - Updated dependencies.
 
 ## [1.1.0] - 2022-09-28

@@ -11,6 +11,7 @@ mod ui;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
+use iced::keyboard::{Event::KeyPressed, Key};
 use iced::widget::{Column, Container, PickList, Row, Text};
 use iced::{
     event, time, window, Alignment, Application, Element, Event, Length, Program, Subscription,
@@ -47,13 +48,26 @@ fn application() -> Application<impl Program<Message = Message, Theme = Theme>> 
         .title(App::title)
         .theme(App::theme)
         .window_size((style::WINDOW_WIDTH, style::WINDOW_HEIGHT))
+        .scale_factor(|app| app.app_state.scale_factor)
 }
 
 /// Persistent state saved between launches.
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize)]
 struct AppState {
     /// Name of the merge input port.
     merge_input_name: String,
+
+    /// Scale factor for the GUI.
+    scale_factor: f32,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            merge_input_name: String::default(),
+            scale_factor: 1.0,
+        }
+    }
 }
 
 /// Holds the application data and state.
@@ -173,6 +187,24 @@ impl App {
             Message::EventOccurred(event) => {
                 if event == Event::Window(window::Event::CloseRequested) {
                     self.save_app_state();
+                } else if let Event::Keyboard(event) = event {
+                    match event {
+                        KeyPressed { key, modifiers, .. } if modifiers.control() => {
+                            match key.as_ref() {
+                                Key::Character("0") => self.app_state.scale_factor = 1.0,
+                                Key::Character("+") => {
+                                    self.app_state.scale_factor =
+                                        (self.app_state.scale_factor * 1.1).min(4.0);
+                                }
+                                Key::Character("-") => {
+                                    self.app_state.scale_factor =
+                                        (self.app_state.scale_factor * 0.9).max(0.5);
+                                }
+                                _ => {}
+                            }
+                        }
+                        _ => {}
+                    }
                 }
             }
 
