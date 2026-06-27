@@ -1,6 +1,6 @@
 //! Style definitions for the different elements.
 
-use iced::{widget, Background, Border, Color, Shadow};
+use iced::{color, theme::Palette, widget, Background, Border, Color, Shadow, Theme};
 
 /// Default window width.
 pub const WINDOW_WIDTH: u32 = 1024;
@@ -39,32 +39,34 @@ pub const STATUS_TEXT_SIZE: u32 = 11;
 const SECTION_TEXT_COLOR: Color = Color::BLACK;
 
 /// Color for active elements.
-const ACTIVE: Color = Color::from_rgb(
-    0x20 as f32 / 255.0,
-    0x20 as f32 / 255.0,
-    0x20 as f32 / 255.0,
-);
+const ACTIVE: Color = color!(0x202020);
 
 /// Color for hovered elements.
-const HOVERED: Color = Color::from_rgb(
-    0x67 as f32 / 255.0,
-    0x7B as f32 / 255.0,
-    0xC4 as f32 / 255.0,
-);
+const HOVERED: Color = color!(0x677BC4);
 
 /// Color for dragged elements.
-const DRAGGED: Color = Color::from_rgb(
-    0x50 as f32 / 255.0,
-    0x50 as f32 / 255.0,
-    0x50 as f32 / 255.0,
-);
+const DRAGGED: Color = color!(0x505050);
 
 /// Color for disabled elements.
-const DISABLED: Color = Color::from_rgb(
-    0x20 as f32 / 255.0,
-    0x20 as f32 / 255.0,
-    0x20 as f32 / 255.0,
-);
+const DISABLED: Color = color!(0x202020);
+
+/// Color for background.
+const BACKGROUND: Color = color!(0x101010);
+
+/// Returns a custom theme.
+pub fn theme() -> Theme {
+    Theme::custom(
+        "Custom",
+        Palette {
+            background: BACKGROUND,
+            text: Color::WHITE,
+            primary: color!(0x5865F2),
+            success: color!(0x12664f),
+            warning: color!(0xffc14e),
+            danger: color!(0xc3423f),
+        },
+    )
+}
 
 /// Returns a style for a section with a specific background color.
 pub fn section(background: Color) -> widget::container::Style {
@@ -79,7 +81,7 @@ pub fn button(status: widget::button::Status) -> widget::button::Style {
     use widget::button::*;
 
     let text_color = match status {
-        Status::Active => Color::from_rgb8(0xEE, 0xEE, 0xEE),
+        Status::Active => color!(0xEEEEEE),
         Status::Hovered | Status::Pressed => Color::WHITE,
         Status::Disabled => DISABLED,
     };
@@ -133,9 +135,9 @@ pub fn pick_list(_status: widget::pick_list::Status) -> widget::pick_list::Style
         text_color: Color::WHITE,
         placeholder_color: Color::WHITE,
         handle_color: Color::WHITE,
-        background: Background::Color(Color::from_rgb8(0x20, 0x20, 0x20)),
+        background: Background::Color(BACKGROUND),
         border: Border {
-            color: Color::from_rgb8(0x80, 0x80, 0x80),
+            color: color!(0x808080),
             width: 1.0,
             radius: 5.0.into(),
         },
