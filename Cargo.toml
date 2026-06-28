@@ -13,6 +13,7 @@ keywords = ["midi", "synthesizer"]
 default = ["x11"]
 x11 = ["iced/x11"]
 wayland = ["iced/wayland"]
+debug = ["iced/debug"]
 
 [dependencies]
 iced = { version = "0.14.0", default-features = false, features = ["advanced", "wgpu", "tokio"]}
