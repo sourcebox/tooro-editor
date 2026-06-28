@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merge input is remembered between launches.
 - Change scale factor via `Ctrl +`, `Ctrl -` and `Ctrl 0`.
 - Initial request delay after device connection to prevent data corruption.
+- Feature selection for `x11` (default) and `wayland`.
 
 ### Changed
 
