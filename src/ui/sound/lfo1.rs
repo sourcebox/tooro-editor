@@ -1,7 +1,7 @@
 //! Section containing the LFO 1 parameters
 
 use iced::{
-    Color, Element, Length, Padding,
+    Color, Element, Padding,
     widget::{column, container, rule, text},
 };
 

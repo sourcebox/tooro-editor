@@ -11,22 +11,6 @@ use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
 use crate::style;
 
-/// Padding for the label.
-const LABEL_PADDING: Padding = Padding {
-    top: 0.0,
-    right: 0.0,
-    bottom: 5.7,
-    left: 0.0,
-};
-
-/// Padding for the value.
-const VALUE_PADDING: Padding = Padding {
-    top: 0.0,
-    right: 0.0,
-    bottom: 5.7,
-    left: 5.0,
-};
-
 /// Returns a slider for a sound (preset) parameter.
 pub fn slider_with_labels(
     label: &str,
@@ -46,8 +30,7 @@ pub fn slider_with_labels(
             text(label)
                 .size(style::PARAM_LABEL_TEXT_SIZE)
                 .width(style::PARAM_LABEL_WIDTH),
-        )
-        .padding(LABEL_PADDING),
+        ),
         slider,
         container(
             text(format!("{}", value))
@@ -55,7 +38,6 @@ pub fn slider_with_labels(
                 .align_x(alignment::Horizontal::Right)
                 .width(style::PARAM_VALUE_WIDTH)
         )
-        .padding(VALUE_PADDING),
     ])
 }
 
@@ -78,8 +60,7 @@ pub fn multi_slider_with_labels(
             text(label)
                 .size(style::PARAM_LABEL_TEXT_SIZE)
                 .width(style::PARAM_LABEL_WIDTH),
-        )
-        .padding(LABEL_PADDING),
+        ),
         slider,
         container(
             text(format!("{}", value))
@@ -87,6 +68,5 @@ pub fn multi_slider_with_labels(
                 .align_x(alignment::Horizontal::Right)
                 .width(style::PARAM_VALUE_WIDTH)
         )
-        .padding(VALUE_PADDING),
     ])
 }

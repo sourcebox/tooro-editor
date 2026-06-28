@@ -12,7 +12,7 @@ pub const WINDOW_HEIGHT: u32 = 670;
 pub const SECTION_PADDING: u16 = 7;
 
 /// Common element spacing.
-pub const SECTION_SPACING: u32 = 1;
+pub const SECTION_SPACING: u32 = 4;
 
 /// Text size for section labels.
 pub const SECTION_LABEL_TEXT_SIZE: u32 = 14;

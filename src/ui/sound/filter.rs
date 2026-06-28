@@ -54,7 +54,7 @@ impl FilterSection {
             ]
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING)
-            .height(169),
+            .height(170),
         )
         .style(|_| style::section(Color::from_rgb8(0xD8, 0x00, 0x00)))
         .into()
