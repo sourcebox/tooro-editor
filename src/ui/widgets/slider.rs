@@ -4,13 +4,13 @@
 //! with the following changes:
 //!     - Mouse wheel support without holding the control key.
 //!     - Allow f64 values for `shift_step`.
+//!     - Better slider fine control when `shift_step` is below 1.0
 
 use iced::{
-    self,
+    self, Border, Element, Event, Length, Pixels, Point, Rectangle, Size,
     advanced::{
-        layout, renderer,
+        Clipboard, Layout, Shell, Widget, layout, renderer,
         widget::tree::{self, Tree},
-        Clipboard, Layout, Shell, Widget,
     },
     keyboard::{
         self,
@@ -18,7 +18,7 @@ use iced::{
     },
     mouse, touch,
     widget::slider::{Catalog, HandleShape, Status, Style, StyleFn},
-    window, Border, Element, Event, Length, Pixels, Point, Rectangle, Size,
+    window,
 };
 
 use std::ops::RangeInclusive;
@@ -235,32 +235,58 @@ where
     ) {
         let state = tree.state.downcast_mut::<State>();
 
+        let click_pos_x = state.click_pos_x;
+        let click_pos_value = state.click_pos_value;
+        let value = self.value.as_();
+
         let mut update = || {
             let current_value = self.value;
 
             let locate = |cursor_position: Point| -> Option<T> {
                 let bounds = layout.bounds();
 
-                if cursor_position.x <= bounds.x {
-                    Some(*self.range.start())
-                } else if cursor_position.x >= bounds.x + bounds.width {
-                    Some(*self.range.end())
-                } else {
-                    let step = if state.keyboard_modifiers.shift() {
-                        self.shift_step.unwrap_or(self.step)
-                    } else {
-                        self.step
-                    };
+                if let Some(shift_step) = self.shift_step
+                    && shift_step < 1.0
+                    && state.keyboard_modifiers.shift()
+                {
+                    // Fine control when shift is pressed and the step value is < 1.0
+                    let step = self.step;
 
                     let start = (*self.range.start()).as_();
                     let end = (*self.range.end()).as_();
 
-                    let percent = f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
+                    let percent = f64::from(cursor_position.x - click_pos_x)
+                        / f64::from(bounds.width)
+                        * shift_step;
 
                     let steps = (percent * (end - start) / step).round();
-                    let value = steps * step + start;
+                    let value = steps * step + click_pos_value;
 
-                    T::from_f64(value.min(end))
+                    T::from_f64(value.clamp(start, end))
+                } else {
+                    // Normal behaviour.
+                    if cursor_position.x <= bounds.x {
+                        Some(*self.range.start())
+                    } else if cursor_position.x >= bounds.x + bounds.width {
+                        Some(*self.range.end())
+                    } else {
+                        let step = if state.keyboard_modifiers.shift() {
+                            self.shift_step.unwrap_or(self.step)
+                        } else {
+                            self.step
+                        };
+
+                        let start = (*self.range.start()).as_();
+                        let end = (*self.range.end()).as_();
+
+                        let percent =
+                            f64::from(cursor_position.x - bounds.x) / f64::from(bounds.width);
+
+                        let steps = (percent * (end - start) / step).round();
+                        let value = steps * step + start;
+
+                        T::from_f64(value.min(end))
+                    }
                 }
             };
 
@@ -314,7 +340,11 @@ where
                             let _ = self.default.map(change);
                             state.is_dragging = false;
                         } else {
-                            let _ = locate(cursor_position).map(change);
+                            state.click_pos_x = cursor_position.x;
+                            state.click_pos_value = value;
+                            if !state.keyboard_modifiers.shift() {
+                                let _ = locate(cursor_position).map(change);
+                            }
                             state.is_dragging = true;
                         }
 
@@ -335,6 +365,10 @@ where
                 | Event::Touch(touch::Event::FingerMoved { .. })
                     if state.is_dragging =>
                 {
+                    if !state.keyboard_modifiers.shift() {
+                        state.click_pos_value = value;
+                    }
+
                     let _ = cursor.land().position().and_then(locate).map(change);
 
                     shell.capture_event();
@@ -521,8 +555,10 @@ where
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 struct State {
     is_dragging: bool,
     keyboard_modifiers: keyboard::Modifiers,
+    click_pos_x: f32,
+    click_pos_value: f64,
 }
