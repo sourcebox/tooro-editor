@@ -216,9 +216,9 @@ struct OnReceiveArgs {
 
 /// Callback for received messages from device or merge input
 fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
-    if args.sender.is_some() {
+    if let Some(sender) = &args.sender {
         let message = Vec::<u8>::from(message);
-        args.sender.as_ref().unwrap().send(message).ok();
+        sender.send(message).ok();
     }
 }
 
@@ -226,10 +226,10 @@ fn on_receive(_timestamp: u64, message: &[u8], args: &mut OnReceiveArgs) {
 fn cleanup_port_name(port_name: String) -> String {
     #[cfg(target_os = "linux")]
     {
-        if let Some((client_name, remainder)) = port_name.split_once(':') {
-            if remainder.starts_with(client_name) {
-                return remainder.to_owned();
-            }
+        if let Some((client_name, remainder)) = port_name.split_once(':')
+            && remainder.starts_with(client_name)
+        {
+            return remainder.to_owned();
         }
         port_name
     }

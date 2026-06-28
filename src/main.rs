@@ -362,12 +362,12 @@ impl App {
                             self.request_multi_update = false;
                         }
 
-                        if let Some(request_time) = self.request_time {
-                            if request_time.elapsed() >= Duration::new(1, 0) {
-                                log::error!("Response timeout");
-                                self.status_communication = String::from("Error: response timeout");
-                                self.request_time = None;
-                            }
+                        if let Some(request_time) = self.request_time
+                            && request_time.elapsed() >= Duration::new(1, 0)
+                        {
+                            log::error!("Response timeout");
+                            self.status_communication = String::from("Error: response timeout");
+                            self.request_time = None;
                         }
                     } else {
                         self.status_communication = String::from("Delaying initial requests...");
@@ -485,10 +485,10 @@ impl App {
                 "Loading persistent data from {}",
                 config_file_path.display()
             );
-            if let Ok(s) = std::fs::read_to_string(config_file_path) {
-                if let Ok(settings) = ron::from_str(s.as_str()) {
-                    self.settings = settings;
-                }
+            if let Ok(s) = std::fs::read_to_string(config_file_path)
+                && let Ok(settings) = ron::from_str(s.as_str())
+            {
+                self.settings = settings;
             }
         }
     }
@@ -502,7 +502,7 @@ impl App {
                 log::info!("Saving persistent data to {}", config_file_path.display());
                 if let Ok(mut config_file) = std::fs::File::create(config_file_path) {
                     let s = ron::ser::to_string(&self.settings).unwrap_or_default();
-                    config_file.write(s.as_bytes()).ok();
+                    config_file.write_all(s.as_bytes()).ok();
                 }
             }
         }
@@ -570,17 +570,15 @@ impl App {
 
         match preset_id {
             0..=99 => {}
-            0x70..=0x73 => {
-                if self.part_id == preset_id - 0x70 {
-                    let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
-                    midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
-                    if let Some(file) = &self.preset_capture_file {
-                        log::debug!("Preset dump captured in file {}", file);
-                        let mut message: Vec<u8> = message.to_vec();
-                        message[2] = 0x70;
-                        std::fs::write(file, message).ok();
-                        self.preset_capture_file = None;
-                    }
+            0x70..=0x73 if self.part_id == preset_id - 0x70 => {
+                let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
+                midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
+                if let Some(file) = &self.preset_capture_file {
+                    log::debug!("Preset dump captured in file {}", file);
+                    let mut message: Vec<u8> = message.to_vec();
+                    message[2] = 0x70;
+                    std::fs::write(file, message).ok();
+                    self.preset_capture_file = None;
                 }
             }
             _ => {}
