@@ -2,7 +2,7 @@
 
 use iced::{
     Padding,
-    widget::{Column, Container, PickList, Row, Text},
+    widget::{Container, PickList, container, row, text},
 };
 
 use crate::messages::Message;
@@ -26,24 +26,20 @@ pub fn env_trigger_list(
     .style(|_, status| style::pick_list(status))
     .text_size(style::LIST_ITEM_TEXT_SIZE);
 
-    Container::new(
-        Row::new()
-            .push(
-                Column::new()
-                    .push(
-                        Text::new(label)
-                            .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(style::PARAM_LABEL_WIDTH),
-                    )
-                    .padding(Padding {
-                        top: 4.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        left: 0.0,
-                    }),
-            )
-            .push(pick_list),
-    )
+    container(row![
+        container(
+            text(label)
+                .size(style::PARAM_LABEL_TEXT_SIZE)
+                .width(style::PARAM_LABEL_WIDTH),
+        )
+        .padding(Padding {
+            top: 4.0,
+            right: 0.0,
+            bottom: 0.0,
+            left: 0.0,
+        }),
+        pick_list
+    ])
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
