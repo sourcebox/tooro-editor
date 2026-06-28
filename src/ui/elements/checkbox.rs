@@ -1,6 +1,6 @@
-//! Checkbox control wrapped in a container with label
+//! Checkbox control wrapped in a container with label.
 
-use iced::widget::{Checkbox, Container, Row, Text};
+use iced::widget::{Checkbox, Container, container, row, text};
 
 use crate::messages::Message;
 use crate::params::SoundParameter;
@@ -8,24 +8,21 @@ use crate::style;
 
 pub fn checkbox_with_labels<'a>(
     label: &'a str,
-    text: &'a str,
+    desc: &'a str,
     sound_param: SoundParameter,
     value: i32,
 ) -> Container<'a, Message> {
     let checkbox = Checkbox::new(value != 0)
-        .label(text)
+        .label(desc)
         .on_toggle(move |v| Message::SoundParameterChange(sound_param, v as i32))
         .style(|_, status| style::checkbox(status))
         .text_size(style::LIST_ITEM_TEXT_SIZE)
         .spacing(7);
 
-    Container::new(
-        Row::new()
-            .push(
-                Text::new(label)
-                    .size(style::PARAM_LABEL_TEXT_SIZE)
-                    .width(style::PARAM_LABEL_WIDTH),
-            )
-            .push(checkbox),
-    )
+    container(row![
+        text(label)
+            .size(style::PARAM_LABEL_TEXT_SIZE)
+            .width(style::PARAM_LABEL_WIDTH),
+        checkbox
+    ])
 }
