@@ -1,8 +1,8 @@
 //! Section containing the modulation parameters
 
 use iced::{
-    widget::{Column, Container, Row},
     Color, Element, Length, Padding,
+    widget::{column, container, row},
 };
 
 use crate::messages::Message;
@@ -18,75 +18,69 @@ impl ModSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new().push(
-            Row::new()
-                .push(
-                    Column::new()
-                        .padding(Padding::from(style::SECTION_PADDING))
-                        .spacing(style::SECTION_SPACING)
-                        .push(mod_target_list(
-                            "MD Target",
-                            SoundParameter::ModModwheelTarget,
-                            params.get_value(SoundParameter::ModModwheelTarget),
-                        ))
-                        .push(slider_with_labels(
-                            "MD Amt",
-                            SoundParameter::ModModwheelAmount,
-                            params.get_value(SoundParameter::ModModwheelAmount),
-                        ))
-                        .width(Length::FillPortion(4)),
-                )
-                .push(
-                    Column::new()
-                        .padding(style::SECTION_PADDING)
-                        .spacing(style::SECTION_SPACING)
-                        .push(mod_target_list(
-                            "PI Target",
-                            SoundParameter::ModPitchTarget,
-                            params.get_value(SoundParameter::ModPitchTarget),
-                        ))
-                        .push(slider_with_labels(
-                            "PI Amt",
-                            SoundParameter::ModPitchAmount,
-                            params.get_value(SoundParameter::ModPitchAmount),
-                        ))
-                        .width(Length::FillPortion(4)),
-                )
-                .push(
-                    Column::new()
-                        .padding(style::SECTION_PADDING)
-                        .spacing(style::SECTION_SPACING)
-                        .push(mod_target_list(
-                            "VL Target",
-                            SoundParameter::ModVelocityTarget,
-                            params.get_value(SoundParameter::ModVelocityTarget),
-                        ))
-                        .push(slider_with_labels(
-                            "VL Amt",
-                            SoundParameter::ModVelocityAmount,
-                            params.get_value(SoundParameter::ModVelocityAmount),
-                        ))
-                        .width(Length::FillPortion(4)),
-                )
-                .push(
-                    Column::new()
-                        .padding(style::SECTION_PADDING)
-                        .spacing(style::SECTION_SPACING)
-                        .push(mod_target_list(
-                            "AF Target",
-                            SoundParameter::ModAftertouchTarget,
-                            params.get_value(SoundParameter::ModAftertouchTarget),
-                        ))
-                        .push(slider_with_labels(
-                            "AF Amt",
-                            SoundParameter::ModAftertouchAmount,
-                            params.get_value(SoundParameter::ModAftertouchAmount),
-                        ))
-                        .width(Length::FillPortion(4)),
+        container(row![
+            column![
+                mod_target_list(
+                    "MD Target",
+                    SoundParameter::ModModwheelTarget,
+                    params.get_value(SoundParameter::ModModwheelTarget),
                 ),
-        );
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xB4, 0xCB, 0xD9)))
-            .into()
+                slider_with_labels(
+                    "MD Amt",
+                    SoundParameter::ModModwheelAmount,
+                    params.get_value(SoundParameter::ModModwheelAmount),
+                )
+            ]
+            .padding(Padding::from(style::SECTION_PADDING))
+            .spacing(style::SECTION_SPACING)
+            .width(Length::FillPortion(4)),
+            column![
+                mod_target_list(
+                    "PI Target",
+                    SoundParameter::ModPitchTarget,
+                    params.get_value(SoundParameter::ModPitchTarget),
+                ),
+                slider_with_labels(
+                    "PI Amt",
+                    SoundParameter::ModPitchAmount,
+                    params.get_value(SoundParameter::ModPitchAmount),
+                )
+            ]
+            .padding(style::SECTION_PADDING)
+            .spacing(style::SECTION_SPACING)
+            .width(Length::FillPortion(4)),
+            column![
+                mod_target_list(
+                    "VL Target",
+                    SoundParameter::ModVelocityTarget,
+                    params.get_value(SoundParameter::ModVelocityTarget),
+                ),
+                slider_with_labels(
+                    "VL Amt",
+                    SoundParameter::ModVelocityAmount,
+                    params.get_value(SoundParameter::ModVelocityAmount),
+                )
+            ]
+            .padding(style::SECTION_PADDING)
+            .spacing(style::SECTION_SPACING)
+            .width(Length::FillPortion(4)),
+            column![
+                mod_target_list(
+                    "AF Target",
+                    SoundParameter::ModAftertouchTarget,
+                    params.get_value(SoundParameter::ModAftertouchTarget),
+                ),
+                slider_with_labels(
+                    "AF Amt",
+                    SoundParameter::ModAftertouchAmount,
+                    params.get_value(SoundParameter::ModAftertouchAmount),
+                )
+            ]
+            .padding(style::SECTION_PADDING)
+            .spacing(style::SECTION_SPACING)
+            .width(Length::FillPortion(4)),
+        ])
+        .style(|_| style::section(Color::from_rgb8(0xB4, 0xCB, 0xD9)))
+        .into()
     }
 }

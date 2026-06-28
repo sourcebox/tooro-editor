@@ -1,8 +1,8 @@
 //! Section containing the extra parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,22 +18,24 @@ impl ExtraSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Extra").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Extra").size(style::SECTION_LABEL_TEXT_SIZE),
+                slider_with_labels(
+                    "Noise",
+                    SoundParameter::ExtraNoise,
+                    params.get_value(SoundParameter::ExtraNoise),
+                ),
+                slider_with_labels(
+                    "O1xO2",
+                    SoundParameter::ExtraRingMod,
+                    params.get_value(SoundParameter::ExtraRingMod),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(slider_with_labels(
-                "Noise",
-                SoundParameter::ExtraNoise,
-                params.get_value(SoundParameter::ExtraNoise),
-            ))
-            .push(slider_with_labels(
-                "O1xO2",
-                SoundParameter::ExtraRingMod,
-                params.get_value(SoundParameter::ExtraRingMod),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
+        .into()
     }
 }

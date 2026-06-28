@@ -1,8 +1,8 @@
 //! Section containing the amplifier parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,22 +18,24 @@ impl AmpSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Amp").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Amp").size(style::SECTION_LABEL_TEXT_SIZE),
+                slider_with_labels(
+                    "Level",
+                    SoundParameter::AmpLevel,
+                    params.get_value(SoundParameter::AmpLevel),
+                ),
+                slider_with_labels(
+                    "Pan",
+                    SoundParameter::AmpPan,
+                    params.get_value(SoundParameter::AmpPan),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(slider_with_labels(
-                "Level",
-                SoundParameter::AmpLevel,
-                params.get_value(SoundParameter::AmpLevel),
-            ))
-            .push(slider_with_labels(
-                "Pan",
-                SoundParameter::AmpPan,
-                params.get_value(SoundParameter::AmpPan),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0x65, 0xA4, 0x7E)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0x65, 0xA4, 0x7E)))
+        .into()
     }
 }

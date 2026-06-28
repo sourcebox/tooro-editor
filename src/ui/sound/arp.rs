@@ -1,8 +1,8 @@
 //! Section containing the arpeggiator parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -21,33 +21,35 @@ impl ArpSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Arp").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Arp").size(style::SECTION_LABEL_TEXT_SIZE),
+                arp_mode_list(
+                    "Mode",
+                    SoundParameter::ArpMode,
+                    params.get_value(SoundParameter::ArpMode),
+                ),
+                arp_grid_list(
+                    "Grid",
+                    SoundParameter::ArpGrid,
+                    params.get_value(SoundParameter::ArpGrid),
+                ),
+                slider_with_labels(
+                    "Tempo",
+                    SoundParameter::ArpTempo,
+                    params.get_value(SoundParameter::ArpTempo),
+                ),
+                checkbox_with_labels(
+                    "",
+                    "Hold",
+                    SoundParameter::ArpHold,
+                    params.get_value(SoundParameter::ArpHold),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(arp_mode_list(
-                "Mode",
-                SoundParameter::ArpMode,
-                params.get_value(SoundParameter::ArpMode),
-            ))
-            .push(arp_grid_list(
-                "Grid",
-                SoundParameter::ArpGrid,
-                params.get_value(SoundParameter::ArpGrid),
-            ))
-            .push(slider_with_labels(
-                "Tempo",
-                SoundParameter::ArpTempo,
-                params.get_value(SoundParameter::ArpTempo),
-            ))
-            .push(checkbox_with_labels(
-                "",
-                "Hold",
-                SoundParameter::ArpHold,
-                params.get_value(SoundParameter::ArpHold),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xF9, 0xB0, 0x8B)))
+        .into()
     }
 }

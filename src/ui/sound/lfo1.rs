@@ -1,8 +1,8 @@
 //! Section containing the LFO 1 parameters
 
 use iced::{
-    widget::{rule, Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, rule, text},
 };
 
 use crate::messages::Message;
@@ -21,43 +21,45 @@ impl LFO1Section {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE),
+                lfo_shape_list(
+                    "Shape",
+                    SoundParameter::LFO1Shape,
+                    params.get_value(SoundParameter::LFO1Shape),
+                ),
+                slider_with_labels(
+                    "Speed",
+                    SoundParameter::LFO1Speed,
+                    params.get_value(SoundParameter::LFO1Speed),
+                ),
+                slider_with_labels(
+                    "Rise",
+                    SoundParameter::LFO1Rise,
+                    params.get_value(SoundParameter::LFO1Rise),
+                ),
+                lfo_phase_list(
+                    "Phase",
+                    SoundParameter::LFO1Phase,
+                    params.get_value(SoundParameter::LFO1Phase),
+                ),
+                rule::horizontal(1).style(|_| style::rule()),
+                mod_target_list(
+                    "Mod Target",
+                    SoundParameter::ModLFO1Target,
+                    params.get_value(SoundParameter::ModLFO1Target),
+                ),
+                slider_with_labels(
+                    "Mod Amt",
+                    SoundParameter::ModLFO1Amount,
+                    params.get_value(SoundParameter::ModLFO1Amount),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(lfo_shape_list(
-                "Shape",
-                SoundParameter::LFO1Shape,
-                params.get_value(SoundParameter::LFO1Shape),
-            ))
-            .push(slider_with_labels(
-                "Speed",
-                SoundParameter::LFO1Speed,
-                params.get_value(SoundParameter::LFO1Speed),
-            ))
-            .push(slider_with_labels(
-                "Rise",
-                SoundParameter::LFO1Rise,
-                params.get_value(SoundParameter::LFO1Rise),
-            ))
-            .push(lfo_phase_list(
-                "Phase",
-                SoundParameter::LFO1Phase,
-                params.get_value(SoundParameter::LFO1Phase),
-            ))
-            .push(rule::horizontal(1).style(|_| style::rule()))
-            .push(mod_target_list(
-                "Mod Target",
-                SoundParameter::ModLFO1Target,
-                params.get_value(SoundParameter::ModLFO1Target),
-            ))
-            .push(slider_with_labels(
-                "Mod Amt",
-                SoundParameter::ModLFO1Amount,
-                params.get_value(SoundParameter::ModLFO1Amount),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xD2, 0x6A, 0x25)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xD2, 0x6A, 0x25)))
+        .into()
     }
 }

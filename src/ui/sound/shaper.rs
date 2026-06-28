@@ -1,8 +1,8 @@
 //! Section containing the shaper parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,42 +18,44 @@ impl ShaperSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Shaper").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Shaper").size(style::SECTION_LABEL_TEXT_SIZE),
+                slider_with_labels(
+                    "Cutoff",
+                    SoundParameter::ShaperCutoff,
+                    params.get_value(SoundParameter::ShaperCutoff),
+                ),
+                slider_with_labels(
+                    "Resonance",
+                    SoundParameter::ShaperResonance,
+                    params.get_value(SoundParameter::ShaperResonance),
+                ),
+                slider_with_labels(
+                    "Env A Amt",
+                    SoundParameter::ShaperEnvAAmount,
+                    params.get_value(SoundParameter::ShaperEnvAAmount),
+                ),
+                slider_with_labels(
+                    "Track",
+                    SoundParameter::ShaperTrack,
+                    params.get_value(SoundParameter::ShaperTrack),
+                ),
+                shaper_mode_list(
+                    "Mode",
+                    SoundParameter::ShaperMode,
+                    params.get_value(SoundParameter::ShaperMode),
+                ),
+                slider_with_labels(
+                    "LFO 2 Amt",
+                    SoundParameter::ShaperLFO2Amount,
+                    params.get_value(SoundParameter::ShaperLFO2Amount),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(slider_with_labels(
-                "Cutoff",
-                SoundParameter::ShaperCutoff,
-                params.get_value(SoundParameter::ShaperCutoff),
-            ))
-            .push(slider_with_labels(
-                "Resonance",
-                SoundParameter::ShaperResonance,
-                params.get_value(SoundParameter::ShaperResonance),
-            ))
-            .push(slider_with_labels(
-                "Env A Amt",
-                SoundParameter::ShaperEnvAAmount,
-                params.get_value(SoundParameter::ShaperEnvAAmount),
-            ))
-            .push(slider_with_labels(
-                "Track",
-                SoundParameter::ShaperTrack,
-                params.get_value(SoundParameter::ShaperTrack),
-            ))
-            .push(shaper_mode_list(
-                "Mode",
-                SoundParameter::ShaperMode,
-                params.get_value(SoundParameter::ShaperMode),
-            ))
-            .push(slider_with_labels(
-                "LFO 2 Amt",
-                SoundParameter::ShaperLFO2Amount,
-                params.get_value(SoundParameter::ShaperLFO2Amount),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xD8, 0x00, 0x00)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xD8, 0x00, 0x00)))
+        .into()
     }
 }

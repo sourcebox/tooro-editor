@@ -1,8 +1,8 @@
 //! Section containing the multi fx parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,42 +18,44 @@ impl FXSection {
     }
 
     pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("FX").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("FX").size(style::SECTION_LABEL_TEXT_SIZE),
+                fx_mode_list(
+                    "Mode",
+                    MultiParameter::FXMode,
+                    params.get_value(MultiParameter::FXMode),
+                ),
+                multi_slider_with_labels(
+                    "Length",
+                    MultiParameter::FXLength,
+                    params.get_value(MultiParameter::FXLength),
+                ),
+                multi_slider_with_labels(
+                    "Feedback",
+                    MultiParameter::FXFeedback,
+                    params.get_value(MultiParameter::FXFeedback),
+                ),
+                multi_slider_with_labels(
+                    "Mix",
+                    MultiParameter::FXMix,
+                    params.get_value(MultiParameter::FXMix),
+                ),
+                multi_slider_with_labels(
+                    "Speed",
+                    MultiParameter::FXSpeed,
+                    params.get_value(MultiParameter::FXSpeed),
+                ),
+                multi_slider_with_labels(
+                    "Depth",
+                    MultiParameter::FXDepth,
+                    params.get_value(MultiParameter::FXDepth),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(fx_mode_list(
-                "Mode",
-                MultiParameter::FXMode,
-                params.get_value(MultiParameter::FXMode),
-            ))
-            .push(multi_slider_with_labels(
-                "Length",
-                MultiParameter::FXLength,
-                params.get_value(MultiParameter::FXLength),
-            ))
-            .push(multi_slider_with_labels(
-                "Feedback",
-                MultiParameter::FXFeedback,
-                params.get_value(MultiParameter::FXFeedback),
-            ))
-            .push(multi_slider_with_labels(
-                "Mix",
-                MultiParameter::FXMix,
-                params.get_value(MultiParameter::FXMix),
-            ))
-            .push(multi_slider_with_labels(
-                "Speed",
-                MultiParameter::FXSpeed,
-                params.get_value(MultiParameter::FXSpeed),
-            ))
-            .push(multi_slider_with_labels(
-                "Depth",
-                MultiParameter::FXDepth,
-                params.get_value(MultiParameter::FXDepth),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0x65, 0xA4, 0x7E)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0x65, 0xA4, 0x7E)))
+        .into()
     }
 }

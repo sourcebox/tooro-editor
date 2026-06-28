@@ -1,8 +1,8 @@
 //! Section containing misc parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,28 +18,30 @@ impl MiscSection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Misc").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Misc").size(style::SECTION_LABEL_TEXT_SIZE),
+                slider_with_labels(
+                    "Bend Amt",
+                    SoundParameter::BendRange,
+                    params.get_value(SoundParameter::BendRange),
+                ),
+                slider_with_labels(
+                    "Tune",
+                    SoundParameter::Tune,
+                    params.get_value(SoundParameter::Tune),
+                ),
+                checkbox_with_labels(
+                    "",
+                    "Poly",
+                    SoundParameter::PolyMode,
+                    params.get_value(SoundParameter::PolyMode),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(slider_with_labels(
-                "Bend Amt",
-                SoundParameter::BendRange,
-                params.get_value(SoundParameter::BendRange),
-            ))
-            .push(slider_with_labels(
-                "Tune",
-                SoundParameter::Tune,
-                params.get_value(SoundParameter::Tune),
-            ))
-            .push(checkbox_with_labels(
-                "",
-                "Poly",
-                SoundParameter::PolyMode,
-                params.get_value(SoundParameter::PolyMode),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xC0, 0xC0, 0xC0)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xC0, 0xC0, 0xC0)))
+        .into()
     }
 }

@@ -1,8 +1,8 @@
 //! Section containing oscillator 2 parameters
 
 use iced::{
-    widget::{Column, Container, Text},
     Color, Element, Padding,
+    widget::{column, container, text},
 };
 
 use crate::messages::Message;
@@ -18,52 +18,54 @@ impl Osc2Section {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE),
+                wavetable_list(
+                    "Table",
+                    SoundParameter::Osc2Table,
+                    params.get_value(SoundParameter::Osc2Table),
+                ),
+                slider_with_labels(
+                    "Wave",
+                    SoundParameter::Osc2Wave,
+                    params.get_value(SoundParameter::Osc2Wave),
+                ),
+                slider_with_labels(
+                    "Coarse",
+                    SoundParameter::Osc2Coarse,
+                    params.get_value(SoundParameter::Osc2Coarse),
+                ),
+                slider_with_labels(
+                    "Fine",
+                    SoundParameter::Osc2Fine,
+                    params.get_value(SoundParameter::Osc2Fine),
+                ),
+                slider_with_labels(
+                    "FM Amt",
+                    SoundParameter::Osc2FMAmount,
+                    params.get_value(SoundParameter::Osc2FMAmount),
+                ),
+                slider_with_labels(
+                    "FM Rate",
+                    SoundParameter::Osc2FMRate,
+                    params.get_value(SoundParameter::Osc2FMRate),
+                ),
+                slider_with_labels(
+                    "Sync",
+                    SoundParameter::Osc2Sync,
+                    params.get_value(SoundParameter::Osc2Sync),
+                ),
+                slider_with_labels(
+                    "Level",
+                    SoundParameter::Osc2Level,
+                    params.get_value(SoundParameter::Osc2Level),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(wavetable_list(
-                "Table",
-                SoundParameter::Osc2Table,
-                params.get_value(SoundParameter::Osc2Table),
-            ))
-            .push(slider_with_labels(
-                "Wave",
-                SoundParameter::Osc2Wave,
-                params.get_value(SoundParameter::Osc2Wave),
-            ))
-            .push(slider_with_labels(
-                "Coarse",
-                SoundParameter::Osc2Coarse,
-                params.get_value(SoundParameter::Osc2Coarse),
-            ))
-            .push(slider_with_labels(
-                "Fine",
-                SoundParameter::Osc2Fine,
-                params.get_value(SoundParameter::Osc2Fine),
-            ))
-            .push(slider_with_labels(
-                "FM Amt",
-                SoundParameter::Osc2FMAmount,
-                params.get_value(SoundParameter::Osc2FMAmount),
-            ))
-            .push(slider_with_labels(
-                "FM Rate",
-                SoundParameter::Osc2FMRate,
-                params.get_value(SoundParameter::Osc2FMRate),
-            ))
-            .push(slider_with_labels(
-                "Sync",
-                SoundParameter::Osc2Sync,
-                params.get_value(SoundParameter::Osc2Sync),
-            ))
-            .push(slider_with_labels(
-                "Level",
-                SoundParameter::Osc2Level,
-                params.get_value(SoundParameter::Osc2Level),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xAB, 0xA3, 0x39)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xAB, 0xA3, 0x39)))
+        .into()
     }
 }

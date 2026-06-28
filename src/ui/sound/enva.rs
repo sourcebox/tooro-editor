@@ -2,7 +2,7 @@
 
 use iced::{
     Color, Element, Padding,
-    widget::{Column, Container, Text, rule},
+    widget::{column, container, rule, text},
 };
 
 use crate::messages::Message;
@@ -21,63 +21,65 @@ impl EnvASection {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let content = Column::new()
-            .push(Text::new("Env A").size(style::SECTION_LABEL_TEXT_SIZE))
+        container(
+            column![
+                text("Env A").size(style::SECTION_LABEL_TEXT_SIZE),
+                slider_with_labels(
+                    "Attack",
+                    SoundParameter::EnvAAttack,
+                    params.get_value(SoundParameter::EnvAAttack),
+                ),
+                slider_with_labels(
+                    "Hold",
+                    SoundParameter::EnvAHold,
+                    params.get_value(SoundParameter::EnvAHold),
+                ),
+                slider_with_labels(
+                    "Decay",
+                    SoundParameter::EnvADecay,
+                    params.get_value(SoundParameter::EnvADecay),
+                ),
+                slider_with_labels(
+                    "Sustain",
+                    SoundParameter::EnvASustain,
+                    params.get_value(SoundParameter::EnvASustain),
+                ),
+                slider_with_labels(
+                    "Release",
+                    SoundParameter::EnvARelease,
+                    params.get_value(SoundParameter::EnvARelease),
+                ),
+                slider_with_labels(
+                    "Velo",
+                    SoundParameter::EnvAVelo,
+                    params.get_value(SoundParameter::EnvAVelo),
+                ),
+                slider_with_labels(
+                    "After",
+                    SoundParameter::EnvAAfter,
+                    params.get_value(SoundParameter::EnvAAfter),
+                ),
+                env_trigger_list(
+                    "Trigger",
+                    SoundParameter::EnvATrigger,
+                    params.get_value(SoundParameter::EnvATrigger),
+                ),
+                rule::horizontal(1).style(|_| style::rule()),
+                mod_target_list(
+                    "Target",
+                    SoundParameter::ModEnvATarget,
+                    params.get_value(SoundParameter::ModEnvATarget),
+                ),
+                slider_with_labels(
+                    "Mod Amt",
+                    SoundParameter::ModEnvAAmount,
+                    params.get_value(SoundParameter::ModEnvAAmount),
+                )
+            ]
             .padding(Padding::from(style::SECTION_PADDING))
-            .spacing(style::SECTION_SPACING)
-            .push(slider_with_labels(
-                "Attack",
-                SoundParameter::EnvAAttack,
-                params.get_value(SoundParameter::EnvAAttack),
-            ))
-            .push(slider_with_labels(
-                "Hold",
-                SoundParameter::EnvAHold,
-                params.get_value(SoundParameter::EnvAHold),
-            ))
-            .push(slider_with_labels(
-                "Decay",
-                SoundParameter::EnvADecay,
-                params.get_value(SoundParameter::EnvADecay),
-            ))
-            .push(slider_with_labels(
-                "Sustain",
-                SoundParameter::EnvASustain,
-                params.get_value(SoundParameter::EnvASustain),
-            ))
-            .push(slider_with_labels(
-                "Release",
-                SoundParameter::EnvARelease,
-                params.get_value(SoundParameter::EnvARelease),
-            ))
-            .push(slider_with_labels(
-                "Velo",
-                SoundParameter::EnvAVelo,
-                params.get_value(SoundParameter::EnvAVelo),
-            ))
-            .push(slider_with_labels(
-                "After",
-                SoundParameter::EnvAAfter,
-                params.get_value(SoundParameter::EnvAAfter),
-            ))
-            .push(env_trigger_list(
-                "Trigger",
-                SoundParameter::EnvATrigger,
-                params.get_value(SoundParameter::EnvATrigger),
-            ))
-            .push(rule::horizontal(1).style(|_| style::rule()))
-            .push(mod_target_list(
-                "Target",
-                SoundParameter::ModEnvATarget,
-                params.get_value(SoundParameter::ModEnvATarget),
-            ))
-            .push(slider_with_labels(
-                "Mod Amt",
-                SoundParameter::ModEnvAAmount,
-                params.get_value(SoundParameter::ModEnvAAmount),
-            ));
-        Container::new(content)
-            .style(|_| style::section(Color::from_rgb8(0xFF, 0xBD, 0x00)))
-            .into()
+            .spacing(style::SECTION_SPACING),
+        )
+        .style(|_| style::section(Color::from_rgb8(0xFF, 0xBD, 0x00)))
+        .into()
     }
 }
