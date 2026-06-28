@@ -37,7 +37,6 @@ impl MultiPanel {
             ]
             .spacing(10),
         )
-        .padding(5)
         .height(Length::Fill)
         .into()
     }

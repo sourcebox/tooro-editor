@@ -53,6 +53,6 @@ impl ManagerPanel {
         ]
         .spacing(10);
 
-        container(column![row1, row2].spacing(10)).padding(5).into()
+        container(column![row1, row2].spacing(10)).into()
     }
 }

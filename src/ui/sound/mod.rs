@@ -95,7 +95,9 @@ impl SoundPanel {
 
         container(
             column![
-                row![sound_col1, sound_col2, sound_col3, sound_col4].spacing(10),
+                row![sound_col1, sound_col2, sound_col3, sound_col4]
+                    .height(Length::Fill)
+                    .spacing(10),
                 container(self.mod_section.view(params))
             ]
             .spacing(10),

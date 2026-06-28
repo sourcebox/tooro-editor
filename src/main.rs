@@ -403,56 +403,62 @@ impl App {
 
     /// Returns the widgets to display.
     fn view(&self) -> Element<'_, Message> {
-        container(column![
-            row![
-                container(self.sound_panel.view(&self.sound_params)).width(Length::FillPortion(4)),
-                column![
-                    self.manager_panel
-                        .view(self.part_id, self.device_connected.is_some()),
-                    self.multi_panel.view(&self.multi_params)
-                ]
-                .width(Length::FillPortion(1)),
-            ]
-            .spacing(5)
-            .height(Length::Fill),
-            row![
-                column![].width(10),
-                container(text(&self.status_connection).size(style::STATUS_TEXT_SIZE))
-                    .width(Length::FillPortion(1)),
-                container(
-                    row![
-                        text("Merge Input:").size(style::STATUS_TEXT_SIZE),
-                        PickList::new(
-                            {
-                                let mut inputs = self.midi.get_merge_inputs().clone();
-                                inputs.insert(0, String::from(""));
-                                inputs
-                            },
-                            Some(self.settings.merge_input_name.clone()),
-                            Message::MergeInputChange,
-                        )
-                        .width(250)
-                        .text_size(style::LIST_ITEM_TEXT_SIZE),
+        container(
+            column![
+                row![
+                    container(self.sound_panel.view(&self.sound_params))
+                        .width(Length::FillPortion(4)),
+                    column![
+                        self.manager_panel
+                            .view(self.part_id, self.device_connected.is_some()),
+                        self.multi_panel.view(&self.multi_params)
                     ]
-                    .align_y(Alignment::Center)
-                    .spacing(10),
-                ),
-                container(text(&self.status_communication).size(style::STATUS_TEXT_SIZE),)
-                    .width(Length::FillPortion(3))
-                    .align_x(Alignment::Center),
-                container(
-                    #[cfg(debug_assertions)]
-                    text(format!("v{} (debug build)", env!("CARGO_PKG_VERSION")))
-                        .size(style::STATUS_TEXT_SIZE),
-                    #[cfg(not(debug_assertions))]
-                    text(format!("v{}", env!("CARGO_PKG_VERSION"))).size(style::STATUS_TEXT_SIZE),
-                )
-                .width(200)
-                .align_x(Alignment::End),
-                column![].width(10),
+                    .spacing(10)
+                    .width(Length::FillPortion(1)),
+                ]
+                .spacing(15)
+                .height(Length::Fill),
+                row![
+                    column![].width(10),
+                    container(text(&self.status_connection).size(style::STATUS_TEXT_SIZE))
+                        .width(Length::FillPortion(1)),
+                    container(
+                        row![
+                            text("Merge Input:").size(style::STATUS_TEXT_SIZE),
+                            PickList::new(
+                                {
+                                    let mut inputs = self.midi.get_merge_inputs().clone();
+                                    inputs.insert(0, String::from(""));
+                                    inputs
+                                },
+                                Some(self.settings.merge_input_name.clone()),
+                                Message::MergeInputChange,
+                            )
+                            .width(250)
+                            .text_size(style::LIST_ITEM_TEXT_SIZE),
+                        ]
+                        .align_y(Alignment::Center)
+                        .spacing(10),
+                    ),
+                    container(text(&self.status_communication).size(style::STATUS_TEXT_SIZE),)
+                        .width(Length::FillPortion(3))
+                        .align_x(Alignment::Center),
+                    container(
+                        #[cfg(debug_assertions)]
+                        text(format!("v{} (debug build)", env!("CARGO_PKG_VERSION")))
+                            .size(style::STATUS_TEXT_SIZE),
+                        #[cfg(not(debug_assertions))]
+                        text(format!("v{}", env!("CARGO_PKG_VERSION")))
+                            .size(style::STATUS_TEXT_SIZE),
+                    )
+                    .width(200)
+                    .align_x(Alignment::End),
+                    column![].width(10),
+                ]
+                .align_y(Alignment::Center)
             ]
-            .align_y(Alignment::Center)
-        ])
+            .spacing(10),
+        )
         .padding(10)
         .height(Length::Fill)
         .into()

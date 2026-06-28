@@ -1,7 +1,7 @@
 //! Section containing misc parameters
 
 use iced::{
-    Color, Element, Padding,
+    Color, Element, Length, Padding,
     widget::{column, container, text},
 };
 
@@ -38,6 +38,7 @@ impl MiscSection {
                     params.get_value(SoundParameter::PolyMode),
                 )
             ]
+            .height(Length::Fill)
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),
         )

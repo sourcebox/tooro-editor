@@ -1,7 +1,7 @@
 //! Section containing the arpeggiator parameters
 
 use iced::{
-    Color, Element, Padding,
+    Color, Element, Length, Padding,
     widget::{column, container, text},
 };
 
@@ -46,6 +46,7 @@ impl ArpSection {
                     params.get_value(SoundParameter::ArpHold),
                 )
             ]
+            .height(Length::Fill)
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),
         )

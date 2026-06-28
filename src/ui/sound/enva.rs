@@ -1,7 +1,7 @@
 //! Section containing the amp envelope parameters
 
 use iced::{
-    Color, Element, Padding,
+    Color, Element, Length, Padding,
     widget::{column, container, rule, text},
 };
 
@@ -76,6 +76,7 @@ impl EnvASection {
                     params.get_value(SoundParameter::ModEnvAAmount),
                 )
             ]
+            .height(Length::Fill)
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),
         )

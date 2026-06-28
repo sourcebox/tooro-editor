@@ -1,7 +1,7 @@
 //! Section containing the multi fx parameters
 
 use iced::{
-    Color, Element, Padding,
+    Color, Element, Length, Padding,
     widget::{column, container, text},
 };
 
@@ -52,6 +52,7 @@ impl FXSection {
                     params.get_value(MultiParameter::FXDepth),
                 )
             ]
+            .height(Length::Fill)
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),
         )
