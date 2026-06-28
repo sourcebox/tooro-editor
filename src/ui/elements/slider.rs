@@ -5,7 +5,7 @@ use iced::{
     widget::{Column, Container, Row, text},
 };
 
-use super::slider_widget::Slider;
+use super::super::widgets::slider::Slider;
 
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
