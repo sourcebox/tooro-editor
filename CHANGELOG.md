@@ -11,13 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Merge input is remembered between launches.
 - Change scale factor via `Ctrl +`, `Ctrl -` and `Ctrl 0`.
-- Initial request delay after device connection to prevent data corruption.
+- Delay initial requests after establishing device connection to prevent data corruption.
 - Feature selection for `x11` (default) and `wayland`.
 
 ### Changed
 
-- Migrated `iced` dependency to `0.14`.
-- Updated dependencies.
+- More consistent dynamic layout.
+- Simplified internal layout structure.
+- Migrated `iced` GUI library to `0.14`.
+- Use 2024 edition of Rust.
 
 ## [1.1.0] - 2022-09-28
 
