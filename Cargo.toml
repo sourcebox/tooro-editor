@@ -8,6 +8,7 @@ description = "Editor for the Fred's Lab Töörö hardware synthesizer"
 repository = "https://github.com/sourcebox/tooro-editor"
 license = "MIT"
 keywords = ["midi", "synthesizer"]
+publish = false
 
 [features]
 default = ["x11"]
