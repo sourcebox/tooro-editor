@@ -1,8 +1,8 @@
 //! Panel containing global controls
 
 use iced::{
-    Alignment, Element, Length,
-    widget::{Button, Column, Container, Row, Text},
+    Element, Length,
+    widget::{Button, column, container, row, text},
 };
 
 use super::style;
@@ -17,54 +17,42 @@ impl ManagerPanel {
     }
 
     pub fn view(&self, part_id: u8, device_connected: bool) -> Element<'_, Message> {
-        let row1 = Row::new()
-            .padding(5)
-            .spacing(10)
-            .push(Column::new().push(part_list(part_id)))
-            .push(
-                Column::new()
-                    .push({
-                        let mut button =
-                            Button::new(Text::new("Resync").size(style::BUTTON_TEXT_SIZE))
-                                .style(|_, status| style::button(status));
-                        if device_connected {
-                            button = button.on_press(Message::UpdateFromDevice);
-                        }
-                        button
-                    })
-                    .width(Length::Shrink),
-            );
+        let row1 = row![
+            part_list(part_id),
+            container({
+                let mut button = Button::new(text("Resync").size(style::BUTTON_TEXT_SIZE))
+                    .style(|_, status| style::button(status));
+                if device_connected {
+                    button = button.on_press(Message::UpdateFromDevice);
+                }
+                button
+            })
+            .width(Length::Shrink),
+        ]
+        .spacing(10);
 
-        let row2 = Row::new()
-            .padding(5)
-            .spacing(10)
-            .push(Column::new().push({
-                let mut button = Button::new(Text::new("Load SYX").size(style::BUTTON_TEXT_SIZE))
+        let row2 = row![
+            {
+                let mut button = Button::new(text("Load SYX").size(style::BUTTON_TEXT_SIZE))
                     .style(|_, status| style::button(status))
                     .padding(5);
                 if device_connected {
                     button = button.on_press(Message::LoadSysexFile);
                 }
                 button
-            }))
-            .push(
-                Column::new()
-                    .push({
-                        let mut button =
-                            Button::new(Text::new("Save SYX").size(style::BUTTON_TEXT_SIZE))
-                                .style(|_, status| style::button(status))
-                                .padding(5);
-                        if device_connected {
-                            button = button.on_press(Message::SavePresetSysexFile);
-                        }
-                        button
-                    })
-                    .align_x(Alignment::Start),
-            );
+            },
+            {
+                let mut button = Button::new(text("Save SYX").size(style::BUTTON_TEXT_SIZE))
+                    .style(|_, status| style::button(status))
+                    .padding(5);
+                if device_connected {
+                    button = button.on_press(Message::SavePresetSysexFile);
+                }
+                button
+            },
+        ]
+        .spacing(10);
 
-        Container::new(Column::new().push(row1).push(row2))
-            .padding(5)
-            .height(80)
-            .into()
+        container(column![row1, row2].spacing(10)).padding(5).into()
     }
 }

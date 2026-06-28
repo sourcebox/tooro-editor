@@ -14,7 +14,7 @@ mod osc1;
 mod osc2;
 mod shaper;
 
-use iced::widget::{Column, Container, Row};
+use iced::widget::{column, container, row};
 use iced::{Element, Length};
 
 use crate::messages::Message;
@@ -61,50 +61,45 @@ impl SoundPanel {
     }
 
     pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
-        let sound_col1 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.osc1_section.view(params))
-            .push(self.lfo1_section.view(params))
-            .push(self.arp_section.view(params))
-            .width(Length::FillPortion(4));
+        let sound_col1 = column![
+            self.osc1_section.view(params),
+            self.lfo1_section.view(params),
+            self.arp_section.view(params)
+        ]
+        .spacing(10)
+        .width(Length::FillPortion(4));
 
-        let sound_col2 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.osc2_section.view(params))
-            .push(self.lfo2_section.view(params))
-            .push(self.misc_section.view(params))
-            .width(Length::FillPortion(4));
+        let sound_col2 = column![
+            self.osc2_section.view(params),
+            self.lfo2_section.view(params),
+            self.misc_section.view(params)
+        ]
+        .spacing(10)
+        .width(Length::FillPortion(4));
 
-        let sound_col3 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.shaper_section.view(params))
-            .push(self.extra_section.view(params))
-            .push(self.envf_section.view(params))
-            .width(Length::FillPortion(4));
+        let sound_col3 = column![
+            self.shaper_section.view(params),
+            self.extra_section.view(params),
+            self.envf_section.view(params)
+        ]
+        .spacing(10)
+        .width(Length::FillPortion(4));
 
-        let sound_col4 = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.filter_section.view(params))
-            .push(self.amp_section.view(params))
-            .push(self.enva_section.view(params))
-            .width(Length::FillPortion(4));
+        let sound_col4 = column![
+            self.filter_section.view(params),
+            self.amp_section.view(params),
+            self.enva_section.view(params)
+        ]
+        .spacing(10)
+        .width(Length::FillPortion(4));
 
-        Container::new(
-            Column::new()
-                .push(
-                    Row::new()
-                        .push(sound_col1)
-                        .push(sound_col2)
-                        .push(sound_col3)
-                        .push(sound_col4),
-                )
-                .push(Row::new().padding(5).push(self.mod_section.view(params))),
+        container(
+            column![
+                row![sound_col1, sound_col2, sound_col3, sound_col4].spacing(10),
+                container(self.mod_section.view(params))
+            ]
+            .spacing(10),
         )
-        .padding(5)
         .height(Length::Fill)
         .into()
     }

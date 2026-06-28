@@ -4,7 +4,7 @@ mod fx;
 mod midi;
 mod mixer;
 
-use iced::widget::{Column, Container, Row};
+use iced::widget::{column, container};
 use iced::{Element, Length};
 
 use crate::messages::Message;
@@ -29,16 +29,16 @@ impl MultiPanel {
     }
 
     pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
-        let col = Column::new()
-            .padding(5)
-            .spacing(10)
-            .push(self.midi_section.view(params))
-            .push(self.mixer_section.view(params))
-            .push(self.fx_section.view(params));
-
-        Container::new(Column::new().push(Row::new().push(col)))
-            .padding(5)
-            .height(Length::Fill)
-            .into()
+        container(
+            column![
+                self.midi_section.view(params),
+                self.mixer_section.view(params),
+                self.fx_section.view(params)
+            ]
+            .spacing(10),
+        )
+        .padding(5)
+        .height(Length::Fill)
+        .into()
     }
 }

@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 
 use iced::futures::SinkExt;
 use iced::keyboard::{Event::KeyPressed, Key};
-use iced::widget::{Column, Container, PickList, Row, Text};
+use iced::widget::{PickList, column, container, row, text};
 use iced::{
     Alignment, Application, Element, Event, Length, Program, Subscription, Task, Theme, event,
     stream, time, window,
@@ -401,89 +401,59 @@ impl App {
         Task::none()
     }
 
-    /// Returns the widgets to display
+    /// Returns the widgets to display.
     fn view(&self) -> Element<'_, Message> {
-        Container::new(
-            Column::new()
-                .push(
-                    Row::new()
-                        .push(
-                            Column::new()
-                                .push(self.sound_panel.view(&self.sound_params))
-                                .width(Length::FillPortion(4)),
+        container(column![
+            row![
+                container(self.sound_panel.view(&self.sound_params)).width(Length::FillPortion(4)),
+                column![
+                    self.manager_panel
+                        .view(self.part_id, self.device_connected.is_some()),
+                    self.multi_panel.view(&self.multi_params)
+                ]
+                .width(Length::FillPortion(1)),
+            ]
+            .spacing(5)
+            .height(Length::Fill),
+            row![
+                column![].width(10),
+                container(text(&self.status_connection).size(style::STATUS_TEXT_SIZE))
+                    .width(Length::FillPortion(1)),
+                container(
+                    row![
+                        text("Merge Input:").size(style::STATUS_TEXT_SIZE),
+                        PickList::new(
+                            {
+                                let mut inputs = self.midi.get_merge_inputs().clone();
+                                inputs.insert(0, String::from(""));
+                                inputs
+                            },
+                            Some(self.settings.merge_input_name.clone()),
+                            Message::MergeInputChange,
                         )
-                        .push(
-                            Column::new()
-                                .push(
-                                    self.manager_panel
-                                        .view(self.part_id, self.device_connected.is_some()),
-                                )
-                                .push(self.multi_panel.view(&self.multi_params))
-                                .width(Length::FillPortion(1)),
-                        )
-                        .height(Length::Fill),
-                )
-                .push(
-                    Row::new()
-                        .push(Column::new().width(10))
-                        .push(
-                            Column::new()
-                                .push(
-                                    Text::new(&self.status_connection)
-                                        .size(style::STATUS_TEXT_SIZE),
-                                )
-                                .width(Length::FillPortion(1)),
-                        )
-                        .push(
-                            Column::new().push(
-                                Row::new()
-                                    .push(Text::new("Merge Input:").size(style::STATUS_TEXT_SIZE))
-                                    .push(
-                                        PickList::new(
-                                            {
-                                                let mut inputs =
-                                                    self.midi.get_merge_inputs().clone();
-                                                inputs.insert(0, String::from(""));
-                                                inputs
-                                            },
-                                            Some(self.settings.merge_input_name.clone()),
-                                            Message::MergeInputChange,
-                                        )
-                                        .width(250)
-                                        .text_size(style::LIST_ITEM_TEXT_SIZE),
-                                    )
-                                    .spacing(10),
-                            ),
-                        )
-                        .push(
-                            Column::new()
-                                .push(
-                                    Text::new(&self.status_communication)
-                                        .size(style::STATUS_TEXT_SIZE),
-                                )
-                                .width(Length::FillPortion(3))
-                                .align_x(Alignment::Center),
-                        )
-                        .push(
-                            Column::new()
-                                .push(
-                                    #[cfg(debug_assertions)]
-                                    Text::new(format!(
-                                        "v{} (debug build)",
-                                        env!("CARGO_PKG_VERSION")
-                                    ))
-                                    .size(style::STATUS_TEXT_SIZE),
-                                    #[cfg(not(debug_assertions))]
-                                    Text::new(format!("v{}", env!("CARGO_PKG_VERSION")))
-                                        .size(style::STATUS_TEXT_SIZE),
-                                )
-                                .width(200)
-                                .align_x(Alignment::End),
-                        )
-                        .push(Column::new().width(10)),
+                        .width(250)
+                        .text_size(style::LIST_ITEM_TEXT_SIZE),
+                    ]
+                    .align_y(Alignment::Center)
+                    .spacing(10),
                 ),
-        )
-        .padding(5)
+                container(text(&self.status_communication).size(style::STATUS_TEXT_SIZE),)
+                    .width(Length::FillPortion(3))
+                    .align_x(Alignment::Center),
+                container(
+                    #[cfg(debug_assertions)]
+                    text(format!("v{} (debug build)", env!("CARGO_PKG_VERSION")))
+                        .size(style::STATUS_TEXT_SIZE),
+                    #[cfg(not(debug_assertions))]
+                    text(format!("v{}", env!("CARGO_PKG_VERSION"))).size(style::STATUS_TEXT_SIZE),
+                )
+                .width(200)
+                .align_x(Alignment::End),
+                column![].width(10),
+            ]
+            .align_y(Alignment::Center)
+        ])
+        .padding(10)
         .height(Length::Fill)
         .into()
     }

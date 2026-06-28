@@ -6,7 +6,7 @@ use iced::{Background, Border, Color, Shadow, Theme, color, theme::Palette, widg
 pub const WINDOW_WIDTH: u32 = 1024;
 
 /// Default window height.
-pub const WINDOW_HEIGHT: u32 = 665;
+pub const WINDOW_HEIGHT: u32 = 670;
 
 /// Common element padding.
 pub const SECTION_PADDING: u16 = 7;
