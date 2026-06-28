@@ -1,7 +1,7 @@
 //! Slider control wrapped in a container with label and value display
 
 use iced::{
-    Padding, alignment,
+    alignment,
     widget::{Container, container, row, text},
 };
 
@@ -33,7 +33,7 @@ pub fn slider_with_labels(
         ),
         slider,
         container(
-            text(format!("{}", value))
+            text(value)
                 .size(style::PARAM_LABEL_TEXT_SIZE)
                 .align_x(alignment::Horizontal::Right)
                 .width(style::PARAM_VALUE_WIDTH)
@@ -63,7 +63,7 @@ pub fn multi_slider_with_labels(
         ),
         slider,
         container(
-            text(format!("{}", value))
+            text(value)
                 .size(style::PARAM_LABEL_TEXT_SIZE)
                 .align_x(alignment::Horizontal::Right)
                 .width(style::PARAM_VALUE_WIDTH)
