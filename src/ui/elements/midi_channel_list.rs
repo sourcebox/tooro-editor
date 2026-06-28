@@ -1,8 +1,8 @@
 //! Dropdown menu for the MIDI channels
 
 use iced::{
-    widget::{Column, Container, PickList, Row, Text},
     Padding,
+    widget::{Column, Container, PickList, Row, Text},
 };
 
 use crate::messages::Message;

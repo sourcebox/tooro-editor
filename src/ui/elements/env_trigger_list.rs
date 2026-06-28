@@ -1,8 +1,8 @@
 //! Dropdown menu for the envelope trigger modes
 
 use iced::{
-    widget::{Column, Container, PickList, Row, Text},
     Padding,
+    widget::{Column, Container, PickList, Row, Text},
 };
 
 use crate::messages::Message;

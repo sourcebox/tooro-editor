@@ -1,8 +1,8 @@
 //! Dropdown menu for the multi fx modes
 
 use iced::{
-    widget::{Column, Container, PickList, Row, Text},
     Padding,
+    widget::{Column, Container, PickList, Row, Text},
 };
 
 use crate::messages::Message;
