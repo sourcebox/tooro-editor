@@ -9,8 +9,13 @@ repository = "https://github.com/sourcebox/tooro-editor"
 license = "MIT"
 keywords = ["midi", "synthesizer"]
 
+[features]
+default = ["x11"]
+x11 = ["iced/x11"]
+wayland = ["iced/wayland"]
+
 [dependencies]
-iced = { version = "0.14.0", default-features = false, features = ["advanced", "x11", "wgpu", "tokio"]}
+iced = { version = "0.14.0", default-features = false, features = ["advanced", "wgpu", "tokio"]}
 midir = "0.11.0"
 log = { version="0.4.33", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "5.2.0"
