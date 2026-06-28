@@ -2,7 +2,7 @@
 
 use iced::{
     Padding, alignment,
-    widget::{Column, Container, Row, text},
+    widget::{Container, container, row, text},
 };
 
 use super::super::widgets::slider::Slider;
@@ -10,6 +10,22 @@ use super::super::widgets::slider::Slider;
 use crate::messages::Message;
 use crate::params::{MultiParameter, SoundParameter};
 use crate::style;
+
+/// Padding for the label.
+const LABEL_PADDING: Padding = Padding {
+    top: 0.0,
+    right: 0.0,
+    bottom: 5.7,
+    left: 0.0,
+};
+
+/// Padding for the value.
+const VALUE_PADDING: Padding = Padding {
+    top: 0.0,
+    right: 0.0,
+    bottom: 5.7,
+    left: 5.0,
+};
 
 /// Returns a slider for a sound (preset) parameter.
 pub fn slider_with_labels(
@@ -25,39 +41,22 @@ pub fn slider_with_labels(
     .style(|_, status| style::slider(status))
     .shift_step(0.25);
 
-    Container::new(
-        Row::new()
-            .push(
-                Column::new()
-                    .push(
-                        text(label)
-                            .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(style::PARAM_LABEL_WIDTH),
-                    )
-                    .padding(Padding {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 5.7,
-                        left: 0.0,
-                    }),
-            )
-            .push(slider)
-            .push(
-                Column::new()
-                    .push(
-                        text(format!("{}", value))
-                            .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .align_x(alignment::Horizontal::Right)
-                            .width(style::PARAM_VALUE_WIDTH),
-                    )
-                    .padding(Padding {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 5.7,
-                        left: 5.0,
-                    }),
-            ),
-    )
+    container(row![
+        container(
+            text(label)
+                .size(style::PARAM_LABEL_TEXT_SIZE)
+                .width(style::PARAM_LABEL_WIDTH),
+        )
+        .padding(LABEL_PADDING),
+        slider,
+        container(
+            text(format!("{}", value))
+                .size(style::PARAM_LABEL_TEXT_SIZE)
+                .align_x(alignment::Horizontal::Right)
+                .width(style::PARAM_VALUE_WIDTH)
+        )
+        .padding(VALUE_PADDING),
+    ])
 }
 
 /// Returns a slider for a multi parameter.
@@ -74,37 +73,20 @@ pub fn multi_slider_with_labels(
     .style(|_, status| style::slider(status))
     .shift_step(0.25);
 
-    Container::new(
-        Row::new()
-            .push(
-                Column::new()
-                    .push(
-                        text(label)
-                            .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .width(style::PARAM_LABEL_WIDTH),
-                    )
-                    .padding(Padding {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 5.7,
-                        left: 0.0,
-                    }),
-            )
-            .push(slider)
-            .push(
-                Column::new()
-                    .push(
-                        text(format!("{}", value))
-                            .size(style::PARAM_LABEL_TEXT_SIZE)
-                            .align_x(alignment::Horizontal::Right)
-                            .width(style::PARAM_VALUE_WIDTH),
-                    )
-                    .padding(Padding {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 5.7,
-                        left: 5.0,
-                    }),
-            ),
-    )
+    container(row![
+        container(
+            text(label)
+                .size(style::PARAM_LABEL_TEXT_SIZE)
+                .width(style::PARAM_LABEL_WIDTH),
+        )
+        .padding(LABEL_PADDING),
+        slider,
+        container(
+            text(format!("{}", value))
+                .size(style::PARAM_LABEL_TEXT_SIZE)
+                .align_x(alignment::Horizontal::Right)
+                .width(style::PARAM_VALUE_WIDTH)
+        )
+        .padding(VALUE_PADDING),
+    ])
 }
