@@ -21,7 +21,6 @@ ron = "0.12.2"
 directories-next = "2.0.0"
 
 [profile.release]
-lto = true
 strip = true
 
 [package.metadata.bundle]
