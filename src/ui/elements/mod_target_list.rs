@@ -1,7 +1,7 @@
 //! Dropdown menu for the modulation targets
 
 use iced::{
-    Padding,
+    Length, Padding,
     widget::{Container, PickList, container, row, text},
 };
 
@@ -43,7 +43,8 @@ pub fn mod_target_list(
         Message::SoundParameterChange(sound_param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
-    .text_size(style::LIST_ITEM_TEXT_SIZE);
+    .text_size(style::LIST_ITEM_TEXT_SIZE)
+    .width(Length::Fill);
 
     container(row![
         container(

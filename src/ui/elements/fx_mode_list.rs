@@ -1,7 +1,7 @@
 //! Dropdown menu for the multi fx modes
 
 use iced::{
-    Padding,
+    Length, Padding,
     widget::{Container, PickList, container, row, text},
 };
 
@@ -25,7 +25,8 @@ pub fn fx_mode_list(
         Message::MultiParameterChange(multi_param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
-    .text_size(style::LIST_ITEM_TEXT_SIZE);
+    .text_size(style::LIST_ITEM_TEXT_SIZE)
+    .width(Length::Fill);
 
     container(row![
         container(

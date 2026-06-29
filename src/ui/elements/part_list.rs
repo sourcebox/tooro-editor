@@ -1,6 +1,9 @@
 //! Dropdown menu for part selection
 
-use iced::widget::{Container, PickList, container};
+use iced::{
+    Length,
+    widget::{Container, PickList, container},
+};
 
 use crate::messages::Message;
 use crate::style;
@@ -17,7 +20,8 @@ pub fn part_list<'a>(value: u8) -> Container<'a, Message> {
         Message::PartChange(v as u8)
     })
     .style(|_, status| style::pick_list(status))
-    .text_size(style::LIST_ITEM_TEXT_SIZE);
+    .text_size(style::LIST_ITEM_TEXT_SIZE)
+    .width(Length::Fill);
 
     container(pick_list)
 }

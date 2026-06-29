@@ -1,7 +1,7 @@
 //! Panel containing global controls
 
 use iced::{
-    Element, Length,
+    Alignment, Element, Length,
     widget::{Button, column, container, row, text},
 };
 
@@ -18,33 +18,46 @@ impl ManagerPanel {
 
     pub fn view(&self, part_id: u8, device_connected: bool) -> Element<'_, Message> {
         let row1 = row![
-            part_list(part_id),
-            container({
-                let mut button = Button::new(text("Resync").size(style::BUTTON_TEXT_SIZE))
-                    .style(|_, status| style::button(status));
+            part_list(part_id).width(Length::Fill),
+            {
+                let mut button = Button::new(
+                    text("Resync")
+                        .size(style::BUTTON_TEXT_SIZE)
+                        .align_x(Alignment::Center),
+                )
+                .style(|_, status| style::button(status))
+                .width(Length::Fill);
                 if device_connected {
                     button = button.on_press(Message::UpdateFromDevice);
                 }
                 button
-            })
-            .width(Length::Shrink),
+            }
+            .width(Length::Fill),
         ]
         .spacing(10);
 
         let row2 = row![
             {
-                let mut button = Button::new(text("Load SYX").size(style::BUTTON_TEXT_SIZE))
-                    .style(|_, status| style::button(status))
-                    .padding(5);
+                let mut button = Button::new(
+                    text("Load SYX")
+                        .size(style::BUTTON_TEXT_SIZE)
+                        .align_x(Alignment::Center),
+                )
+                .style(|_, status| style::button(status))
+                .width(Length::Fill);
                 if device_connected {
                     button = button.on_press(Message::LoadSysexFile);
                 }
                 button
             },
             {
-                let mut button = Button::new(text("Save SYX").size(style::BUTTON_TEXT_SIZE))
-                    .style(|_, status| style::button(status))
-                    .padding(5);
+                let mut button = Button::new(
+                    text("Save SYX")
+                        .size(style::BUTTON_TEXT_SIZE)
+                        .align_x(Alignment::Center),
+                )
+                .style(|_, status| style::button(status))
+                .width(Length::Fill);
                 if device_connected {
                     button = button.on_press(Message::SavePresetSysexFile);
                 }

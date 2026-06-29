@@ -1,7 +1,7 @@
 //! Dropdown menu for the MIDI channels
 
 use iced::{
-    Padding,
+    Length, Padding,
     widget::{Container, PickList, container, row, text},
 };
 
@@ -38,7 +38,8 @@ pub fn midi_channel_list(
         Message::MultiParameterChange(multi_param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
-    .text_size(style::LIST_ITEM_TEXT_SIZE);
+    .text_size(style::LIST_ITEM_TEXT_SIZE)
+    .width(Length::Fill);
 
     container(row![
         container(
