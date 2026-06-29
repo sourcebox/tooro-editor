@@ -46,7 +46,7 @@ impl LFO2Section {
                 ),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
-                    "Mod Target",
+                    "Target",
                     SoundParameter::ModLFO2Target,
                     params.get_value(SoundParameter::ModLFO2Target),
                 ),
