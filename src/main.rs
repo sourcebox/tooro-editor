@@ -31,6 +31,8 @@ use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
 use ui::style;
 
+use crate::ui::style::WINDOW_SIZE;
+
 /// Application name used for file path of persistent storage.
 const APP_NAME: &str = env!("CARGO_PKG_NAME");
 
@@ -51,8 +53,8 @@ fn application() -> Application<impl Program<Message = Message, Theme = Theme>> 
         .theme(App::theme)
         .scale_factor(|app| app.settings.scale_factor)
         .window(window::Settings {
-            size: (style::WINDOW_WIDTH, style::WINDOW_HEIGHT).into(),
-            min_size: Some((style::WINDOW_WIDTH, style::WINDOW_HEIGHT).into()),
+            size: WINDOW_SIZE,
+            min_size: Some(WINDOW_SIZE),
             exit_on_close_request: false,
             ..Default::default()
         })
@@ -191,30 +193,30 @@ impl App {
     /// Process a message and update the state accordingly.
     fn update(&mut self, message: Message) -> Task<Message> {
         match message {
-            Message::EventOccurred(event) => {
-                if event == Event::Window(window::Event::CloseRequested) {
+            Message::EventOccurred(event) => match event {
+                Event::Window(window::Event::CloseRequested) => {
                     self.save_settings();
                     return window::latest().and_then(window::close);
-                } else if let Event::Keyboard(event) = event {
-                    match event {
-                        KeyPressed { key, modifiers, .. } if modifiers.control() => {
-                            match key.as_ref() {
-                                Key::Character("0") => self.settings.scale_factor = 1.0,
-                                Key::Character("+") => {
-                                    self.settings.scale_factor =
-                                        (self.settings.scale_factor * 1.1).min(4.0);
-                                }
-                                Key::Character("-") => {
-                                    self.settings.scale_factor =
-                                        (self.settings.scale_factor * 0.9).max(0.5);
-                                }
-                                _ => {}
-                            }
-                        }
-                        _ => {}
-                    }
                 }
-            }
+                Event::Keyboard(event) => match event {
+                    KeyPressed { key, modifiers, .. } if modifiers.control() => {
+                        match key.as_ref() {
+                            Key::Character("0") => self.settings.scale_factor = 1.0,
+                            Key::Character("+") => {
+                                self.settings.scale_factor =
+                                    (self.settings.scale_factor * 1.1).min(4.0);
+                            }
+                            Key::Character("-") => {
+                                self.settings.scale_factor =
+                                    (self.settings.scale_factor * 0.9).max(0.5);
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => {}
+                },
+                _ => {}
+            },
 
             Message::SoundParameterChange(param, value) => {
                 let last_value = self.sound_params.get_value(param);

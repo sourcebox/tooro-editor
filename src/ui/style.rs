@@ -1,12 +1,18 @@
 //! Style definitions for the different elements.
 
-use iced::{Background, Border, Color, Shadow, Theme, color, theme::Palette, widget};
+use iced::{Background, Border, Color, Shadow, Size, Theme, color, theme::Palette, widget};
 
 /// Default window width.
 pub const WINDOW_WIDTH: u32 = 1024;
 
 /// Default window height.
 pub const WINDOW_HEIGHT: u32 = 670;
+
+/// Default window size.
+pub const WINDOW_SIZE: Size = Size {
+    width: WINDOW_WIDTH as f32,
+    height: WINDOW_HEIGHT as f32,
+};
 
 /// Common element padding.
 pub const SECTION_PADDING: u16 = 7;
