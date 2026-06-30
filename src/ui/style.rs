@@ -134,14 +134,20 @@ pub fn slider(status: widget::slider::Status) -> widget::slider::Style {
 }
 
 /// Returns a style for the pick list.
-pub fn pick_list(_status: widget::pick_list::Status) -> widget::pick_list::Style {
+pub fn pick_list(status: widget::pick_list::Status) -> widget::pick_list::Style {
     use widget::pick_list::*;
+
+    let background_color = match status {
+        Status::Active => ACTIVE,
+        Status::Hovered => HOVERED,
+        Status::Opened { .. } => HOVERED,
+    };
 
     Style {
         text_color: Color::WHITE,
         placeholder_color: Color::WHITE,
         handle_color: Color::WHITE,
-        background: Background::Color(BACKGROUND),
+        background: Background::Color(background_color),
         border: Border {
             color: color!(0x808080),
             width: 1.0,

@@ -434,6 +434,7 @@ impl App {
                                 Some(self.settings.merge_input_name.clone()),
                                 Message::MergeInputChange,
                             )
+                            .style(|_, status| style::pick_list(status))
                             .width(250)
                             .text_size(style::LIST_ITEM_TEXT_SIZE),
                         ]
