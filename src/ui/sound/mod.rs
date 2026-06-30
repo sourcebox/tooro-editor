@@ -60,7 +60,7 @@ impl SoundPanel {
         }
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, params: &'a ParameterValues) -> Element<'a, Message> {
         let sound_col1 = column![
             self.osc1_section.view(params),
             self.lfo1_section.view(params),

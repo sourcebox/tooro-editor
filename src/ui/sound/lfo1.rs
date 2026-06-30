@@ -20,40 +20,24 @@ impl LFO1Section {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE),
-                lfo_shape_list(
-                    "Shape",
-                    Parameter::Sound(SoundParameter::LFO1Shape),
-                    params.get_value(Parameter::Sound(SoundParameter::LFO1Shape)),
-                ),
-                slider_with_labels(
-                    "Speed",
-                    Parameter::Sound(SoundParameter::LFO1Speed),
-                    params.get_value(Parameter::Sound(SoundParameter::LFO1Speed)),
-                ),
-                slider_with_labels(
-                    "Rise",
-                    Parameter::Sound(SoundParameter::LFO1Rise),
-                    params.get_value(Parameter::Sound(SoundParameter::LFO1Rise)),
-                ),
-                lfo_phase_list(
-                    "Phase",
-                    Parameter::Sound(SoundParameter::LFO1Phase),
-                    params.get_value(Parameter::Sound(SoundParameter::LFO1Phase)),
-                ),
+                lfo_shape_list("Shape", Parameter::Sound(SoundParameter::LFO1Shape), values),
+                slider_with_labels("Speed", Parameter::Sound(SoundParameter::LFO1Speed), values),
+                slider_with_labels("Rise", Parameter::Sound(SoundParameter::LFO1Rise), values),
+                lfo_phase_list("Phase", Parameter::Sound(SoundParameter::LFO1Phase), values),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
                     "Target",
                     Parameter::Sound(SoundParameter::ModLFO1Target),
-                    params.get_value(Parameter::Sound(SoundParameter::ModLFO1Target)),
+                    values
                 ),
                 slider_with_labels(
                     "Mod Amt",
                     Parameter::Sound(SoundParameter::ModLFO1Amount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModLFO1Amount)),
+                    values
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

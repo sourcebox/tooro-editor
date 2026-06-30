@@ -17,40 +17,20 @@ impl FXSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("FX").size(style::SECTION_LABEL_TEXT_SIZE),
-                fx_mode_list(
-                    "Mode",
-                    Parameter::Multi(MultiParameter::FXMode),
-                    params.get_value(Parameter::Multi(MultiParameter::FXMode)),
-                ),
-                slider_with_labels(
-                    "Length",
-                    Parameter::Multi(MultiParameter::FXLength),
-                    params.get_value(Parameter::Multi(MultiParameter::FXLength)),
-                ),
+                fx_mode_list("Mode", Parameter::Multi(MultiParameter::FXMode), values),
+                slider_with_labels("Length", Parameter::Multi(MultiParameter::FXLength), values),
                 slider_with_labels(
                     "Feedback",
                     Parameter::Multi(MultiParameter::FXFeedback),
-                    params.get_value(Parameter::Multi(MultiParameter::FXFeedback)),
+                    values
                 ),
-                slider_with_labels(
-                    "Mix",
-                    Parameter::Multi(MultiParameter::FXMix),
-                    params.get_value(Parameter::Multi(MultiParameter::FXMix)),
-                ),
-                slider_with_labels(
-                    "Speed",
-                    Parameter::Multi(MultiParameter::FXSpeed),
-                    params.get_value(Parameter::Multi(MultiParameter::FXSpeed)),
-                ),
-                slider_with_labels(
-                    "Depth",
-                    Parameter::Multi(MultiParameter::FXDepth),
-                    params.get_value(Parameter::Multi(MultiParameter::FXDepth)),
-                )
+                slider_with_labels("Mix", Parameter::Multi(MultiParameter::FXMix), values),
+                slider_with_labels("Speed", Parameter::Multi(MultiParameter::FXSpeed), values),
+                slider_with_labels("Depth", Parameter::Multi(MultiParameter::FXDepth), values)
             ]
             .height(Length::Fill)
             .padding(Padding::from(style::SECTION_PADDING))

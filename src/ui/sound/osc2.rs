@@ -17,50 +17,30 @@ impl Osc2Section {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE),
-                wavetable_list(
-                    "Table",
-                    Parameter::Sound(SoundParameter::Osc2Table),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Table)),
-                ),
-                slider_with_labels(
-                    "Wave",
-                    Parameter::Sound(SoundParameter::Osc2Wave),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Wave)),
-                ),
+                wavetable_list("Table", Parameter::Sound(SoundParameter::Osc2Table), values),
+                slider_with_labels("Wave", Parameter::Sound(SoundParameter::Osc2Wave), values),
                 slider_with_labels(
                     "Coarse",
                     Parameter::Sound(SoundParameter::Osc2Coarse),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Coarse)),
+                    values
                 ),
-                slider_with_labels(
-                    "Fine",
-                    Parameter::Sound(SoundParameter::Osc2Fine),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Fine)),
-                ),
+                slider_with_labels("Fine", Parameter::Sound(SoundParameter::Osc2Fine), values),
                 slider_with_labels(
                     "FM Amt",
                     Parameter::Sound(SoundParameter::Osc2FMAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2FMAmount)),
+                    values
                 ),
                 slider_with_labels(
                     "FM Rate",
                     Parameter::Sound(SoundParameter::Osc2FMRate),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2FMRate)),
+                    values
                 ),
-                slider_with_labels(
-                    "Sync",
-                    Parameter::Sound(SoundParameter::Osc2Sync),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Sync)),
-                ),
-                slider_with_labels(
-                    "Level",
-                    Parameter::Sound(SoundParameter::Osc2Level),
-                    params.get_value(Parameter::Sound(SoundParameter::Osc2Level)),
-                )
+                slider_with_labels("Sync", Parameter::Sound(SoundParameter::Osc2Sync), values),
+                slider_with_labels("Level", Parameter::Sound(SoundParameter::Osc2Level), values)
             ]
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),

@@ -6,11 +6,15 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::Parameter;
+use crate::params::{Parameter, ParameterValues};
 use crate::style;
 
-pub fn mod_target_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
-    let value = match value {
+pub fn mod_target_list<'a>(
+    label: &'a str,
+    param: Parameter,
+    values: &'a ParameterValues,
+) -> Container<'a, Message> {
+    let value = match values.get_value(param) {
         0 => Some(ModTarget::Osc1Wave),
         1 => Some(ModTarget::Osc2Wave),
         2 => Some(ModTarget::Osc1Pitch),

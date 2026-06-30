@@ -17,19 +17,19 @@ impl ExtraSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Extra").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Noise",
                     Parameter::Sound(SoundParameter::ExtraNoise),
-                    params.get_value(Parameter::Sound(SoundParameter::ExtraNoise)),
+                    values
                 ),
                 slider_with_labels(
                     "O1xO2",
                     Parameter::Sound(SoundParameter::ExtraRingMod),
-                    params.get_value(Parameter::Sound(SoundParameter::ExtraRingMod)),
+                    values
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

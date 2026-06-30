@@ -3,16 +3,16 @@
 use iced::widget::{Checkbox, Container, container, row, text};
 
 use crate::messages::Message;
-use crate::params::Parameter;
+use crate::params::{Parameter, ParameterValues};
 use crate::style;
 
 pub fn checkbox_with_labels<'a>(
     label: &'a str,
     desc: &'a str,
     param: Parameter,
-    value: i32,
+    values: &'a ParameterValues,
 ) -> Container<'a, Message> {
-    let checkbox = Checkbox::new(value != 0)
+    let checkbox = Checkbox::new(values.get_value(param) != 0)
         .label(desc)
         .on_toggle(move |v| Message::ParameterChange(param, v as i32))
         .style(|_, status| style::checkbox(status))

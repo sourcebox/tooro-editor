@@ -17,20 +17,12 @@ impl AmpSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Amp").size(style::SECTION_LABEL_TEXT_SIZE),
-                slider_with_labels(
-                    "Level",
-                    Parameter::Sound(SoundParameter::AmpLevel),
-                    params.get_value(Parameter::Sound(SoundParameter::AmpLevel)),
-                ),
-                slider_with_labels(
-                    "Pan",
-                    Parameter::Sound(SoundParameter::AmpPan),
-                    params.get_value(Parameter::Sound(SoundParameter::AmpPan)),
-                )
+                slider_with_labels("Level", Parameter::Sound(SoundParameter::AmpLevel), values),
+                slider_with_labels("Pan", Parameter::Sound(SoundParameter::AmpPan), values)
             ]
             .padding(Padding::from(style::SECTION_PADDING))
             .spacing(style::SECTION_SPACING),

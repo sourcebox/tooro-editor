@@ -17,25 +17,21 @@ impl MiscSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Misc").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Bend Amt",
                     Parameter::Sound(SoundParameter::BendRange),
-                    params.get_value(Parameter::Sound(SoundParameter::BendRange)),
+                    values
                 ),
-                slider_with_labels(
-                    "Tune",
-                    Parameter::Sound(SoundParameter::Tune),
-                    params.get_value(Parameter::Sound(SoundParameter::Tune)),
-                ),
+                slider_with_labels("Tune", Parameter::Sound(SoundParameter::Tune), values),
                 checkbox_with_labels(
                     "",
                     "Poly",
                     Parameter::Sound(SoundParameter::PolyMode),
-                    params.get_value(Parameter::Sound(SoundParameter::PolyMode)),
+                    values
                 )
             ]
             .height(Length::Fill)

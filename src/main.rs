@@ -25,7 +25,7 @@ use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
 use messages::Message;
 use midi::MidiConnector;
-use params::{GetValue, Parameter, ParameterValues};
+use params::{Parameter, ParameterValues};
 use ui::manager::ManagerPanel;
 use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
@@ -215,10 +215,9 @@ impl App {
             },
 
             Message::ParameterChange(param, value) => {
+                let last_value = self.params.get_value(param);
                 match param {
                     Parameter::Sound(param) => {
-                        let last_value = self.params.sound.get_value(param);
-
                         if value != last_value {
                             self.params.sound.insert(param, value);
                             if self.device_connected.is_some() {
@@ -233,8 +232,6 @@ impl App {
                         }
                     }
                     Parameter::Multi(param) => {
-                        let last_value = self.params.multi.get_value(param);
-
                         if value != last_value {
                             self.params.multi.insert(param, value);
                             if self.device_connected.is_some() {

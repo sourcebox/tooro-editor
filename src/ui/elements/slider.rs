@@ -8,11 +8,16 @@ use iced::{
 use super::super::widgets::slider::Slider;
 
 use crate::messages::Message;
-use crate::params::Parameter;
+use crate::params::{Parameter, ParameterValues};
 use crate::style;
 
 /// Returns a slider for a parameter.
-pub fn slider_with_labels(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
+pub fn slider_with_labels<'a>(
+    label: &'a str,
+    param: Parameter,
+    values: &'a ParameterValues,
+) -> Container<'a, Message> {
+    let value = values.get_value(param);
     let range = param.get_range();
     let slider = Slider::new(range, value, move |v| Message::ParameterChange(param, v))
         .default(param.get_default())

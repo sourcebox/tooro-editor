@@ -17,18 +17,18 @@ impl ModSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(row![
             column![
                 mod_target_list(
                     "MD Target",
                     Parameter::Sound(SoundParameter::ModModwheelTarget),
-                    params.get_value(Parameter::Sound(SoundParameter::ModModwheelTarget)),
+                    values
                 ),
                 slider_with_labels(
                     "MD Amt",
                     Parameter::Sound(SoundParameter::ModModwheelAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModModwheelAmount)),
+                    values
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))
@@ -38,12 +38,12 @@ impl ModSection {
                 mod_target_list(
                     "PI Target",
                     Parameter::Sound(SoundParameter::ModPitchTarget),
-                    params.get_value(Parameter::Sound(SoundParameter::ModPitchTarget)),
+                    values
                 ),
                 slider_with_labels(
                     "PI Amt",
                     Parameter::Sound(SoundParameter::ModPitchAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModPitchAmount)),
+                    values
                 )
             ]
             .padding(style::SECTION_PADDING)
@@ -53,12 +53,12 @@ impl ModSection {
                 mod_target_list(
                     "VL Target",
                     Parameter::Sound(SoundParameter::ModVelocityTarget),
-                    params.get_value(Parameter::Sound(SoundParameter::ModVelocityTarget)),
+                    values
                 ),
                 slider_with_labels(
                     "VL Amt",
                     Parameter::Sound(SoundParameter::ModVelocityAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModVelocityAmount)),
+                    values
                 )
             ]
             .padding(style::SECTION_PADDING)
@@ -68,12 +68,12 @@ impl ModSection {
                 mod_target_list(
                     "AF Target",
                     Parameter::Sound(SoundParameter::ModAftertouchTarget),
-                    params.get_value(Parameter::Sound(SoundParameter::ModAftertouchTarget)),
+                    values
                 ),
                 slider_with_labels(
                     "AF Amt",
                     Parameter::Sound(SoundParameter::ModAftertouchAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModAftertouchAmount)),
+                    values
                 )
             ]
             .padding(style::SECTION_PADDING)

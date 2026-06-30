@@ -17,39 +17,39 @@ impl FilterSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Filter").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Cutoff",
                     Parameter::Sound(SoundParameter::FilterCutoff),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterCutoff)),
+                    values
                 ),
                 slider_with_labels(
                     "Resonance",
                     Parameter::Sound(SoundParameter::FilterResonance),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterResonance)),
+                    values
                 ),
                 slider_with_labels(
                     "Env F Amt",
                     Parameter::Sound(SoundParameter::FilterEnvFAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterEnvFAmount)),
+                    values
                 ),
                 slider_with_labels(
                     "Track",
                     Parameter::Sound(SoundParameter::FilterTrack),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterTrack)),
+                    values
                 ),
                 slider_with_labels(
                     "After",
                     Parameter::Sound(SoundParameter::FilterAfter),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterAfter)),
+                    values
                 ),
                 slider_with_labels(
                     "LFO 1 Amt",
                     Parameter::Sound(SoundParameter::FilterLFO1Amount),
-                    params.get_value(Parameter::Sound(SoundParameter::FilterLFO1Amount)),
+                    values
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

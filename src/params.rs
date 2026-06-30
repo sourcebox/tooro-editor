@@ -282,7 +282,7 @@ impl MultiParameter {
     }
 }
 
-/// Sets of all parameter values.
+/// Set of all parameter values.
 pub struct ParameterValues {
     /// Sound (preset) parameter values
     pub sound: HashMap<SoundParameter, i32>,
@@ -306,27 +306,5 @@ impl ParameterValues {
             Parameter::Sound(param) => *self.sound.get(&param).unwrap_or(&param.get_default()),
             Parameter::Multi(param) => *self.multi.get(&param).unwrap_or(&param.get_default()),
         }
-    }
-}
-
-/// Trait for returning the current value of a parameter.
-pub trait GetValue<T> {
-    /// Return the value of the requested parameter
-    fn get_value(&self, param: T) -> i32;
-}
-
-/// GetValue trait implementation for preset parameters.
-impl GetValue<SoundParameter> for HashMap<SoundParameter, i32> {
-    /// Return the value of the requested preset parameter
-    fn get_value(&self, param: SoundParameter) -> i32 {
-        *self.get(&param).unwrap_or(&param.get_default())
-    }
-}
-
-/// GetValue trait implementation for multi parameters.
-impl GetValue<MultiParameter> for HashMap<MultiParameter, i32> {
-    /// Return the value of the requested multi parameter
-    fn get_value(&self, param: MultiParameter) -> i32 {
-        *self.get(&param).unwrap_or(&param.get_default())
     }
 }

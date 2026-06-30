@@ -20,30 +20,18 @@ impl ArpSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Arp").size(style::SECTION_LABEL_TEXT_SIZE),
-                arp_mode_list(
-                    "Mode",
-                    Parameter::Sound(SoundParameter::ArpMode),
-                    params.get_value(Parameter::Sound(SoundParameter::ArpMode)),
-                ),
-                arp_grid_list(
-                    "Grid",
-                    Parameter::Sound(SoundParameter::ArpGrid),
-                    params.get_value(Parameter::Sound(SoundParameter::ArpGrid)),
-                ),
-                slider_with_labels(
-                    "Tempo",
-                    Parameter::Sound(SoundParameter::ArpTempo),
-                    params.get_value(Parameter::Sound(SoundParameter::ArpTempo)),
-                ),
+                arp_mode_list("Mode", Parameter::Sound(SoundParameter::ArpMode), values),
+                arp_grid_list("Grid", Parameter::Sound(SoundParameter::ArpGrid), values),
+                slider_with_labels("Tempo", Parameter::Sound(SoundParameter::ArpTempo), values),
                 checkbox_with_labels(
                     "",
                     "Hold",
                     Parameter::Sound(SoundParameter::ArpHold),
-                    params.get_value(Parameter::Sound(SoundParameter::ArpHold)),
+                    values
                 )
             ]
             .height(Length::Fill)

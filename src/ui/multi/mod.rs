@@ -28,12 +28,12 @@ impl MultiPanel {
         }
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
-                self.midi_section.view(params),
-                self.mixer_section.view(params),
-                self.fx_section.view(params)
+                self.midi_section.view(values),
+                self.mixer_section.view(values),
+                self.fx_section.view(values)
             ]
             .spacing(10),
         )

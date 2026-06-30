@@ -6,11 +6,15 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::Parameter;
+use crate::params::{Parameter, ParameterValues};
 use crate::style;
 
-pub fn shaper_mode_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
-    let value = match value {
+pub fn shaper_mode_list<'a>(
+    label: &'a str,
+    param: Parameter,
+    values: &'a ParameterValues,
+) -> Container<'a, Message> {
+    let value = match values.get_value(param) {
         0 => Some(ShaperMode::Lowpass),
         1 => Some(ShaperMode::Bandpass),
         2 => Some(ShaperMode::Highpass),

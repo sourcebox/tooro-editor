@@ -6,11 +6,15 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::Parameter;
+use crate::params::{Parameter, ParameterValues};
 use crate::style;
 
-pub fn env_trigger_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
-    let value = match value {
+pub fn env_trigger_list<'a>(
+    label: &'a str,
+    param: Parameter,
+    values: &'a ParameterValues,
+) -> Container<'a, Message> {
+    let value = match values.get_value(param) {
         0 => Some(EnvTrigger::Always),
         1 => Some(EnvTrigger::Never),
         2 => Some(EnvTrigger::Continue),

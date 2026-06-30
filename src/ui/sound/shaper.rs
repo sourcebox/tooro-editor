@@ -17,39 +17,35 @@ impl ShaperSection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Shaper").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Cutoff",
                     Parameter::Sound(SoundParameter::ShaperCutoff),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperCutoff)),
+                    values
                 ),
                 slider_with_labels(
                     "Resonance",
                     Parameter::Sound(SoundParameter::ShaperResonance),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperResonance)),
+                    values
                 ),
                 slider_with_labels(
                     "Env A Amt",
                     Parameter::Sound(SoundParameter::ShaperEnvAAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperEnvAAmount)),
+                    values
                 ),
                 slider_with_labels(
                     "Track",
                     Parameter::Sound(SoundParameter::ShaperTrack),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperTrack)),
+                    values
                 ),
-                shaper_mode_list(
-                    "Mode",
-                    Parameter::Sound(SoundParameter::ShaperMode),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperMode)),
-                ),
+                shaper_mode_list("Mode", Parameter::Sound(SoundParameter::ShaperMode), values),
                 slider_with_labels(
                     "LFO 2 Amt",
                     Parameter::Sound(SoundParameter::ShaperLFO2Amount),
-                    params.get_value(Parameter::Sound(SoundParameter::ShaperLFO2Amount)),
+                    values
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

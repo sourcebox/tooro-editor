@@ -20,60 +20,44 @@ impl EnvASection {
         Self {}
     }
 
-    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
+    pub fn view<'a>(&'a self, values: &'a ParameterValues) -> Element<'a, Message> {
         container(
             column![
                 text("Env A").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Attack",
                     Parameter::Sound(SoundParameter::EnvAAttack),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvAAttack)),
+                    values
                 ),
-                slider_with_labels(
-                    "Hold",
-                    Parameter::Sound(SoundParameter::EnvAHold),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvAHold)),
-                ),
-                slider_with_labels(
-                    "Decay",
-                    Parameter::Sound(SoundParameter::EnvADecay),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvADecay)),
-                ),
+                slider_with_labels("Hold", Parameter::Sound(SoundParameter::EnvAHold), values),
+                slider_with_labels("Decay", Parameter::Sound(SoundParameter::EnvADecay), values),
                 slider_with_labels(
                     "Sustain",
                     Parameter::Sound(SoundParameter::EnvASustain),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvASustain)),
+                    values
                 ),
                 slider_with_labels(
                     "Release",
                     Parameter::Sound(SoundParameter::EnvARelease),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvARelease)),
+                    values
                 ),
-                slider_with_labels(
-                    "Velo",
-                    Parameter::Sound(SoundParameter::EnvAVelo),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvAVelo)),
-                ),
-                slider_with_labels(
-                    "After",
-                    Parameter::Sound(SoundParameter::EnvAAfter),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvAAfter)),
-                ),
+                slider_with_labels("Velo", Parameter::Sound(SoundParameter::EnvAVelo), values),
+                slider_with_labels("After", Parameter::Sound(SoundParameter::EnvAAfter), values),
                 env_trigger_list(
                     "Trigger",
                     Parameter::Sound(SoundParameter::EnvATrigger),
-                    params.get_value(Parameter::Sound(SoundParameter::EnvATrigger)),
+                    values
                 ),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
                     "Target",
                     Parameter::Sound(SoundParameter::ModEnvATarget),
-                    params.get_value(Parameter::Sound(SoundParameter::ModEnvATarget)),
+                    values
                 ),
                 slider_with_labels(
                     "Mod Amt",
                     Parameter::Sound(SoundParameter::ModEnvAAmount),
-                    params.get_value(Parameter::Sound(SoundParameter::ModEnvAAmount)),
+                    values
                 )
             ]
             .height(Length::Fill)
