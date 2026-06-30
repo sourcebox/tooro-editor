@@ -2850,7 +2850,7 @@ dependencies = [
 
 [[package]]
 name = "tooro-editor"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "directories-next",
  "iced",
