@@ -25,7 +25,7 @@ use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
 use messages::Message;
 use midi::MidiConnector;
-use params::{GetValue, MultiParameterValues, SoundParameterValues};
+use params::{GetValue, MultiParameterValues, Parameter, SoundParameterValues};
 use ui::manager::ManagerPanel;
 use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
@@ -218,29 +218,35 @@ impl App {
                 _ => {}
             },
 
-            Message::SoundParameterChange(param, value) => {
-                let last_value = self.sound_params.get_value(param);
+            Message::ParameterChange(param, value) => {
+                match param {
+                    Parameter::Sound(param) => {
+                        let last_value = self.sound_params.get_value(param);
 
-                if value != last_value {
-                    self.sound_params.insert(param, value);
-                    if self.device_connected.is_some() {
-                        let message =
-                            midi::sysex::preset_param_dump(0x70 + self.part_id, &param, value);
-                        // log::debug!("Sending preset parameter dump {:?}", message);
-                        self.midi.send(&message);
+                        if value != last_value {
+                            self.sound_params.insert(param, value);
+                            if self.device_connected.is_some() {
+                                let message = midi::sysex::preset_param_dump(
+                                    0x70 + self.part_id,
+                                    &param,
+                                    value,
+                                );
+                                // log::debug!("Sending preset parameter dump {:?}", message);
+                                self.midi.send(&message);
+                            }
+                        }
                     }
-                }
-            }
+                    Parameter::Multi(param) => {
+                        let last_value = self.multi_params.get_value(param);
 
-            Message::MultiParameterChange(param, value) => {
-                let last_value = self.multi_params.get_value(param);
-
-                if value != last_value {
-                    self.multi_params.insert(param, value);
-                    if self.device_connected.is_some() {
-                        let message = midi::sysex::multi_param_dump(&param, value);
-                        // log::debug!("Sending multi parameter dump {:?}", message);
-                        self.midi.send(&message);
+                        if value != last_value {
+                            self.multi_params.insert(param, value);
+                            if self.device_connected.is_some() {
+                                let message = midi::sysex::multi_param_dump(&param, value);
+                                // log::debug!("Sending multi parameter dump {:?}", message);
+                                self.midi.send(&message);
+                            }
+                        }
                     }
                 }
             }

@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{mod_target_list::mod_target_list, slider::slider_with_labels};
 use crate::ui::style;
 
@@ -22,12 +22,12 @@ impl ModSection {
             column![
                 mod_target_list(
                     "MD Target",
-                    SoundParameter::ModModwheelTarget,
+                    Parameter::Sound(SoundParameter::ModModwheelTarget),
                     params.get_value(SoundParameter::ModModwheelTarget),
                 ),
                 slider_with_labels(
                     "MD Amt",
-                    SoundParameter::ModModwheelAmount,
+                    Parameter::Sound(SoundParameter::ModModwheelAmount),
                     params.get_value(SoundParameter::ModModwheelAmount),
                 )
             ]
@@ -37,12 +37,12 @@ impl ModSection {
             column![
                 mod_target_list(
                     "PI Target",
-                    SoundParameter::ModPitchTarget,
+                    Parameter::Sound(SoundParameter::ModPitchTarget),
                     params.get_value(SoundParameter::ModPitchTarget),
                 ),
                 slider_with_labels(
                     "PI Amt",
-                    SoundParameter::ModPitchAmount,
+                    Parameter::Sound(SoundParameter::ModPitchAmount),
                     params.get_value(SoundParameter::ModPitchAmount),
                 )
             ]
@@ -52,12 +52,12 @@ impl ModSection {
             column![
                 mod_target_list(
                     "VL Target",
-                    SoundParameter::ModVelocityTarget,
+                    Parameter::Sound(SoundParameter::ModVelocityTarget),
                     params.get_value(SoundParameter::ModVelocityTarget),
                 ),
                 slider_with_labels(
                     "VL Amt",
-                    SoundParameter::ModVelocityAmount,
+                    Parameter::Sound(SoundParameter::ModVelocityAmount),
                     params.get_value(SoundParameter::ModVelocityAmount),
                 )
             ]
@@ -67,12 +67,12 @@ impl ModSection {
             column![
                 mod_target_list(
                     "AF Target",
-                    SoundParameter::ModAftertouchTarget,
+                    Parameter::Sound(SoundParameter::ModAftertouchTarget),
                     params.get_value(SoundParameter::ModAftertouchTarget),
                 ),
                 slider_with_labels(
                     "AF Amt",
-                    SoundParameter::ModAftertouchAmount,
+                    Parameter::Sound(SoundParameter::ModAftertouchAmount),
                     params.get_value(SoundParameter::ModAftertouchAmount),
                 )
             ]

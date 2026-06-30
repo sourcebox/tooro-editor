@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::slider::slider_with_labels;
 use crate::ui::style;
 
@@ -23,12 +23,12 @@ impl ExtraSection {
                 text("Extra").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Noise",
-                    SoundParameter::ExtraNoise,
+                    Parameter::Sound(SoundParameter::ExtraNoise),
                     params.get_value(SoundParameter::ExtraNoise),
                 ),
                 slider_with_labels(
                     "O1xO2",
-                    SoundParameter::ExtraRingMod,
+                    Parameter::Sound(SoundParameter::ExtraRingMod),
                     params.get_value(SoundParameter::ExtraRingMod),
                 )
             ]

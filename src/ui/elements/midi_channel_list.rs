@@ -6,14 +6,10 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::MultiParameter;
+use crate::params::Parameter;
 use crate::style;
 
-pub fn midi_channel_list(
-    label: &str,
-    multi_param: MultiParameter,
-    value: i32,
-) -> Container<'_, Message> {
+pub fn midi_channel_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
     let value = match value {
         0 => Some(MidiChannel::Omni),
         1 => Some(MidiChannel::Channel1),
@@ -35,7 +31,7 @@ pub fn midi_channel_list(
         _ => None,
     };
     let pick_list = PickList::new(&MidiChannel::ALL[..], value, move |v| {
-        Message::MultiParameterChange(multi_param, v as i32)
+        Message::ParameterChange(param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
     .text_size(style::LIST_ITEM_TEXT_SIZE)

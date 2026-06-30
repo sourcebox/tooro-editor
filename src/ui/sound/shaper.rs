@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{shaper_mode_list::shaper_mode_list, slider::slider_with_labels};
 use crate::ui::style;
 
@@ -23,32 +23,32 @@ impl ShaperSection {
                 text("Shaper").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Cutoff",
-                    SoundParameter::ShaperCutoff,
+                    Parameter::Sound(SoundParameter::ShaperCutoff),
                     params.get_value(SoundParameter::ShaperCutoff),
                 ),
                 slider_with_labels(
                     "Resonance",
-                    SoundParameter::ShaperResonance,
+                    Parameter::Sound(SoundParameter::ShaperResonance),
                     params.get_value(SoundParameter::ShaperResonance),
                 ),
                 slider_with_labels(
                     "Env A Amt",
-                    SoundParameter::ShaperEnvAAmount,
+                    Parameter::Sound(SoundParameter::ShaperEnvAAmount),
                     params.get_value(SoundParameter::ShaperEnvAAmount),
                 ),
                 slider_with_labels(
                     "Track",
-                    SoundParameter::ShaperTrack,
+                    Parameter::Sound(SoundParameter::ShaperTrack),
                     params.get_value(SoundParameter::ShaperTrack),
                 ),
                 shaper_mode_list(
                     "Mode",
-                    SoundParameter::ShaperMode,
+                    Parameter::Sound(SoundParameter::ShaperMode),
                     params.get_value(SoundParameter::ShaperMode),
                 ),
                 slider_with_labels(
                     "LFO 2 Amt",
-                    SoundParameter::ShaperLFO2Amount,
+                    Parameter::Sound(SoundParameter::ShaperLFO2Amount),
                     params.get_value(SoundParameter::ShaperLFO2Amount),
                 )
             ]

@@ -1,9 +1,36 @@
-//! Definitions and methods for the preset and multi parameters
+//! Definitions and methods all parameters.
 
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
-/// Enum containing all preset parameters
+/// Wrapper for all parameters.
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+pub enum Parameter {
+    /// Sound parameter.
+    Sound(SoundParameter),
+
+    /// Multi parameter.
+    Multi(MultiParameter),
+}
+
+impl Parameter {
+    /// Returns the value range of the parameter.
+    pub fn get_range(&self) -> RangeInclusive<i32> {
+        match self {
+            Self::Sound(param) => param.get_range(),
+            Self::Multi(param) => param.get_range(),
+        }
+    }
+
+    pub fn get_default(&self) -> i32 {
+        match self {
+            Self::Sound(param) => param.get_default(),
+            Self::Multi(param) => param.get_default(),
+        }
+    }
+}
+
+/// Preset parameters.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum SoundParameter {
     // Osc 1
@@ -113,7 +140,7 @@ pub enum SoundParameter {
 }
 
 impl SoundParameter {
-    /// Return the value range of the parameter
+    /// Returns the value range of the parameter.
     pub fn get_range(&self) -> RangeInclusive<i32> {
         match self {
             // Default for bipolar
@@ -169,16 +196,16 @@ impl SoundParameter {
         }
     }
 
-    /// Return the default value for the parameter
+    /// Returns the default value for the parameter.
     pub fn get_default(&self) -> i32 {
         0
     }
 }
 
-/// Hashmap type for preset parameters
+/// Hashmap type for preset parameters.
 pub type SoundParameterValues = HashMap<SoundParameter, i32>;
 
-/// Enum containing all multi parameters
+/// Multi parameters.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum MultiParameter {
     // Preset IDs
@@ -215,7 +242,7 @@ pub enum MultiParameter {
 }
 
 impl MultiParameter {
-    /// Return the value range of the parameter
+    /// Returns the value range of the parameter.
     pub fn get_range(&self) -> RangeInclusive<i32> {
         match self {
             // Preset IDs
@@ -252,22 +279,22 @@ impl MultiParameter {
         }
     }
 
-    /// Return the default value for the parameter
+    /// Returns the default value for the parameter.
     pub fn get_default(&self) -> i32 {
         0
     }
 }
 
-/// Hashmap type for preset parameters
+/// Hashmap type for multi parameters.
 pub type MultiParameterValues = HashMap<MultiParameter, i32>;
 
-/// Trait for returning the current value of a parameter
+/// Trait for returning the current value of a parameter.
 pub trait GetValue<T> {
     /// Return the value of the requested parameter
     fn get_value(&self, param: T) -> i32;
 }
 
-/// GetValue trait implementation for preset parameters
+/// GetValue trait implementation for preset parameters.
 impl GetValue<SoundParameter> for SoundParameterValues {
     /// Return the value of the requested preset parameter
     fn get_value(&self, param: SoundParameter) -> i32 {
@@ -275,7 +302,7 @@ impl GetValue<SoundParameter> for SoundParameterValues {
     }
 }
 
-/// GetValue trait implementation for multi parameters
+/// GetValue trait implementation for multi parameters.
 impl GetValue<MultiParameter> for MultiParameterValues {
     /// Return the value of the requested multi parameter
     fn get_value(&self, param: MultiParameter) -> i32 {

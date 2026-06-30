@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{
     arp_grid_list::arp_grid_list, arp_mode_list::arp_mode_list, checkbox::checkbox_with_labels,
     slider::slider_with_labels,
@@ -26,23 +26,23 @@ impl ArpSection {
                 text("Arp").size(style::SECTION_LABEL_TEXT_SIZE),
                 arp_mode_list(
                     "Mode",
-                    SoundParameter::ArpMode,
+                    Parameter::Sound(SoundParameter::ArpMode),
                     params.get_value(SoundParameter::ArpMode),
                 ),
                 arp_grid_list(
                     "Grid",
-                    SoundParameter::ArpGrid,
+                    Parameter::Sound(SoundParameter::ArpGrid),
                     params.get_value(SoundParameter::ArpGrid),
                 ),
                 slider_with_labels(
                     "Tempo",
-                    SoundParameter::ArpTempo,
+                    Parameter::Sound(SoundParameter::ArpTempo),
                     params.get_value(SoundParameter::ArpTempo),
                 ),
                 checkbox_with_labels(
                     "",
                     "Hold",
-                    SoundParameter::ArpHold,
+                    Parameter::Sound(SoundParameter::ArpHold),
                     params.get_value(SoundParameter::ArpHold),
                 )
             ]

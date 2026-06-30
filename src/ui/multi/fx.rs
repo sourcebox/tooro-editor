@@ -6,8 +6,8 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, MultiParameter, MultiParameterValues};
-use crate::ui::elements::{fx_mode_list::fx_mode_list, slider::multi_slider_with_labels};
+use crate::params::{GetValue, MultiParameter, MultiParameterValues, Parameter};
+use crate::ui::elements::{fx_mode_list::fx_mode_list, slider::slider_with_labels};
 use crate::ui::style;
 
 pub struct FXSection;
@@ -23,32 +23,32 @@ impl FXSection {
                 text("FX").size(style::SECTION_LABEL_TEXT_SIZE),
                 fx_mode_list(
                     "Mode",
-                    MultiParameter::FXMode,
+                    Parameter::Multi(MultiParameter::FXMode),
                     params.get_value(MultiParameter::FXMode),
                 ),
-                multi_slider_with_labels(
+                slider_with_labels(
                     "Length",
-                    MultiParameter::FXLength,
+                    Parameter::Multi(MultiParameter::FXLength),
                     params.get_value(MultiParameter::FXLength),
                 ),
-                multi_slider_with_labels(
+                slider_with_labels(
                     "Feedback",
-                    MultiParameter::FXFeedback,
+                    Parameter::Multi(MultiParameter::FXFeedback),
                     params.get_value(MultiParameter::FXFeedback),
                 ),
-                multi_slider_with_labels(
+                slider_with_labels(
                     "Mix",
-                    MultiParameter::FXMix,
+                    Parameter::Multi(MultiParameter::FXMix),
                     params.get_value(MultiParameter::FXMix),
                 ),
-                multi_slider_with_labels(
+                slider_with_labels(
                     "Speed",
-                    MultiParameter::FXSpeed,
+                    Parameter::Multi(MultiParameter::FXSpeed),
                     params.get_value(MultiParameter::FXSpeed),
                 ),
-                multi_slider_with_labels(
+                slider_with_labels(
                     "Depth",
-                    MultiParameter::FXDepth,
+                    Parameter::Multi(MultiParameter::FXDepth),
                     params.get_value(MultiParameter::FXDepth),
                 )
             ]

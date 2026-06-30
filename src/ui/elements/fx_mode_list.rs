@@ -6,14 +6,10 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::MultiParameter;
+use crate::params::Parameter;
 use crate::style;
 
-pub fn fx_mode_list(
-    label: &str,
-    multi_param: MultiParameter,
-    value: i32,
-) -> Container<'_, Message> {
+pub fn fx_mode_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
     let value = match value {
         0 => Some(FXMode::Off),
         1 => Some(FXMode::MonoDelay),
@@ -22,7 +18,7 @@ pub fn fx_mode_list(
         _ => None,
     };
     let pick_list = PickList::new(&FXMode::ALL[..], value, move |v| {
-        Message::MultiParameterChange(multi_param, v as i32)
+        Message::ParameterChange(param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
     .text_size(style::LIST_ITEM_TEXT_SIZE)

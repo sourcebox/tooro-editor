@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{
     env_trigger_list::env_trigger_list, mod_target_list::mod_target_list,
     slider::slider_with_labels,
@@ -26,53 +26,53 @@ impl EnvASection {
                 text("Env A").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Attack",
-                    SoundParameter::EnvAAttack,
+                    Parameter::Sound(SoundParameter::EnvAAttack),
                     params.get_value(SoundParameter::EnvAAttack),
                 ),
                 slider_with_labels(
                     "Hold",
-                    SoundParameter::EnvAHold,
+                    Parameter::Sound(SoundParameter::EnvAHold),
                     params.get_value(SoundParameter::EnvAHold),
                 ),
                 slider_with_labels(
                     "Decay",
-                    SoundParameter::EnvADecay,
+                    Parameter::Sound(SoundParameter::EnvADecay),
                     params.get_value(SoundParameter::EnvADecay),
                 ),
                 slider_with_labels(
                     "Sustain",
-                    SoundParameter::EnvASustain,
+                    Parameter::Sound(SoundParameter::EnvASustain),
                     params.get_value(SoundParameter::EnvASustain),
                 ),
                 slider_with_labels(
                     "Release",
-                    SoundParameter::EnvARelease,
+                    Parameter::Sound(SoundParameter::EnvARelease),
                     params.get_value(SoundParameter::EnvARelease),
                 ),
                 slider_with_labels(
                     "Velo",
-                    SoundParameter::EnvAVelo,
+                    Parameter::Sound(SoundParameter::EnvAVelo),
                     params.get_value(SoundParameter::EnvAVelo),
                 ),
                 slider_with_labels(
                     "After",
-                    SoundParameter::EnvAAfter,
+                    Parameter::Sound(SoundParameter::EnvAAfter),
                     params.get_value(SoundParameter::EnvAAfter),
                 ),
                 env_trigger_list(
                     "Trigger",
-                    SoundParameter::EnvATrigger,
+                    Parameter::Sound(SoundParameter::EnvATrigger),
                     params.get_value(SoundParameter::EnvATrigger),
                 ),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
                     "Target",
-                    SoundParameter::ModEnvATarget,
+                    Parameter::Sound(SoundParameter::ModEnvATarget),
                     params.get_value(SoundParameter::ModEnvATarget),
                 ),
                 slider_with_labels(
                     "Mod Amt",
-                    SoundParameter::ModEnvAAmount,
+                    Parameter::Sound(SoundParameter::ModEnvAAmount),
                     params.get_value(SoundParameter::ModEnvAAmount),
                 )
             ]

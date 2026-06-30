@@ -6,14 +6,10 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::SoundParameter;
+use crate::params::Parameter;
 use crate::style;
 
-pub fn shaper_mode_list(
-    label: &str,
-    sound_param: SoundParameter,
-    value: i32,
-) -> Container<'_, Message> {
+pub fn shaper_mode_list(label: &str, param: Parameter, value: i32) -> Container<'_, Message> {
     let value = match value {
         0 => Some(ShaperMode::Lowpass),
         1 => Some(ShaperMode::Bandpass),
@@ -21,7 +17,7 @@ pub fn shaper_mode_list(
         _ => None,
     };
     let pick_list = PickList::new(&ShaperMode::ALL[..], value, move |v| {
-        Message::SoundParameterChange(sound_param, v as i32)
+        Message::ParameterChange(param, v as i32)
     })
     .style(|_, status| style::pick_list(status))
     .text_size(style::LIST_ITEM_TEXT_SIZE)

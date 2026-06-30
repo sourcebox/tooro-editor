@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{slider::slider_with_labels, wavetable_list::wavetable_list};
 use crate::ui::style;
 
@@ -23,42 +23,42 @@ impl Osc2Section {
                 text("Osc 2").size(style::SECTION_LABEL_TEXT_SIZE),
                 wavetable_list(
                     "Table",
-                    SoundParameter::Osc2Table,
+                    Parameter::Sound(SoundParameter::Osc2Table),
                     params.get_value(SoundParameter::Osc2Table),
                 ),
                 slider_with_labels(
                     "Wave",
-                    SoundParameter::Osc2Wave,
+                    Parameter::Sound(SoundParameter::Osc2Wave),
                     params.get_value(SoundParameter::Osc2Wave),
                 ),
                 slider_with_labels(
                     "Coarse",
-                    SoundParameter::Osc2Coarse,
+                    Parameter::Sound(SoundParameter::Osc2Coarse),
                     params.get_value(SoundParameter::Osc2Coarse),
                 ),
                 slider_with_labels(
                     "Fine",
-                    SoundParameter::Osc2Fine,
+                    Parameter::Sound(SoundParameter::Osc2Fine),
                     params.get_value(SoundParameter::Osc2Fine),
                 ),
                 slider_with_labels(
                     "FM Amt",
-                    SoundParameter::Osc2FMAmount,
+                    Parameter::Sound(SoundParameter::Osc2FMAmount),
                     params.get_value(SoundParameter::Osc2FMAmount),
                 ),
                 slider_with_labels(
                     "FM Rate",
-                    SoundParameter::Osc2FMRate,
+                    Parameter::Sound(SoundParameter::Osc2FMRate),
                     params.get_value(SoundParameter::Osc2FMRate),
                 ),
                 slider_with_labels(
                     "Sync",
-                    SoundParameter::Osc2Sync,
+                    Parameter::Sound(SoundParameter::Osc2Sync),
                     params.get_value(SoundParameter::Osc2Sync),
                 ),
                 slider_with_labels(
                     "Level",
-                    SoundParameter::Osc2Level,
+                    Parameter::Sound(SoundParameter::Osc2Level),
                     params.get_value(SoundParameter::Osc2Level),
                 )
             ]

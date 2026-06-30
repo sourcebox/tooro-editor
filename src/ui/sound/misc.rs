@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{checkbox::checkbox_with_labels, slider::slider_with_labels};
 use crate::ui::style;
 
@@ -23,18 +23,18 @@ impl MiscSection {
                 text("Misc").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Bend Amt",
-                    SoundParameter::BendRange,
+                    Parameter::Sound(SoundParameter::BendRange),
                     params.get_value(SoundParameter::BendRange),
                 ),
                 slider_with_labels(
                     "Tune",
-                    SoundParameter::Tune,
+                    Parameter::Sound(SoundParameter::Tune),
                     params.get_value(SoundParameter::Tune),
                 ),
                 checkbox_with_labels(
                     "",
                     "Poly",
-                    SoundParameter::PolyMode,
+                    Parameter::Sound(SoundParameter::PolyMode),
                     params.get_value(SoundParameter::PolyMode),
                 )
             ]

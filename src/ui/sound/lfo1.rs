@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::{
     lfo_phase_list::lfo_phase_list, lfo_shape_list::lfo_shape_list,
     mod_target_list::mod_target_list, slider::slider_with_labels,
@@ -26,33 +26,33 @@ impl LFO1Section {
                 text("LFO 1").size(style::SECTION_LABEL_TEXT_SIZE),
                 lfo_shape_list(
                     "Shape",
-                    SoundParameter::LFO1Shape,
+                    Parameter::Sound(SoundParameter::LFO1Shape),
                     params.get_value(SoundParameter::LFO1Shape),
                 ),
                 slider_with_labels(
                     "Speed",
-                    SoundParameter::LFO1Speed,
+                    Parameter::Sound(SoundParameter::LFO1Speed),
                     params.get_value(SoundParameter::LFO1Speed),
                 ),
                 slider_with_labels(
                     "Rise",
-                    SoundParameter::LFO1Rise,
+                    Parameter::Sound(SoundParameter::LFO1Rise),
                     params.get_value(SoundParameter::LFO1Rise),
                 ),
                 lfo_phase_list(
                     "Phase",
-                    SoundParameter::LFO1Phase,
+                    Parameter::Sound(SoundParameter::LFO1Phase),
                     params.get_value(SoundParameter::LFO1Phase),
                 ),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
                     "Target",
-                    SoundParameter::ModLFO1Target,
+                    Parameter::Sound(SoundParameter::ModLFO1Target),
                     params.get_value(SoundParameter::ModLFO1Target),
                 ),
                 slider_with_labels(
                     "Mod Amt",
-                    SoundParameter::ModLFO1Amount,
+                    Parameter::Sound(SoundParameter::ModLFO1Amount),
                     params.get_value(SoundParameter::ModLFO1Amount),
                 )
             ]

@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, SoundParameter, SoundParameterValues};
+use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
 use crate::ui::elements::slider::slider_with_labels;
 use crate::ui::style;
 
@@ -23,12 +23,12 @@ impl AmpSection {
                 text("Amp").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Level",
-                    SoundParameter::AmpLevel,
+                    Parameter::Sound(SoundParameter::AmpLevel),
                     params.get_value(SoundParameter::AmpLevel),
                 ),
                 slider_with_labels(
                     "Pan",
-                    SoundParameter::AmpPan,
+                    Parameter::Sound(SoundParameter::AmpPan),
                     params.get_value(SoundParameter::AmpPan),
                 )
             ]
