@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
+use crate::params::{Parameter, ParameterValues, SoundParameter};
 use crate::ui::elements::{
     lfo_phase_list::lfo_phase_list, lfo_shape_list::lfo_shape_list,
     mod_target_list::mod_target_list, slider::slider_with_labels,
@@ -20,40 +20,40 @@ impl LFO2Section {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         container(
             column![
                 text("LFO 2").size(style::SECTION_LABEL_TEXT_SIZE),
                 lfo_shape_list(
                     "Shape",
                     Parameter::Sound(SoundParameter::LFO2Shape),
-                    params.get_value(SoundParameter::LFO2Shape),
+                    params.get_value(Parameter::Sound(SoundParameter::LFO2Shape)),
                 ),
                 slider_with_labels(
                     "Speed",
                     Parameter::Sound(SoundParameter::LFO2Speed),
-                    params.get_value(SoundParameter::LFO2Speed),
+                    params.get_value(Parameter::Sound(SoundParameter::LFO2Speed)),
                 ),
                 slider_with_labels(
                     "Rise",
                     Parameter::Sound(SoundParameter::LFO2Rise),
-                    params.get_value(SoundParameter::LFO2Rise),
+                    params.get_value(Parameter::Sound(SoundParameter::LFO2Rise)),
                 ),
                 lfo_phase_list(
                     "Phase",
                     Parameter::Sound(SoundParameter::LFO2Phase),
-                    params.get_value(SoundParameter::LFO2Phase),
+                    params.get_value(Parameter::Sound(SoundParameter::LFO2Phase)),
                 ),
                 rule::horizontal(1).style(|_| style::rule()),
                 mod_target_list(
                     "Target",
                     Parameter::Sound(SoundParameter::ModLFO2Target),
-                    params.get_value(SoundParameter::ModLFO2Target),
+                    params.get_value(Parameter::Sound(SoundParameter::ModLFO2Target)),
                 ),
                 slider_with_labels(
                     "Mod Amt",
                     Parameter::Sound(SoundParameter::ModLFO2Amount),
-                    params.get_value(SoundParameter::ModLFO2Amount),
+                    params.get_value(Parameter::Sound(SoundParameter::ModLFO2Amount)),
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

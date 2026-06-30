@@ -25,7 +25,7 @@ use tinyfiledialogs::{open_file_dialog, save_file_dialog_with_filter};
 
 use messages::Message;
 use midi::MidiConnector;
-use params::{GetValue, MultiParameterValues, Parameter, SoundParameterValues};
+use params::{GetValue, Parameter, ParameterValues};
 use ui::manager::ManagerPanel;
 use ui::multi::MultiPanel;
 use ui::sound::SoundPanel;
@@ -105,11 +105,8 @@ struct App {
     /// Current part id 0-3 for part 1-4
     part_id: u8,
 
-    /// Current sound (preset) parameter values
-    sound_params: SoundParameterValues,
-
-    /// Current multi parameter values
-    multi_params: MultiParameterValues,
+    /// Current parameter values.
+    params: ParameterValues,
 
     /// MIDI connection handler for all ports
     midi: MidiConnector,
@@ -150,8 +147,7 @@ impl App {
 
             part_id: 0,
 
-            sound_params: SoundParameterValues::with_capacity(128),
-            multi_params: MultiParameterValues::with_capacity(32),
+            params: ParameterValues::new(),
 
             midi: MidiConnector::new(),
             device_connected: None,
@@ -221,10 +217,10 @@ impl App {
             Message::ParameterChange(param, value) => {
                 match param {
                     Parameter::Sound(param) => {
-                        let last_value = self.sound_params.get_value(param);
+                        let last_value = self.params.sound.get_value(param);
 
                         if value != last_value {
-                            self.sound_params.insert(param, value);
+                            self.params.sound.insert(param, value);
                             if self.device_connected.is_some() {
                                 let message = midi::sysex::preset_param_dump(
                                     0x70 + self.part_id,
@@ -237,10 +233,10 @@ impl App {
                         }
                     }
                     Parameter::Multi(param) => {
-                        let last_value = self.multi_params.get_value(param);
+                        let last_value = self.params.multi.get_value(param);
 
                         if value != last_value {
-                            self.multi_params.insert(param, value);
+                            self.params.multi.insert(param, value);
                             if self.device_connected.is_some() {
                                 let message = midi::sysex::multi_param_dump(&param, value);
                                 // log::debug!("Sending multi parameter dump {:?}", message);
@@ -414,12 +410,11 @@ impl App {
         container(
             column![
                 row![
-                    container(self.sound_panel.view(&self.sound_params))
-                        .width(Length::FillPortion(4)),
+                    container(self.sound_panel.view(&self.params)).width(Length::FillPortion(4)),
                     column![
                         self.manager_panel
                             .view(self.part_id, self.device_connected.is_some()),
-                        self.multi_panel.view(&self.multi_params)
+                        self.multi_panel.view(&self.params)
                     ]
                     .spacing(10)
                     .width(Length::FillPortion(1)),
@@ -586,7 +581,7 @@ impl App {
             0..=99 => {}
             0x70..=0x73 if self.part_id == preset_id - 0x70 => {
                 let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
-                midi::sysex::update_sound_params(&mut self.sound_params, &param_values);
+                midi::sysex::update_sound_params(&mut self.params, &param_values);
                 if let Some(file) = &self.preset_capture_file {
                     log::debug!("Preset dump captured in file {}", file);
                     let mut message: Vec<u8> = message.to_vec();
@@ -613,7 +608,7 @@ impl App {
 
         if multi_id == 0x7F {
             let param_values = midi::sysex::unpack_data(&message[3..message.len()]);
-            midi::sysex::update_multi_params(&mut self.multi_params, &param_values);
+            midi::sysex::update_multi_params(&mut self.params, &param_values);
         }
 
         self.request_time = None;

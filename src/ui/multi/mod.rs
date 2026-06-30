@@ -8,7 +8,7 @@ use iced::widget::{column, container};
 use iced::{Element, Length};
 
 use crate::messages::Message;
-use crate::params::MultiParameterValues;
+use crate::params::ParameterValues;
 use fx::FXSection;
 use midi::MidiSection;
 use mixer::MixerSection;
@@ -28,7 +28,7 @@ impl MultiPanel {
         }
     }
 
-    pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         container(
             column![
                 self.midi_section.view(params),

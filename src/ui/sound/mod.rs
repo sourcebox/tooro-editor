@@ -18,7 +18,7 @@ use iced::widget::{column, container, row};
 use iced::{Element, Length};
 
 use crate::messages::Message;
-use crate::params::SoundParameterValues;
+use crate::params::ParameterValues;
 use {
     amp::AmpSection, arp::ArpSection, enva::EnvASection, envf::EnvFSection, extra::ExtraSection,
     filter::FilterSection, lfo1::LFO1Section, lfo2::LFO2Section, misc::MiscSection,
@@ -60,7 +60,7 @@ impl SoundPanel {
         }
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         let sound_col1 = column![
             self.osc1_section.view(params),
             self.lfo1_section.view(params),

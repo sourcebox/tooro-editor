@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
+use crate::params::{Parameter, ParameterValues, SoundParameter};
 use crate::ui::elements::{
     arp_grid_list::arp_grid_list, arp_mode_list::arp_mode_list, checkbox::checkbox_with_labels,
     slider::slider_with_labels,
@@ -20,30 +20,30 @@ impl ArpSection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         container(
             column![
                 text("Arp").size(style::SECTION_LABEL_TEXT_SIZE),
                 arp_mode_list(
                     "Mode",
                     Parameter::Sound(SoundParameter::ArpMode),
-                    params.get_value(SoundParameter::ArpMode),
+                    params.get_value(Parameter::Sound(SoundParameter::ArpMode)),
                 ),
                 arp_grid_list(
                     "Grid",
                     Parameter::Sound(SoundParameter::ArpGrid),
-                    params.get_value(SoundParameter::ArpGrid),
+                    params.get_value(Parameter::Sound(SoundParameter::ArpGrid)),
                 ),
                 slider_with_labels(
                     "Tempo",
                     Parameter::Sound(SoundParameter::ArpTempo),
-                    params.get_value(SoundParameter::ArpTempo),
+                    params.get_value(Parameter::Sound(SoundParameter::ArpTempo)),
                 ),
                 checkbox_with_labels(
                     "",
                     "Hold",
                     Parameter::Sound(SoundParameter::ArpHold),
-                    params.get_value(SoundParameter::ArpHold),
+                    params.get_value(Parameter::Sound(SoundParameter::ArpHold)),
                 )
             ]
             .height(Length::Fill)

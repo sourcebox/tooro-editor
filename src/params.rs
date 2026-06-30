@@ -202,9 +202,6 @@ impl SoundParameter {
     }
 }
 
-/// Hashmap type for preset parameters.
-pub type SoundParameterValues = HashMap<SoundParameter, i32>;
-
 /// Multi parameters.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum MultiParameter {
@@ -285,8 +282,32 @@ impl MultiParameter {
     }
 }
 
-/// Hashmap type for multi parameters.
-pub type MultiParameterValues = HashMap<MultiParameter, i32>;
+/// Sets of all parameter values.
+pub struct ParameterValues {
+    /// Sound (preset) parameter values
+    pub sound: HashMap<SoundParameter, i32>,
+
+    /// Multi parameter values
+    pub multi: HashMap<MultiParameter, i32>,
+}
+
+impl ParameterValues {
+    /// Returns a new initialized struct.
+    pub fn new() -> Self {
+        Self {
+            sound: HashMap::<SoundParameter, i32>::with_capacity(128),
+            multi: HashMap::<MultiParameter, i32>::with_capacity(32),
+        }
+    }
+
+    /// Returns the current value of a parameter.
+    pub fn get_value(&self, param: Parameter) -> i32 {
+        match param {
+            Parameter::Sound(param) => *self.sound.get(&param).unwrap_or(&param.get_default()),
+            Parameter::Multi(param) => *self.multi.get(&param).unwrap_or(&param.get_default()),
+        }
+    }
+}
 
 /// Trait for returning the current value of a parameter.
 pub trait GetValue<T> {
@@ -295,7 +316,7 @@ pub trait GetValue<T> {
 }
 
 /// GetValue trait implementation for preset parameters.
-impl GetValue<SoundParameter> for SoundParameterValues {
+impl GetValue<SoundParameter> for HashMap<SoundParameter, i32> {
     /// Return the value of the requested preset parameter
     fn get_value(&self, param: SoundParameter) -> i32 {
         *self.get(&param).unwrap_or(&param.get_default())
@@ -303,7 +324,7 @@ impl GetValue<SoundParameter> for SoundParameterValues {
 }
 
 /// GetValue trait implementation for multi parameters.
-impl GetValue<MultiParameter> for MultiParameterValues {
+impl GetValue<MultiParameter> for HashMap<MultiParameter, i32> {
     /// Return the value of the requested multi parameter
     fn get_value(&self, param: MultiParameter) -> i32 {
         *self.get(&param).unwrap_or(&param.get_default())

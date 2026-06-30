@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, MultiParameter, MultiParameterValues, Parameter};
+use crate::params::{MultiParameter, Parameter, ParameterValues};
 use crate::ui::elements::midi_channel_list::midi_channel_list;
 use crate::ui::style;
 
@@ -17,29 +17,29 @@ impl MidiSection {
         Self {}
     }
 
-    pub fn view(&self, params: &MultiParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         container(
             column![
                 text("MIDI").size(style::SECTION_LABEL_TEXT_SIZE),
                 midi_channel_list(
                     "Part 1 Ch",
                     Parameter::Multi(MultiParameter::ChannelPart1),
-                    params.get_value(MultiParameter::ChannelPart1),
+                    params.get_value(Parameter::Multi(MultiParameter::ChannelPart1)),
                 ),
                 midi_channel_list(
                     "Part 2 Ch",
                     Parameter::Multi(MultiParameter::ChannelPart2),
-                    params.get_value(MultiParameter::ChannelPart2),
+                    params.get_value(Parameter::Multi(MultiParameter::ChannelPart2)),
                 ),
                 midi_channel_list(
                     "Part 3 Ch",
                     Parameter::Multi(MultiParameter::ChannelPart3),
-                    params.get_value(MultiParameter::ChannelPart3),
+                    params.get_value(Parameter::Multi(MultiParameter::ChannelPart3)),
                 ),
                 midi_channel_list(
                     "Part 4 Ch",
                     Parameter::Multi(MultiParameter::ChannelPart4),
-                    params.get_value(MultiParameter::ChannelPart4),
+                    params.get_value(Parameter::Multi(MultiParameter::ChannelPart4)),
                 )
             ]
             .padding(Padding::from(style::SECTION_PADDING))

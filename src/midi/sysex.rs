@@ -2,9 +2,7 @@
 
 #![allow(dead_code)]
 
-use crate::params::{
-    GetValue, MultiParameter, MultiParameterValues, SoundParameter, SoundParameterValues,
-};
+use crate::params::{MultiParameter, Parameter, ParameterValues, SoundParameter};
 
 // Service ids
 pub const SERVICE_MULTI_REQUEST: u8 = 0x01;
@@ -225,52 +223,106 @@ pub fn multi_param_dump(param: &MultiParameter, value: i32) -> Vec<u8> {
 /// Return message for multi dump
 ///
 /// - `multi_id`   Multi id, either 0..9 or 0x7F
-pub fn multi_dump(multi_id: u8, params: &MultiParameterValues) -> Vec<u8> {
+pub fn multi_dump(multi_id: u8, params: &ParameterValues) -> Vec<u8> {
     let mut data = Vec::<u8>::new();
 
     // Preset IDs
-    push_param(&mut data, params.get_value(MultiParameter::PresetPart1));
-    push_param(&mut data, params.get_value(MultiParameter::PresetPart2));
-    push_param(&mut data, params.get_value(MultiParameter::PresetPart3));
-    push_param(&mut data, params.get_value(MultiParameter::PresetPart4));
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::PresetPart1)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::PresetPart2)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::PresetPart3)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::PresetPart4)),
+    );
 
     // MIDI channels
-    push_param(&mut data, params.get_value(MultiParameter::ChannelPart1));
-    push_param(&mut data, params.get_value(MultiParameter::ChannelPart2));
-    push_param(&mut data, params.get_value(MultiParameter::ChannelPart3));
-    push_param(&mut data, params.get_value(MultiParameter::ChannelPart4));
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::ChannelPart1)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::ChannelPart2)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::ChannelPart3)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::ChannelPart4)),
+    );
 
     // Volumes
-    push_param(&mut data, params.get_value(MultiParameter::VolumePart1) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::VolumePart2) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::VolumePart3) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::VolumePart4) * 4);
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::VolumePart1)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::VolumePart2)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::VolumePart3)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::VolumePart4)) * 4,
+    );
 
     // Balances
     push_param(
         &mut data,
-        params.get_value(MultiParameter::BalancePart1) * 4,
+        params.get_value(Parameter::Multi(MultiParameter::BalancePart1)) * 4,
     );
     push_param(
         &mut data,
-        params.get_value(MultiParameter::BalancePart2) * 4,
+        params.get_value(Parameter::Multi(MultiParameter::BalancePart2)) * 4,
     );
     push_param(
         &mut data,
-        params.get_value(MultiParameter::BalancePart3) * 4,
+        params.get_value(Parameter::Multi(MultiParameter::BalancePart3)) * 4,
     );
     push_param(
         &mut data,
-        params.get_value(MultiParameter::BalancePart4) * 4,
+        params.get_value(Parameter::Multi(MultiParameter::BalancePart4)) * 4,
     );
 
     // FX
-    push_param(&mut data, params.get_value(MultiParameter::FXLength) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::FXFeedback) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::FXMix) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::FXMode));
-    push_param(&mut data, params.get_value(MultiParameter::FXSpeed) * 4);
-    push_param(&mut data, params.get_value(MultiParameter::FXDepth) * 4);
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXLength)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXFeedback)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXMix)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXMode)),
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXSpeed)) * 4,
+    );
+    push_param(
+        &mut data,
+        params.get_value(Parameter::Multi(MultiParameter::FXDepth)) * 4,
+    );
 
     // Flags etc. and name
     data.append(&mut vec![0_u8; 4]);
@@ -343,260 +395,388 @@ pub fn unpack_data(data: &[u8]) -> Vec<u8> {
 ///
 /// - `params`  Parameter map to be updated
 /// - `values`  Raw values from unpacked sysex data
-pub fn update_sound_params(params: &mut SoundParameterValues, values: &[u8]) {
+pub fn update_sound_params(params: &mut ParameterValues, values: &[u8]) {
     // Osc 1
-    params.insert(SoundParameter::Osc1Wave, value_from_index(values, 0) / 4);
-    params.insert(SoundParameter::Osc1Coarse, value_from_index(values, 2));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::Osc1Wave, value_from_index(values, 0) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc1Coarse, value_from_index(values, 2));
+    params.sound.insert(
         SoundParameter::Osc1FMAmount,
         value_from_index(values, 4) / 4,
     );
-    params.insert(SoundParameter::Osc1Level, value_from_index(values, 6) / 4);
-    params.insert(SoundParameter::Osc1Table, value_from_index(values, 8));
-    params.insert(SoundParameter::Osc1Fine, value_from_index(values, 10));
-    params.insert(SoundParameter::Osc1FMRate, value_from_index(values, 12) / 4);
-    params.insert(SoundParameter::Osc1Sync, value_from_index(values, 14) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc1Level, value_from_index(values, 6) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc1Table, value_from_index(values, 8));
+    params
+        .sound
+        .insert(SoundParameter::Osc1Fine, value_from_index(values, 10));
+    params
+        .sound
+        .insert(SoundParameter::Osc1FMRate, value_from_index(values, 12) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc1Sync, value_from_index(values, 14) / 4);
 
     // Osc 2
-    params.insert(SoundParameter::Osc2Wave, value_from_index(values, 16) / 4);
-    params.insert(SoundParameter::Osc2Coarse, value_from_index(values, 18));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::Osc2Wave, value_from_index(values, 16) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc2Coarse, value_from_index(values, 18));
+    params.sound.insert(
         SoundParameter::Osc2FMAmount,
         value_from_index(values, 20) / 4,
     );
-    params.insert(SoundParameter::Osc2Level, value_from_index(values, 22) / 4);
-    params.insert(SoundParameter::Osc2Table, value_from_index(values, 24));
-    params.insert(SoundParameter::Osc2Fine, value_from_index(values, 26));
-    params.insert(SoundParameter::Osc2FMRate, value_from_index(values, 28) / 4);
-    params.insert(SoundParameter::Osc2Sync, value_from_index(values, 30) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc2Level, value_from_index(values, 22) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc2Table, value_from_index(values, 24));
+    params
+        .sound
+        .insert(SoundParameter::Osc2Fine, value_from_index(values, 26));
+    params
+        .sound
+        .insert(SoundParameter::Osc2FMRate, value_from_index(values, 28) / 4);
+    params
+        .sound
+        .insert(SoundParameter::Osc2Sync, value_from_index(values, 30) / 4);
 
     // Extra
-    params.insert(SoundParameter::ExtraNoise, value_from_index(values, 32) / 4);
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ExtraNoise, value_from_index(values, 32) / 4);
+    params.sound.insert(
         SoundParameter::ExtraRingMod,
         value_from_index(values, 34) / 4,
     );
 
     // Shaper
-    params.insert(
+    params.sound.insert(
         SoundParameter::ShaperCutoff,
         value_from_index(values, 36) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ShaperResonance,
         value_from_index(values, 38) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ShaperEnvAAmount,
         value_from_index(values, 40) / 4,
     );
-    params.insert(SoundParameter::ShaperTrack, value_from_index(values, 42));
-    params.insert(SoundParameter::ShaperMode, value_from_index(values, 44));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ShaperTrack, value_from_index(values, 42));
+    params
+        .sound
+        .insert(SoundParameter::ShaperMode, value_from_index(values, 44));
+    params.sound.insert(
         SoundParameter::ShaperLFO2Amount,
         value_from_index(values, 46) / 4,
     );
 
     // Filter
-    params.insert(
+    params.sound.insert(
         SoundParameter::FilterCutoff,
         value_from_index(values, 48) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::FilterResonance,
         value_from_index(values, 50) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::FilterEnvFAmount,
         value_from_index(values, 52) / 4,
     );
-    params.insert(SoundParameter::FilterTrack, value_from_index(values, 54));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::FilterTrack, value_from_index(values, 54));
+    params.sound.insert(
         SoundParameter::FilterAfter,
         value_from_index(values, 56) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::FilterLFO1Amount,
         value_from_index(values, 58) / 4,
     );
 
     // Env F
-    params.insert(SoundParameter::EnvFAttack, value_from_index(values, 60) / 4);
-    params.insert(SoundParameter::EnvFDecay, value_from_index(values, 62) / 4);
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::EnvFAttack, value_from_index(values, 60) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvFDecay, value_from_index(values, 62) / 4);
+    params.sound.insert(
         SoundParameter::EnvFSustain,
         value_from_index(values, 64) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::EnvFRelease,
         value_from_index(values, 66) / 4,
     );
-    params.insert(SoundParameter::EnvFVelo, value_from_index(values, 68) / 4);
-    params.insert(SoundParameter::EnvFHold, value_from_index(values, 70) / 4);
-    params.insert(SoundParameter::EnvFAfter, value_from_index(values, 72) / 4);
-    params.insert(SoundParameter::EnvFTrigger, value_from_index(values, 74));
+    params
+        .sound
+        .insert(SoundParameter::EnvFVelo, value_from_index(values, 68) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvFHold, value_from_index(values, 70) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvFAfter, value_from_index(values, 72) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvFTrigger, value_from_index(values, 74));
 
     // Env A
-    params.insert(SoundParameter::EnvAAttack, value_from_index(values, 76) / 4);
-    params.insert(SoundParameter::EnvADecay, value_from_index(values, 78) / 4);
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::EnvAAttack, value_from_index(values, 76) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvADecay, value_from_index(values, 78) / 4);
+    params.sound.insert(
         SoundParameter::EnvASustain,
         value_from_index(values, 80) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::EnvARelease,
         value_from_index(values, 82) / 4,
     );
-    params.insert(SoundParameter::EnvAVelo, value_from_index(values, 84) / 4);
-    params.insert(SoundParameter::EnvAHold, value_from_index(values, 86) / 4);
-    params.insert(SoundParameter::EnvAAfter, value_from_index(values, 88) / 4);
-    params.insert(SoundParameter::EnvATrigger, value_from_index(values, 90));
+    params
+        .sound
+        .insert(SoundParameter::EnvAVelo, value_from_index(values, 84) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvAHold, value_from_index(values, 86) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvAAfter, value_from_index(values, 88) / 4);
+    params
+        .sound
+        .insert(SoundParameter::EnvATrigger, value_from_index(values, 90));
 
     // LFO 1
-    params.insert(SoundParameter::LFO1Shape, value_from_index(values, 92));
-    params.insert(SoundParameter::LFO1Speed, value_from_index(values, 94) / 4);
-    params.insert(SoundParameter::LFO1Rise, value_from_index(values, 96) / 4);
-    params.insert(SoundParameter::LFO1Phase, value_from_index(values, 98));
+    params
+        .sound
+        .insert(SoundParameter::LFO1Shape, value_from_index(values, 92));
+    params
+        .sound
+        .insert(SoundParameter::LFO1Speed, value_from_index(values, 94) / 4);
+    params
+        .sound
+        .insert(SoundParameter::LFO1Rise, value_from_index(values, 96) / 4);
+    params
+        .sound
+        .insert(SoundParameter::LFO1Phase, value_from_index(values, 98));
 
     // LFO 2
-    params.insert(SoundParameter::LFO2Shape, value_from_index(values, 100));
-    params.insert(SoundParameter::LFO2Speed, value_from_index(values, 102) / 4);
-    params.insert(SoundParameter::LFO2Rise, value_from_index(values, 104) / 4);
-    params.insert(SoundParameter::LFO2Phase, value_from_index(values, 106));
+    params
+        .sound
+        .insert(SoundParameter::LFO2Shape, value_from_index(values, 100));
+    params
+        .sound
+        .insert(SoundParameter::LFO2Speed, value_from_index(values, 102) / 4);
+    params
+        .sound
+        .insert(SoundParameter::LFO2Rise, value_from_index(values, 104) / 4);
+    params
+        .sound
+        .insert(SoundParameter::LFO2Phase, value_from_index(values, 106));
 
     // Arpeggiator
-    params.insert(SoundParameter::ArpMode, value_from_index(values, 108));
-    params.insert(SoundParameter::ArpGrid, value_from_index(values, 110));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ArpMode, value_from_index(values, 108));
+    params
+        .sound
+        .insert(SoundParameter::ArpGrid, value_from_index(values, 110));
+    params.sound.insert(
         SoundParameter::ArpTempo,
         value_from_index(values, 112) / 4 + 1,
     );
-    params.insert(SoundParameter::ArpHold, value_from_index(values, 114));
+    params
+        .sound
+        .insert(SoundParameter::ArpHold, value_from_index(values, 114));
 
     // Amplifier
-    params.insert(SoundParameter::AmpLevel, value_from_index(values, 116) / 4);
-    params.insert(SoundParameter::AmpPan, value_from_index(values, 118) / 4);
+    params
+        .sound
+        .insert(SoundParameter::AmpLevel, value_from_index(values, 116) / 4);
+    params
+        .sound
+        .insert(SoundParameter::AmpPan, value_from_index(values, 118) / 4);
 
     // Modulations
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModEnvFAmount,
         value_from_index(values, 120) / 4,
     );
-    params.insert(SoundParameter::ModEnvFTarget, value_from_index(values, 122));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ModEnvFTarget, value_from_index(values, 122));
+    params.sound.insert(
         SoundParameter::ModEnvAAmount,
         value_from_index(values, 124) / 4,
     );
-    params.insert(SoundParameter::ModEnvATarget, value_from_index(values, 126));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ModEnvATarget, value_from_index(values, 126));
+    params.sound.insert(
         SoundParameter::ModLFO1Amount,
         value_from_index(values, 128) / 4,
     );
-    params.insert(SoundParameter::ModLFO1Target, value_from_index(values, 130));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ModLFO1Target, value_from_index(values, 130));
+    params.sound.insert(
         SoundParameter::ModLFO2Amount,
         value_from_index(values, 132) / 4,
     );
-    params.insert(SoundParameter::ModLFO2Target, value_from_index(values, 134));
-    params.insert(
+    params
+        .sound
+        .insert(SoundParameter::ModLFO2Target, value_from_index(values, 134));
+    params.sound.insert(
         SoundParameter::ModModwheelAmount,
         value_from_index(values, 136) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModModwheelTarget,
         value_from_index(values, 138),
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModPitchAmount,
         value_from_index(values, 140) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModPitchTarget,
         value_from_index(values, 142),
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModVelocityAmount,
         value_from_index(values, 144) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModVelocityTarget,
         value_from_index(values, 146),
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModAftertouchAmount,
         value_from_index(values, 148) / 4,
     );
-    params.insert(
+    params.sound.insert(
         SoundParameter::ModAftertouchTarget,
         value_from_index(values, 150),
     );
 
     // Misc
-    params.insert(SoundParameter::Tune, value_from_index(values, 168));
-    params.insert(SoundParameter::BendRange, value_from_index(values, 172));
-    params.insert(SoundParameter::PolyMode, value_from_index(values, 174));
+    params
+        .sound
+        .insert(SoundParameter::Tune, value_from_index(values, 168));
+    params
+        .sound
+        .insert(SoundParameter::BendRange, value_from_index(values, 172));
+    params
+        .sound
+        .insert(SoundParameter::PolyMode, value_from_index(values, 174));
 }
 
 /// Update all multi parameters according to sysex data
 ///
 /// - `params`  Parameter map to be updated
 /// - `values`  Raw values from unpacked sysex data
-pub fn update_multi_params(params: &mut MultiParameterValues, values: &[u8]) {
+pub fn update_multi_params(params: &mut ParameterValues, values: &[u8]) {
     // Preset IDs
-    params.insert(MultiParameter::PresetPart1, value_from_index(values, 0));
-    params.insert(MultiParameter::PresetPart2, value_from_index(values, 2));
-    params.insert(MultiParameter::PresetPart3, value_from_index(values, 4));
-    params.insert(MultiParameter::PresetPart4, value_from_index(values, 6));
+    params
+        .multi
+        .insert(MultiParameter::PresetPart1, value_from_index(values, 0));
+    params
+        .multi
+        .insert(MultiParameter::PresetPart2, value_from_index(values, 2));
+    params
+        .multi
+        .insert(MultiParameter::PresetPart3, value_from_index(values, 4));
+    params
+        .multi
+        .insert(MultiParameter::PresetPart4, value_from_index(values, 6));
 
     // MIDI channels
-    params.insert(MultiParameter::ChannelPart1, value_from_index(values, 8));
-    params.insert(MultiParameter::ChannelPart2, value_from_index(values, 10));
-    params.insert(MultiParameter::ChannelPart3, value_from_index(values, 12));
-    params.insert(MultiParameter::ChannelPart4, value_from_index(values, 14));
+    params
+        .multi
+        .insert(MultiParameter::ChannelPart1, value_from_index(values, 8));
+    params
+        .multi
+        .insert(MultiParameter::ChannelPart2, value_from_index(values, 10));
+    params
+        .multi
+        .insert(MultiParameter::ChannelPart3, value_from_index(values, 12));
+    params
+        .multi
+        .insert(MultiParameter::ChannelPart4, value_from_index(values, 14));
 
     // Volumes
-    params.insert(
+    params.multi.insert(
         MultiParameter::VolumePart1,
         value_from_index(values, 16) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::VolumePart2,
         value_from_index(values, 18) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::VolumePart3,
         value_from_index(values, 20) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::VolumePart4,
         value_from_index(values, 22) / 4,
     );
 
     // Balances
-    params.insert(
+    params.multi.insert(
         MultiParameter::BalancePart1,
         value_from_index(values, 24) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::BalancePart2,
         value_from_index(values, 26) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::BalancePart3,
         value_from_index(values, 28) / 4,
     );
-    params.insert(
+    params.multi.insert(
         MultiParameter::BalancePart4,
         value_from_index(values, 30) / 4,
     );
 
     // FX
-    params.insert(MultiParameter::FXLength, value_from_index(values, 32) / 4);
-    params.insert(MultiParameter::FXFeedback, value_from_index(values, 34) / 4);
-    params.insert(MultiParameter::FXMix, value_from_index(values, 36) / 4);
-    params.insert(MultiParameter::FXMode, value_from_index(values, 38));
-    params.insert(MultiParameter::FXSpeed, value_from_index(values, 40) / 4);
-    params.insert(MultiParameter::FXDepth, value_from_index(values, 40) / 4);
+    params
+        .multi
+        .insert(MultiParameter::FXLength, value_from_index(values, 32) / 4);
+    params
+        .multi
+        .insert(MultiParameter::FXFeedback, value_from_index(values, 34) / 4);
+    params
+        .multi
+        .insert(MultiParameter::FXMix, value_from_index(values, 36) / 4);
+    params
+        .multi
+        .insert(MultiParameter::FXMode, value_from_index(values, 38));
+    params
+        .multi
+        .insert(MultiParameter::FXSpeed, value_from_index(values, 40) / 4);
+    params
+        .multi
+        .insert(MultiParameter::FXDepth, value_from_index(values, 40) / 4);
 }
 
 /// Return parameter value as i32 from values vector addressed by index

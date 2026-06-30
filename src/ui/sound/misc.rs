@@ -6,7 +6,7 @@ use iced::{
 };
 
 use crate::messages::Message;
-use crate::params::{GetValue, Parameter, SoundParameter, SoundParameterValues};
+use crate::params::{Parameter, ParameterValues, SoundParameter};
 use crate::ui::elements::{checkbox::checkbox_with_labels, slider::slider_with_labels};
 use crate::ui::style;
 
@@ -17,25 +17,25 @@ impl MiscSection {
         Self {}
     }
 
-    pub fn view(&self, params: &SoundParameterValues) -> Element<'_, Message> {
+    pub fn view(&self, params: &ParameterValues) -> Element<'_, Message> {
         container(
             column![
                 text("Misc").size(style::SECTION_LABEL_TEXT_SIZE),
                 slider_with_labels(
                     "Bend Amt",
                     Parameter::Sound(SoundParameter::BendRange),
-                    params.get_value(SoundParameter::BendRange),
+                    params.get_value(Parameter::Sound(SoundParameter::BendRange)),
                 ),
                 slider_with_labels(
                     "Tune",
                     Parameter::Sound(SoundParameter::Tune),
-                    params.get_value(SoundParameter::Tune),
+                    params.get_value(Parameter::Sound(SoundParameter::Tune)),
                 ),
                 checkbox_with_labels(
                     "",
                     "Poly",
                     Parameter::Sound(SoundParameter::PolyMode),
-                    params.get_value(SoundParameter::PolyMode),
+                    params.get_value(Parameter::Sound(SoundParameter::PolyMode)),
                 )
             ]
             .height(Length::Fill)
