@@ -17,7 +17,7 @@ wayland = ["iced/wayland"]
 debug = ["iced/debug"]
 
 [dependencies]
-iced = { version = "0.14.0", default-features = false, features = ["advanced", "wgpu", "tokio"]}
+iced = { version = "0.14.0", default-features = false, features = ["advanced", "wgpu", "tokio", "image"]}
 midir = "0.11.0"
 log = { version="0.4.33", features = ["max_level_debug", "release_max_level_warn"] }
 simple_logger = "5.2.0"

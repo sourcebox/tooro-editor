@@ -2,18 +2,22 @@
 
 use iced::{
     Alignment, Element, Length,
-    widget::{Button, column, container, row, text},
+    widget::{Button, Image, column, container, image::Handle, row, text},
 };
 
 use super::style;
 use crate::messages::Message;
 use crate::ui::elements::part_list::part_list;
 
-pub struct ManagerPanel {}
+pub struct ManagerPanel {
+    logo: Handle,
+}
 
 impl ManagerPanel {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            logo: Handle::from_bytes(include_bytes!("../../../icons/icon_94x128.png").as_slice()),
+        }
     }
 
     pub fn view(&self, part_id: u8, device_connected: bool) -> Element<'_, Message> {
@@ -66,6 +70,14 @@ impl ManagerPanel {
         ]
         .spacing(10);
 
-        container(column![row1, row2].spacing(10)).into()
+        container(
+            row![
+                column![row1, row2].spacing(10),
+                Image::new(self.logo.clone()).height(48)
+            ]
+            .spacing(5)
+            .align_y(Alignment::Center),
+        )
+        .into()
     }
 }
