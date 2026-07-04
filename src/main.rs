@@ -39,7 +39,8 @@ const APP_NAME: &str = env!("CARGO_PKG_NAME");
 /// The main entry point.
 fn main() -> iced::Result {
     SimpleLogger::new()
-        .with_level(log::LevelFilter::Debug)
+        .with_level(log::LevelFilter::Info)
+        .with_module_level(env!("CARGO_CRATE_NAME"), log::LevelFilter::Debug)
         .init()
         .unwrap();
 
@@ -488,7 +489,7 @@ impl App {
         if let Some(proj_dirs) = directories_next::ProjectDirs::from("", "", APP_NAME) {
             let config_dir = proj_dirs.config_dir().to_path_buf();
             let config_file_path = config_dir.join("config.ron");
-            log::info!(
+            log::debug!(
                 "Loading persistent data from {}",
                 config_file_path.display()
             );
@@ -506,7 +507,7 @@ impl App {
             let config_dir = proj_dirs.config_dir().to_path_buf();
             if let Ok(()) = std::fs::create_dir_all(&config_dir) {
                 let config_file_path = config_dir.join("config.ron");
-                log::info!("Saving persistent data to {}", config_file_path.display());
+                log::debug!("Saving persistent data to {}", config_file_path.display());
                 if let Ok(mut config_file) = std::fs::File::create(config_file_path) {
                     let s = ron::ser::to_string(&self.settings).unwrap_or_default();
                     config_file.write_all(s.as_bytes()).ok();
