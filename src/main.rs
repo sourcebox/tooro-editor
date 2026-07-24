@@ -112,8 +112,8 @@ struct App {
     /// MIDI connection handler for all ports
     midi: MidiConnector,
 
-    /// Device connection timestamp.
-    device_connected: Option<Instant>,
+    /// Device connection state.
+    device_connected: bool,
 
     /// Flag for requested sound (preset) parameter update from device
     request_sound_update: bool,
@@ -126,9 +126,6 @@ struct App {
 
     /// File to capture next received preset dump
     preset_capture_file: Option<String>,
-
-    /// Flag for app initialisation complete
-    init_complete: bool,
 }
 
 impl App {
@@ -141,7 +138,7 @@ impl App {
             multi_panel: MultiPanel::new(),
             manager_panel: ManagerPanel::new(),
 
-            status_connection: String::from("Device disconnected"),
+            status_connection: String::new(),
             status_communication: String::from("Initializing..."),
 
             merge_input_sender: None,
@@ -151,21 +148,32 @@ impl App {
             params: ParameterValues::new(),
 
             midi: MidiConnector::new(),
-            device_connected: None,
+            device_connected: false,
 
             request_sound_update: false,
             request_multi_update: false,
             request_time: None,
 
             preset_capture_file: None,
-
-            init_complete: false,
         };
 
         app.load_settings();
 
-        // If the merge input is not present at startup, clear the stored setting.
         app.midi.scan_ports();
+
+        // Get the initial connection state and request the dumps immediately if
+        // the device is already available.
+        app.device_connected = app.midi.is_connected();
+        if app.device_connected {
+            app.status_connection = String::from("Device connected");
+            app.request_sound_update = true;
+            app.request_multi_update = true;
+        } else {
+            app.status_connection = String::from("Device disconnected");
+            app.status_communication = String::from("Communication disabled");
+        }
+
+        // If the merge input is not present at startup, clear the stored setting.
         if !app
             .midi
             .get_merge_inputs()
@@ -221,7 +229,7 @@ impl App {
                     Parameter::Sound(param) => {
                         if value != last_value {
                             self.params.sound.insert(param, value);
-                            if self.device_connected.is_some() {
+                            if self.device_connected {
                                 let message = midi::sysex::preset_param_dump(
                                     0x70 + self.part_id,
                                     &param,
@@ -235,7 +243,7 @@ impl App {
                     Parameter::Multi(param) => {
                         if value != last_value {
                             self.params.multi.insert(param, value);
-                            if self.device_connected.is_some() {
+                            if self.device_connected {
                                 let message = midi::sysex::multi_param_dump(&param, value);
                                 // log::debug!("Sending multi parameter dump {:?}", message);
                                 self.midi.send(&message);
@@ -258,12 +266,12 @@ impl App {
                 }
             }
 
-            Message::UpdateFromDevice if self.device_connected.is_some() => {
+            Message::UpdateFromDevice if self.device_connected => {
                 self.request_sound_update = true;
                 self.request_multi_update = true;
             }
 
-            Message::LoadSysexFile if self.device_connected.is_some() => {
+            Message::LoadSysexFile if self.device_connected => {
                 if let Some(file) =
                     open_file_dialog("Open syx file", "", Some((&["*.syx"], "Sysex files")))
                 {
@@ -300,7 +308,7 @@ impl App {
                 }
             }
 
-            Message::SavePresetSysexFile if self.device_connected.is_some() => {
+            Message::SavePresetSysexFile if self.device_connected => {
                 if let Some(file) =
                     save_file_dialog_with_filter("Save syx file", "", &["*.syx"], "Sysex files")
                 {
@@ -316,22 +324,26 @@ impl App {
                 self.midi.scan_ports();
                 let connection_state = self.midi.is_connected();
 
-                if connection_state != self.device_connected.is_some() {
+                if connection_state != self.device_connected {
+                    self.device_connected = connection_state;
                     if connection_state {
-                        self.on_device_connected();
+                        log::debug!("Device connected");
+                        self.status_connection = String::from("Device connected");
+                        self.status_communication = String::from("Waiting to communicate...");
+                        // When the device becomes available, issue an update request
+                        // after a short delay to give it time to settle.
+                        return Task::perform(
+                            tokio::time::sleep(Duration::from_millis(1500)),
+                            |_| Message::UpdateFromDevice,
+                        );
                     } else {
-                        self.on_device_disconnected();
+                        log::debug!("Device disconnected");
+                        self.status_connection = String::from("Device disconnected");
+                        self.status_communication = String::from("Communication disabled");
+                        self.request_sound_update = false;
+                        self.request_multi_update = false;
+                        self.request_time = None;
                     }
-                }
-
-                if !self.init_complete {
-                    log::debug!("Init complete");
-                    self.status_communication = if self.device_connected.is_some() {
-                        String::new()
-                    } else {
-                        String::from("MIDI communication disabled")
-                    };
-                    self.init_complete = true;
                 }
             }
 
@@ -340,39 +352,33 @@ impl App {
                     self.process_midi(&message);
                 }
 
-                if let Some(device_connected) = self.device_connected {
-                    // Delay the initial requests after connection to prevent
-                    // corrupted data being returned.
-                    if Instant::now() > device_connected + Duration::from_millis(1500) {
-                        if self.request_sound_update && self.request_time.is_none() {
-                            let preset_id = 0x70 + self.part_id;
-                            log::debug!("Requesting preset with id {:#X}", preset_id);
-                            self.status_communication = String::from("Requesting preset dump...");
-                            let message = midi::sysex::preset_request(preset_id);
-                            self.midi.send(&message);
-                            self.request_time = Some(Instant::now());
-                            self.request_sound_update = false;
-                        }
+                if self.device_connected {
+                    if self.request_sound_update && self.request_time.is_none() {
+                        let preset_id = 0x70 + self.part_id;
+                        log::debug!("Requesting preset with id {:#X}", preset_id);
+                        self.status_communication = String::from("Requesting preset dump...");
+                        let message = midi::sysex::preset_request(preset_id);
+                        self.midi.send(&message);
+                        self.request_time = Some(Instant::now());
+                        self.request_sound_update = false;
+                    }
 
-                        if self.request_multi_update && self.request_time.is_none() {
-                            let multi_id = 0x7F;
-                            log::debug!("Requesting multi with id {:#X}", multi_id);
-                            self.status_communication = String::from("Requesting multi dump...");
-                            let message = midi::sysex::multi_request(multi_id);
-                            self.midi.send(&message);
-                            self.request_time = Some(Instant::now());
-                            self.request_multi_update = false;
-                        }
+                    if self.request_multi_update && self.request_time.is_none() {
+                        let multi_id = 0x7F;
+                        log::debug!("Requesting multi with id {:#X}", multi_id);
+                        self.status_communication = String::from("Requesting multi dump...");
+                        let message = midi::sysex::multi_request(multi_id);
+                        self.midi.send(&message);
+                        self.request_time = Some(Instant::now());
+                        self.request_multi_update = false;
+                    }
 
-                        if let Some(request_time) = self.request_time
-                            && request_time.elapsed() >= Duration::new(1, 0)
-                        {
-                            log::error!("Response timeout");
-                            self.status_communication = String::from("Error: response timeout");
-                            self.request_time = None;
-                        }
-                    } else {
-                        self.status_communication = String::from("Delaying initial requests...");
+                    if let Some(request_time) = self.request_time
+                        && request_time.elapsed() >= Duration::new(1, 0)
+                    {
+                        log::error!("Response timeout");
+                        self.status_communication = String::from("Error: response timeout");
+                        self.request_time = None;
                     }
                 }
             }
@@ -410,8 +416,7 @@ impl App {
                 row![
                     container(self.sound_panel.view(&self.params)).width(Length::FillPortion(4)),
                     column![
-                        self.manager_panel
-                            .view(self.part_id, self.device_connected.is_some()),
+                        self.manager_panel.view(self.part_id, self.device_connected),
                         self.multi_panel.view(&self.params)
                     ]
                     .spacing(10)
@@ -514,25 +519,6 @@ impl App {
                 }
             }
         }
-    }
-
-    /// Called when device is connected
-    fn on_device_connected(&mut self) {
-        log::debug!("Device connected");
-        self.status_connection = String::from("Device connected");
-        self.device_connected = Some(Instant::now());
-        self.request_sound_update = true;
-        self.request_multi_update = true;
-    }
-
-    /// Called when device is disconnected
-    fn on_device_disconnected(&mut self) {
-        log::debug!("Device disconnected");
-        self.status_connection = String::from("Device disconnected");
-        self.device_connected = None;
-        self.request_sound_update = false;
-        self.request_multi_update = false;
-        self.request_time = None;
     }
 
     /// Process an incoming MIDI message from the device
