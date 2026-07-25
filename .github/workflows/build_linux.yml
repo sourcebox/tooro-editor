@@ -9,7 +9,7 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     env:
       PROJECT_NAME: ${{ github.event.repository.name }}
