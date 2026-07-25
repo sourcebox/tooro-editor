@@ -23,7 +23,7 @@ log = { version="0.4.33", features = ["max_level_debug", "release_max_level_info
 simple_logger = "5.2.0"
 num-traits = "0.2.19"
 tinyfiledialogs = "3.9.1"
-serde = { version = "1.0.228", features = ["derive"] }
+serde = { version = "1.0.229", features = ["derive"] }
 ron = "0.12.2"
 directories-next = "2.0.0"
 tokio = { version = "1.53.1", features = ["time"] }
