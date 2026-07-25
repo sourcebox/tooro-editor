@@ -11,7 +11,7 @@ keywords = ["midi", "synthesizer"]
 publish = false
 
 [features]
-default = ["x11"]
+default = ["x11", "wayland"]
 x11 = ["iced/x11"]
 wayland = ["iced/wayland"]
 debug = ["iced/debug"]
