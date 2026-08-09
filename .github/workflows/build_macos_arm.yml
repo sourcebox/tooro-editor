@@ -24,7 +24,7 @@ jobs:
       run: ./build-mac-bundle.sh
 
     - name: Archive DMG
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_NAME }}-aarch64.dmg
         path: target/release/bundle/osx/*.dmg

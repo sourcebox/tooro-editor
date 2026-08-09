@@ -33,7 +33,7 @@ jobs:
       run: cargo wix
 
     - name: Archive .msi
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_NAME }}-x86_64-pc-windows-msvc.msi
         path: target/wix/*.msi
