@@ -36,7 +36,7 @@ jobs:
       run: ./build-linux-appimage.sh
 
     - name: Archive AppImage
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_NAME }}-x86_64.AppImage
         path: target/release/appimage/*.AppImage
